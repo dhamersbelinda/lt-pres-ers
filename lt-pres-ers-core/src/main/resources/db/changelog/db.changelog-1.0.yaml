@@ -1,0 +1,36 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: example
+      changes:
+        - createTable:
+            tableName: ACCOUNT
+            columns:
+              - column:
+                 name: ID
+                 type: BIGINT
+                 autoIncrement: true
+                 constraints:
+                   primaryKey: true
+                   primaryKeyName: PK_ACCOUNT
+                   nullable: false
+              - column:
+                 name: HOLDER
+                 type: varchar(50)
+                 constraints:
+                   nullable: false
+                   unique: true
+                   uniqueConstraintName: UK_ACCOUNT_HOLDER
+              - column:
+                 name: EXTERNAL_ID
+                 type: varchar(50)
+                 constraints:
+                   nullable: false
+                   unique: true
+                   uniqueConstraintName: UK_ACCOUNT_EXTERNAL_ID
+              - column:
+                 name: BALANCE
+                 type: decimal(30,2)
+                 constraints:
+                   nullable: false

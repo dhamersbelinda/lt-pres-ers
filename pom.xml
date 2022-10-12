@@ -29,8 +29,28 @@
     </modules>
 
     <scm>
-        <developerConnection>scm:git:https://github.com/TODO/lt-pres-ers.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/nowina-solutions/lt-pres-ers.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>1.6.11</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>2.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openapitools</groupId>
+                <artifactId>jackson-databind-nullable</artifactId>
+                <version>0.2.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
 </project>

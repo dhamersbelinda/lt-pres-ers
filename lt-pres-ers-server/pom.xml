@@ -57,8 +57,8 @@
                                 https://forge.etsi.org/rep/esi/x19_512_preservation_protocol/raw/v1.1.2/19512-Preservation-API-openapi.json
                             </inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>be.uclouvain.lt.pres.ers.api</apiPackage>
-                            <modelPackage>be.uclouvain.lt.pres.ers.model</modelPackage>
+                            <apiPackage>be.uclouvain.lt.pres.ers.server.api</apiPackage>
+                            <modelPackage>be.uclouvain.lt.pres.ers.server.model</modelPackage>
                             <configOptions>
                                 <delegatePattern>true</delegatePattern>
                             </configOptions>

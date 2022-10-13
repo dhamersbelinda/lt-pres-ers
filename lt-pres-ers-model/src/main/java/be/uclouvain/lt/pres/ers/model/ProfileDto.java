@@ -14,10 +14,10 @@ public class ProfileDto {
     private URI preservationEvidencePolicy;
     private OffsetDateTime validFrom;
     private OffsetDateTime validUntil;
-    private String preservationStorageModel;
-    private String preservationGoal;
-    private String evidenceFormat;
+    private PreservationStorageModel preservationStorageModel;
+    private URI preservationGoal;
+    private URI evidenceFormat;
 
-    private String schemeIdentifier;
+    private URI schemeIdentifier;
 
 }

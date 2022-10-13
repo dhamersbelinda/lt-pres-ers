@@ -11,7 +11,7 @@ public class OperationDto {
     private String name;
     private URI specification;
     private String description;
-    private List<OperationInputDto> input;
-    private List<OperationOutputDto> output;
+    private List<OperationInputDto> inputs;
+    private List<OperationOutputDto> outputs;
 
 }

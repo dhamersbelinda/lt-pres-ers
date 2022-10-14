@@ -2,6 +2,8 @@ package be.uclouvain.lt.pres.ers.core.service.impl;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
@@ -28,21 +30,21 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileMapper mapper;
 
     @Override
-    public Stream<ProfileDto> getProfiles(final ProfileStatus status) {
+    public List<ProfileDto> getProfiles(final ProfileStatus status) {
         switch (status) {
         case ALL:
-            try (final Stream<Profile> stream = this.repository.streamAll()) {
-                return stream.map(this.mapper::toDto);
+            try (final Stream<Profile> stream = this.repository.streamAllBy()) {
+                return stream.map(this.mapper::toDto).collect(Collectors.toList());
             }
         case ACTIVE:
             try (final Stream<Profile> stream = this.repository
                     .findByValidUntilIsNullOrValidUntilAfter(OffsetDateTime.now())) {
-                return stream.map(this.mapper::toDto);
+                return stream.map(this.mapper::toDto).collect(Collectors.toList());
             }
         case INACTIVE:
             try (final Stream<Profile> stream = this.repository
                     .findByValidUntilIsNotNullAndValidUntilBefore(OffsetDateTime.now())) {
-                return stream.map(this.mapper::toDto);
+                return stream.map(this.mapper::toDto).collect(Collectors.toList());
             }
         default:
             throw new IllegalArgumentException("Unhandled value: " + status);

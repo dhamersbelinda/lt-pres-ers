@@ -16,6 +16,6 @@ public interface ProfileRepository extends CrudRepository<Profile, URI> {
     // Find all inactive profiles
     Stream<Profile> findByValidUntilIsNotNullAndValidUntilBefore(OffsetDateTime now);
 
-    Stream<Profile> streamAll();
+    Stream<Profile> streamAllBy();
 
 }

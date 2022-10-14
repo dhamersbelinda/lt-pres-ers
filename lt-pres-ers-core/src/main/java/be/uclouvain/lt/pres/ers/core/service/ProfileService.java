@@ -1,7 +1,7 @@
 package be.uclouvain.lt.pres.ers.core.service;
 
 import java.net.URI;
-import java.util.stream.Stream;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -22,7 +22,7 @@ public interface ProfileService {
      * @return Profiles whose validity dates correspond to given
      *         <code>status</code>.
      */
-    Stream<ProfileDto> getProfiles(@NotNull ProfileStatus status);
+    List<ProfileDto> getProfiles(@NotNull ProfileStatus status);
 
     /**
      * Retrieves {@link ProfileDto profile} with identifier <code>identifier</code>.

@@ -16,8 +16,6 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import be.uclouvain.lt.pres.ers.model.PreservationStorageModel;
 import lombok.Getter;
@@ -48,11 +46,9 @@ public class Profile {
     private URI preservationEvidencePolicy;
 
     @Column(name = "VALID_FROM", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime validFrom;
 
     @Column(name = "VALID_UNTIL", nullable = true)
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime validUntil;
 
     @Column(name = "PRESERVATION_STORAGE_MODEL", nullable = false, length = 32)

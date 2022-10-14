@@ -11,7 +11,7 @@ public enum ProfileStatus {
     ACTIVE("active"), INACTIVE("inactive"), ALL("all");
 
     @Getter
-    private String standardizedValue;
+    private final String standardizedValue;
 
     private static final Map<String, ProfileStatus> fromStandardizedValuesToInstances = Map.of("active", ACTIVE,
             "inactive", INACTIVE, "all", ALL);

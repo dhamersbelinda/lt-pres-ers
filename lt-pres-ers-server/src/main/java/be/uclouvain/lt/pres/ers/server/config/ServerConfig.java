@@ -1,4 +1,4 @@
-package be.uclouvain.lt.pres.ers.config;
+package be.uclouvain.lt.pres.ers.server.config;
 
 import java.util.Locale;
 

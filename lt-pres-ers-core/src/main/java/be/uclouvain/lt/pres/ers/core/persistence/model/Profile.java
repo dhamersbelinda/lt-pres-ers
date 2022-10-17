@@ -1,7 +1,9 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -63,5 +65,14 @@ public class Profile {
 
     @Column(name = "SCHEME_IDENTIFIER", nullable = true, length = 2048)
     private URI schemeIdentifier;
+
+    @Column(name = "SPECIFICATION", nullable = true, length = 2048)
+    private URI specification;
+
+    @Column(name = "PRESERVATION_EVIDENCE_RETENTION_PERIOD", nullable = true, length = 30)
+    private Period preservationEvidenceRetentionPeriod;
+
+    @Column(name = "PRESERVATION_EVIDENCE_RETENTION_DURATION", nullable = true, length = 30)
+    private Duration preservationEvidenceRetentionDuration;
 
 }

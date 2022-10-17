@@ -1,7 +1,9 @@
 package be.uclouvain.lt.pres.ers.model;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.List;
 
 import lombok.Data;
@@ -19,5 +21,7 @@ public class ProfileDto {
     private URI evidenceFormat;
 
     private URI schemeIdentifier;
-
+    private URI specification;
+    private Period preservationEvidenceRetentionPeriod;
+    private Duration preservationEvidenceRetentionDuration;
 }

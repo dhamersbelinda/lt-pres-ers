@@ -3,10 +3,8 @@ package be.uclouvain.lt.pres.ers.model;
 import lombok.Data;
 
 @Data
-public class OperationInputDto {
+public class ParameterDto {
 
-    private String name;
-    private String description;
     private FormatDto format;
 
 }

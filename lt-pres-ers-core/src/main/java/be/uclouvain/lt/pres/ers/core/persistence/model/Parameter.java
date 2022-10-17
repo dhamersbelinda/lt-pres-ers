@@ -17,12 +17,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "OPERATION_INPUT")
+@Table(name = "PARAMETER")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class OperationInput {
+public class Parameter {
 
     @Id
     @Column(name = "ID")
@@ -30,18 +30,12 @@ public class OperationInput {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "NAME", nullable = false, length = 128)
-    private String name;
-
-    @Column(name = "DESCRIPTION", nullable = true, length = 2048)
-    private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "FORMAT_ID", nullable = true, referencedColumnName = "ID")
-    private Format format;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "PARENT_FORMAT_ID", nullable = false, referencedColumnName = "ID")
+    private Format parentFormat;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "OPERATION_ID", nullable = false, referencedColumnName = "ID")
-    private Operation operation;
+    @JoinColumn(name = "FORMAT_ID", nullable = false, referencedColumnName = "ID")
+    private Format format;
 
 }

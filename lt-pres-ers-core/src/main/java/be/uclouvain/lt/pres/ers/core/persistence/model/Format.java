@@ -1,13 +1,16 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
+import java.net.URI;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AccessLevel;
@@ -17,12 +20,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "OPERATION_INPUT")
+@Table(name = "FORMAT")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class OperationInput {
+public class Format {
 
     @Id
     @Column(name = "ID")
@@ -30,18 +33,10 @@ public class OperationInput {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "NAME", nullable = false, length = 128)
-    private String name;
+    @Column(name = "FORMAT_ID", nullable = false, length = 2048)
+    private URI formatId;
 
-    @Column(name = "DESCRIPTION", nullable = true, length = 2048)
-    private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "FORMAT_ID", nullable = true, referencedColumnName = "ID")
-    private Format format;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "OPERATION_ID", nullable = false, referencedColumnName = "ID")
-    private Operation operation;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentFormat", cascade = CascadeType.ALL)
+    private Set<Parameter> parameters;
 
 }

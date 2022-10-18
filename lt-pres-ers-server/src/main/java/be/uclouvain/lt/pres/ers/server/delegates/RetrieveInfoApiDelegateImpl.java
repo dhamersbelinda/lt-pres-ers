@@ -102,6 +102,9 @@ public class RetrieveInfoApiDelegateImpl implements RetrieveInfoApiDelegate {
         result.setMin((min != null) ? min.getUri().toString() : null);
         result.setMsg((msg != null) ? new DsbInternationalStringType().value(msg).lang("EN") : null);
         response.setResult(result);
+
+        response.setPro(profiles);
+
         return ResponseEntity.status(httpStatus).body(response);
     }
 }

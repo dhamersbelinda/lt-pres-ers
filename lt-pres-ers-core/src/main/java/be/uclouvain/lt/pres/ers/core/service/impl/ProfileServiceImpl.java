@@ -54,7 +54,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileDto getProfile(final URI identifier) throws ProfileNotFoundException {
         return this.mapper.toDto(this.repository.findByProfileIdentifier(identifier)
-                .orElseThrow(() -> new ProfileNotFoundException("There is no profile with identifier" + identifier)));
+                .orElseThrow(() -> new ProfileNotFoundException("There is no profile with identifier " + identifier)));
     }
 
 }

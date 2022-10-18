@@ -59,7 +59,7 @@ public interface ProfileDtoMapper {
     MdParameterType toMdParameterType(OperationInputDto dto);
 
     default List<MdFormatType> toMdFormatTypeList(final FormatDto dto) {
-        return List.of(this.toMdFormatType(dto));
+        return (dto == null) ? null : List.of(this.toMdFormatType(dto));
     }
 
     @Mapping(target = "fid", source = "formatId")

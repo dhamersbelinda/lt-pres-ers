@@ -2,7 +2,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 1
-      author: initial
+      author: nowina
       changes:
         - createTable:
             tableName: PROFILE
@@ -74,7 +74,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 2
-      author: initial
+      author: nowina
       changes:
         - createTable:
             tableName: OPERATION
@@ -109,7 +109,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 3
-      author: initial
+      author: nowina
       changes:
         - createTable:
             tableName: OPERATION_INPUT
@@ -144,7 +144,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 4
-      author: initial
+      author: nowina
       changes:
         - createTable:
             tableName: OPERATION_OUTPUT
@@ -174,7 +174,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 5
-      author: initial
+      author: nowina
       changes:
         - createTable:
             tableName: FORMAT
@@ -194,7 +194,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 6
-      author: initial
+      author: nowina
       changes:
         - createTable:
             tableName: PARAMETER
@@ -216,3 +216,99 @@ databaseChangeLog:
                  type: BIGINT
                  constraints:
                    nullable: false
+
+  - changeSet:
+      id: 7
+      author: nowina
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: PROFILE_ID
+            baseTableName: OPERATION
+            constraintName: FK_OPERATION_PROFILE
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: PROFILE
+            validate: true
+
+  - changeSet:
+      id: 8
+      author: nowina
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: FORMAT_ID
+            baseTableName: OPERATION_INPUT
+            constraintName: FK_OPERATION_INPUT_FORMAT
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: FORMAT
+            validate: true
+
+  - changeSet:
+      id: 9
+      author: nowina
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: OPERATION_ID
+            baseTableName: OPERATION_INPUT
+            constraintName: FK_OPERATION_INPUT_OPERATION
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: OPERATION
+            validate: true
+
+  - changeSet:
+      id: 10
+      author: nowina
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: OPERATION_ID
+            baseTableName: OPERATION_OUTPUT
+            constraintName: FK_OPERATION_OUTPUT_OPERATION
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: OPERATION
+            validate: true
+
+  - changeSet:
+      id: 11
+      author: nowina
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: PARENT_FORMAT_ID
+            baseTableName: PARAMETER
+            constraintName: FK_PARAMETER_PARENT_FORMAT
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: FORMAT
+            validate: true
+
+  - changeSet:
+      id: 12
+      author: nowina
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: FORMAT_ID
+            baseTableName: PARAMETER
+            constraintName: FK_PARAMETER_FORMAT
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: FORMAT
+            validate: true

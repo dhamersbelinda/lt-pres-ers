@@ -2,6 +2,7 @@ package be.uclouvain.lt.pres.ers.core.persistence.repository;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -22,5 +23,8 @@ public interface ProfileRepository extends CrudRepository<Profile, URI> {
 
     @EntityGraph(value = "profile-entity-graph", type = EntityGraphType.FETCH)
     Stream<Profile> streamAllBy();
+
+    @EntityGraph(value = "profile-entity-graph", type = EntityGraphType.FETCH)
+    Optional<Profile> findByProfileIdentifier(URI profileIdentifier);
 
 }

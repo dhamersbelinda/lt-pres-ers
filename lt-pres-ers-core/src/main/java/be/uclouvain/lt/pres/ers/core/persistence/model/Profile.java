@@ -38,7 +38,9 @@ import lombok.ToString;
                 @NamedSubgraph(name = "format-subgraph", attributeNodes = {
                         @NamedAttributeNode(value = "parameters", subgraph = "parameter-subgraph") }),
                 @NamedSubgraph(name = "parameter-subgraph", attributeNodes = {
-                        @NamedAttributeNode(value = "format") }) })
+                        @NamedAttributeNode(value = "format", subgraph = "format-subgraph-2") }),
+                @NamedSubgraph(name = "format-subgraph-2", attributeNodes = {
+                        @NamedAttributeNode(value = "parameters") }) })
 @Entity
 @Table(name = "PROFILE")
 @Getter

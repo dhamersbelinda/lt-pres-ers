@@ -30,8 +30,15 @@ import lombok.ToString;
 
 @NamedEntityGraph(name = "profile-entity-graph", attributeNodes = {
         @NamedAttributeNode(value = "operations", subgraph = "operation-subgraph") }, subgraphs = {
-                @NamedSubgraph(name = "operation-subgraph", attributeNodes = { @NamedAttributeNode("inputs"),
-                        @NamedAttributeNode("outputs") }) })
+                @NamedSubgraph(name = "operation-subgraph", attributeNodes = {
+                        @NamedAttributeNode(value = "inputs", subgraph = "operation-input-subgraph"),
+                        @NamedAttributeNode("outputs") }),
+                @NamedSubgraph(name = "operation-input-subgraph", attributeNodes = {
+                        @NamedAttributeNode(value = "format", subgraph = "format-subgraph") }),
+                @NamedSubgraph(name = "format-subgraph", attributeNodes = {
+                        @NamedAttributeNode(value = "parameters", subgraph = "parameter-subgraph") }),
+                @NamedSubgraph(name = "parameter-subgraph", attributeNodes = {
+                        @NamedAttributeNode(value = "format") }) })
 @Entity
 @Table(name = "PROFILE")
 @Getter

@@ -2,35 +2,217 @@ databaseChangeLog:
 
   - changeSet:
       id: 1
-      author: example
+      author: initial
       changes:
         - createTable:
-            tableName: ACCOUNT
+            tableName: PROFILE
             columns:
               - column:
                  name: ID
                  type: BIGINT
-                 autoIncrement: true
                  constraints:
                    primaryKey: true
-                   primaryKeyName: PK_ACCOUNT
+                   primaryKeyName: PK_PROFILE
                    nullable: false
               - column:
-                 name: HOLDER
-                 type: varchar(50)
+                 name: PROFILE_IDENTIFIER
+                 type: varchar(2048)
                  constraints:
                    nullable: false
                    unique: true
-                   uniqueConstraintName: UK_ACCOUNT_HOLDER
+                   uniqueConstraintName: UK_PROFILE_IDENTIFIER
               - column:
-                 name: EXTERNAL_ID
-                 type: varchar(50)
+                 name: PRESERVATION_EVIDENCE_POLICY
+                 type: varchar(2048)
                  constraints:
                    nullable: false
-                   unique: true
-                   uniqueConstraintName: UK_ACCOUNT_EXTERNAL_ID
               - column:
-                 name: BALANCE
-                 type: decimal(30,2)
+                 name: VALID_FROM
+                 type: TIMESTAMP(3)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: VALID_UNTIL
+                 type: TIMESTAMP(3)
+                 constraints:
+                   nullable: true
+              - column:
+                 name: PRESERVATION_STORAGE_MODEL
+                 type: varchar(32)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: PRESERVATION_GOAL
+                 type: varchar(2048)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: EVIDENCE_FORMAT
+                 type: varchar(2048)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: SCHEME_IDENTIFIER
+                 type: varchar(2048)
+                 constraints:
+                   nullable: true
+              - column:
+                 name: SPECIFICATION
+                 type: varchar(2048)
+                 constraints:
+                   nullable: true
+              - column:
+                 name: PRESERVATION_EVIDENCE_RETENTION_PERIOD
+                 type: varchar(32)
+                 constraints:
+                   nullable: true
+              - column:
+                 name: PRESERVATION_EVIDENCE_RETENTION_DURATION
+                 type: varchar(32)
+                 constraints:
+                   nullable: true
+
+  - changeSet:
+      id: 2
+      author: initial
+      changes:
+        - createTable:
+            tableName: OPERATION
+            columns:
+              - column:
+                 name: ID
+                 type: BIGINT
+                 constraints:
+                   primaryKey: true
+                   primaryKeyName: PK_OPERATION
+                   nullable: false
+              - column:
+                 name: NAME
+                 type: varchar(128)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: SPECIFICATION
+                 type: varchar(2048)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: DESCRIPTION
+                 type: varchar(2048)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: PROFILE_ID
+                 type: BIGINT
+                 constraints:
+                   nullable: false
+
+  - changeSet:
+      id: 3
+      author: initial
+      changes:
+        - createTable:
+            tableName: OPERATION_INPUT
+            columns:
+              - column:
+                 name: ID
+                 type: BIGINT
+                 constraints:
+                   primaryKey: true
+                   primaryKeyName: PK_OPERATION_INPUT
+                   nullable: false
+              - column:
+                 name: NAME
+                 type: varchar(128)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: DESCRIPTION
+                 type: varchar(2048)
+                 constraints:
+                   nullable: true
+              - column:
+                 name: FORMAT_ID
+                 type: BIGINT
+                 constraints:
+                   nullable: true
+              - column:
+                 name: OPERATION_ID
+                 type: BIGINT
+                 constraints:
+                   nullable: false
+
+  - changeSet:
+      id: 4
+      author: initial
+      changes:
+        - createTable:
+            tableName: OPERATION_OUTPUT
+            columns:
+              - column:
+                 name: ID
+                 type: BIGINT
+                 constraints:
+                   primaryKey: true
+                   primaryKeyName: PK_OPERATION_OUTPUT
+                   nullable: false
+              - column:
+                 name: NAME
+                 type: varchar(128)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: DESCRIPTION
+                 type: varchar(2048)
+                 constraints:
+                   nullable: false
+              - column:
+                 name: OPERATION_ID
+                 type: BIGINT
+                 constraints:
+                   nullable: false
+
+  - changeSet:
+      id: 5
+      author: initial
+      changes:
+        - createTable:
+            tableName: FORMAT
+            columns:
+              - column:
+                 name: ID
+                 type: BIGINT
+                 constraints:
+                   primaryKey: true
+                   primaryKeyName: PK_FORMAT
+                   nullable: false
+              - column:
+                 name: FORMAT_ID
+                 type: varchar(2048)
+                 constraints:
+                   nullable: false
+
+  - changeSet:
+      id: 6
+      author: initial
+      changes:
+        - createTable:
+            tableName: PARAMETER
+            columns:
+              - column:
+                 name: ID
+                 type: BIGINT
+                 constraints:
+                   primaryKey: true
+                   primaryKeyName: PK_PARAMETER
+                   nullable: false
+              - column:
+                 name: PARENT_FORMAT_ID
+                 type: BIGINT
+                 constraints:
+                   nullable: false
+              - column:
+                 name: FORMAT_ID
+                 type: BIGINT
                  constraints:
                    nullable: false

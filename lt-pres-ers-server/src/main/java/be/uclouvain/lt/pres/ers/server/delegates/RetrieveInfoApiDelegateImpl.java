@@ -15,7 +15,7 @@ import be.uclouvain.lt.pres.ers.core.service.ProfileService;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import be.uclouvain.lt.pres.ers.model.ProfileStatus;
 import be.uclouvain.lt.pres.ers.server.api.RetrieveInfoApiDelegate;
-import be.uclouvain.lt.pres.ers.server.mapper.ProfileMapper;
+import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.DsbInternationalStringType;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType.MajEnum;
@@ -30,7 +30,7 @@ public class RetrieveInfoApiDelegateImpl implements RetrieveInfoApiDelegate {
 
     private final ProfileService service;
 
-    private final ProfileMapper mapper;
+    private final ProfileDtoMapper mapper;
 
     @Override
     public ResponseEntity<PresRetrieveInfoResponseType> retrieveInfoPost(final PresRetrieveInfoType request) {

@@ -25,7 +25,7 @@ import be.uclouvain.lt.pres.ers.server.model.PresProfileType;
 import be.uclouvain.lt.pres.ers.server.model.PresProfileValidityPeriodType;
 
 @Mapper
-public interface ProfileMapper {
+public interface ProfileDtoMapper {
 
     @Mapping(target = "pid", source = "profileIdentifier")
     @Mapping(target = "op", source = "operations")

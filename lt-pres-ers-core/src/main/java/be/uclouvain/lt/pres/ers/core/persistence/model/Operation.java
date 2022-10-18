@@ -51,7 +51,7 @@ public class Operation {
     private Set<OperationOutput> outputs;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "PROFILE_IDENTIFIER", nullable = false, referencedColumnName = "PROFILE_IDENTIFIER")
+    @JoinColumn(name = "PROFILE_ID", nullable = false, referencedColumnName = "ID")
     private Profile profile;
 
 }

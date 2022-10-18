@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
@@ -20,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import be.uclouvain.lt.pres.ers.model.PreservationStorageModel;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,6 +41,14 @@ import lombok.ToString;
 public class Profile {
 
     @Id
+    @Column(name = "ID")
+    @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // profileIdentifier can be a natural primary key, but JPA 2.2 does not allow
+    // the use of converters on attributes annotated with @Id. So, we use a
+    // surrogate key and we put a unique key constraint on this column.
     @Column(name = "PROFILE_IDENTIFIER", nullable = false, length = 2048)
     private URI profileIdentifier;
 
@@ -69,10 +80,10 @@ public class Profile {
     @Column(name = "SPECIFICATION", nullable = true, length = 2048)
     private URI specification;
 
-    @Column(name = "PRESERVATION_EVIDENCE_RETENTION_PERIOD", nullable = true, length = 30)
+    @Column(name = "PRESERVATION_EVIDENCE_RETENTION_PERIOD", nullable = true, length = 32)
     private Period preservationEvidenceRetentionPeriod;
 
-    @Column(name = "PRESERVATION_EVIDENCE_RETENTION_DURATION", nullable = true, length = 30)
+    @Column(name = "PRESERVATION_EVIDENCE_RETENTION_DURATION", nullable = true, length = 32)
     private Duration preservationEvidenceRetentionDuration;
 
 }

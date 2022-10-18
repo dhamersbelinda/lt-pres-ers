@@ -10,6 +10,7 @@ databaseChangeLog:
               - column:
                  name: ID
                  type: BIGINT
+                 autoIncrement: true
                  constraints:
                    primaryKey: true
                    primaryKeyName: PK_PROFILE
@@ -82,6 +83,7 @@ databaseChangeLog:
               - column:
                  name: ID
                  type: BIGINT
+                 autoIncrement: true
                  constraints:
                    primaryKey: true
                    primaryKeyName: PK_OPERATION
@@ -117,6 +119,7 @@ databaseChangeLog:
               - column:
                  name: ID
                  type: BIGINT
+                 autoIncrement: true
                  constraints:
                    primaryKey: true
                    primaryKeyName: PK_OPERATION_INPUT
@@ -152,6 +155,7 @@ databaseChangeLog:
               - column:
                  name: ID
                  type: BIGINT
+                 autoIncrement: true
                  constraints:
                    primaryKey: true
                    primaryKeyName: PK_OPERATION_OUTPUT
@@ -182,6 +186,7 @@ databaseChangeLog:
               - column:
                  name: ID
                  type: BIGINT
+                 autoIncrement: true
                  constraints:
                    primaryKey: true
                    primaryKeyName: PK_FORMAT
@@ -202,6 +207,7 @@ databaseChangeLog:
               - column:
                  name: ID
                  type: BIGINT
+                 autoIncrement: true
                  constraints:
                    primaryKey: true
                    primaryKeyName: PK_PARAMETER
@@ -312,3 +318,249 @@ databaseChangeLog:
             referencedColumnNames: ID
             referencedTableName: FORMAT
             validate: true
+
+  - changeSet:
+     id: 13
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: PROFILE_IDENTIFIER  
+                 value: https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0
+             - column:
+                 name: PRESERVATION_EVIDENCE_POLICY  
+                 value: https://uclouvain.be/en/faculties/epl/preservation-api/profile/preservation-evidence-policy/v1.0
+             - column:
+                 name: VALID_FROM
+                 valueDate: 2022-10-01
+             - column:
+                 name: PRESERVATION_STORAGE_MODEL  
+                 value: WITH_TEMPORARY_STORAGE
+             - column:
+                 name: PRESERVATION_GOAL  
+                 value: http://uri.etsi.org/19512/goal/pgd
+             - column:
+                 name: EVIDENCE_FORMAT  
+                 value: urn:ietf:rfc:6283 
+             - column:
+                 name: SCHEME_IDENTIFIER  
+                 value: http://uri.etsi.org/19512/scheme/pgd+wts+ers
+             - column:
+                 name: SPECIFICATION  
+                 value: https://www.etsi.org/deliver/etsi_ts/119500_119599/119512/01.01.02_60/ts_119512v010102p.pdf
+             - column:
+                 name: PRESERVATION_EVIDENCE_RETENTION_PERIOD  
+                 value: P10Y
+             - column:
+                 name: PRESERVATION_EVIDENCE_RETENTION_DURATION  
+                 value: PT0S
+           tableName: PROFILE
+       - rollback:
+           - delete:
+              tableName: PROFILE
+
+  - changeSet:
+     id: 14
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: NAME  
+                 value: PreservePO
+             - column:
+                 name: SPECIFICATION  
+                 value: https://www.etsi.org/deliver/etsi_ts/119500_119599/119512/01.01.02_60/ts_119512v010102p.pdf
+             - column:
+                 name: DESCRIPTION
+                 value: See clause 5.3.3
+             - column:
+                 name: PROFILE_ID  
+                 valueComputed: (SELECT ID FROM PROFILE)
+           tableName: OPERATION
+       - rollback:
+           - delete:
+              tableName: OPERATION
+
+  - changeSet:
+     id: 15
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: NAME  
+                 value: RetrievePO
+             - column:
+                 name: SPECIFICATION  
+                 value: https://www.etsi.org/deliver/etsi_ts/119500_119599/119512/01.01.02_60/ts_119512v010102p.pdf
+             - column:
+                 name: DESCRIPTION
+                 value: See clause 5.3.4
+             - column:
+                 name: PROFILE_ID  
+                 valueComputed: (SELECT ID FROM PROFILE)
+           tableName: OPERATION
+       - rollback:
+           - delete:
+              tableName: OPERATION
+
+  - changeSet:
+     id: 16
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: FORMAT_ID
+                 value: http://uri.etsi.org/19512/format/DigestList
+           tableName: FORMAT
+       - rollback:
+           - delete:
+              tableName: FORMAT
+
+  - changeSet:
+     id: 17
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: NAME  
+                 value: PreservePORequest
+             - column:
+                 name: DESCRIPTION
+                 value: See clause 5.3.3.1
+             - column:
+                 name: FORMAT_ID
+                 valueComputed: (SELECT ID FROM FORMAT WHERE FORMAT_ID = 'http://uri.etsi.org/19512/format/DigestList')
+             - column:
+                 name: OPERATION_ID  
+                 valueComputed: (SELECT ID FROM OPERATION WHERE NAME = 'PreservePO')
+           tableName: OPERATION_INPUT
+       - rollback:
+           - delete:
+              tableName: OPERATION_INPUT
+
+  - changeSet:
+     id: 18
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: NAME  
+                 value: RetrievePORequest
+             - column:
+                 name: DESCRIPTION
+                 value: See clause 5.3.4.1
+             - column:
+                 name: OPERATION_ID
+                 valueComputed: (SELECT ID FROM OPERATION WHERE NAME = 'RetrievePO')
+           tableName: OPERATION_INPUT
+       - rollback:
+           - delete:
+              tableName: OPERATION_INPUT
+
+  - changeSet:
+     id: 19
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: NAME  
+                 value: PreservePOResponse
+             - column:
+                 name: DESCRIPTION
+                 value: See clause 5.3.3.2
+             - column:
+                 name: OPERATION_ID
+                 valueComputed: (SELECT ID FROM OPERATION WHERE NAME = 'PreservePO')
+           tableName: OPERATION_OUTPUT
+       - rollback:
+           - delete:
+              tableName: OPERATION_OUTPUT
+
+  - changeSet:
+     id: 20
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: NAME  
+                 value: RetrievePOResponse
+             - column:
+                 name: DESCRIPTION
+                 value: See clause 5.3.4.2
+             - column:
+                 name: OPERATION_ID
+                 valueComputed: (SELECT ID FROM OPERATION WHERE NAME = 'RetrievePO')
+           tableName: OPERATION_OUTPUT
+       - rollback:
+           - delete:
+              tableName: OPERATION_OUTPUT
+
+  - changeSet:
+     id: 21
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: FORMAT_ID
+                 value: SHA-256
+           tableName: FORMAT
+       - rollback:
+           - delete:
+              tableName: FORMAT
+
+  - changeSet:
+     id: 22
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: PARENT_FORMAT_ID  
+                 valueComputed: (SELECT ID FROM FORMAT WHERE FORMAT_ID = 'http://uri.etsi.org/19512/format/DigestList')
+             - column:
+                 name: FORMAT_ID  
+                 valueComputed: (SELECT ID FROM FORMAT WHERE FORMAT_ID = 'SHA-256')
+           tableName: PARAMETER
+       - rollback:
+           - delete:
+              tableName: PARAMETER
+
+  - changeSet:
+     id: 23
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: FORMAT_ID
+                 value: SHA-512
+           tableName: FORMAT
+       - rollback:
+           - delete:
+              tableName: FORMAT
+
+  - changeSet:
+     id: 24
+     author: nowina
+     changes:
+       - insert:
+           columns:
+             - column:
+                 name: PARENT_FORMAT_ID  
+                 valueComputed: (SELECT ID FROM FORMAT WHERE FORMAT_ID = 'http://uri.etsi.org/19512/format/DigestList')
+             - column:
+                 name: FORMAT_ID  
+                 valueComputed: (SELECT ID FROM FORMAT WHERE FORMAT_ID = 'SHA-512')
+           tableName: PARAMETER
+       - rollback:
+           - delete:
+              tableName: PARAMETER

@@ -60,7 +60,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                https://forge.etsi.org/rep/esi/x19_512_preservation_protocol/raw/v1.1.2/19512-Preservation-API-openapi.json
+                                ${project.basedir}/src/main/resources/19512-Preservation-API-openapi-1.1.2.json
                             </inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>be.uclouvain.lt.pres.ers.server.api</apiPackage>

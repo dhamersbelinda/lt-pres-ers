@@ -1,0 +1,702 @@
+{
+    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+    "definitions": {
+        "dsb-AnyType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsb-AnyType"
+        },
+        "dsb-AttachmentReferenceType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsb-AttachmentReferenceType"
+        },
+        "dsb-DigestInfoType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsb-DigestInfoType"
+        },
+        "dsigrw-TransformsType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsigrw-TransformsType"
+        },
+        "dsigrw-TransformType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsigrw-TransformType"
+        },
+        "nsl-NsPrefixMappingType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/nsl-NsPrefixMappingType"
+        },
+        "dsb-Base64DataType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsb-Base64DataType"
+        },
+        "dsb-ResultType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsb-ResultType"
+        },
+        "dsb-InternationalStringType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsb-InternationalStringType"
+        },
+        "md-OperationType": {
+            "$ref": "./oasis-dss-metadata-schema-1.0-cs02.json#\/definitions\/md-OperationType"
+        },
+        "md-ParameterType": {
+            "$ref": "./oasis-dss-metadata-schema-1.0-cs02.json#\/definitions\/md-ParameterType"
+        },
+        "md-FormatType": {
+            "$ref": "./oasis-dss-metadata-schema-1.0-cs02.json#\/definitions\/md-FormatType"
+        },
+        "md-ExtensionType": {
+            "$ref": "./oasis-dss-metadata-schema-1.0-cs02.json#\/definitions\/md-ExtensionType"
+        },
+        "md-PolicyType": {
+            "$ref": "./oasis-dss-metadata-schema-1.0-cs02.json#\/definitions\/md-PolicyType"
+        },
+        "md-PolicyByRefType": {
+            "$ref": "./oasis-dss-metadata-schema-1.0-cs02.json#\/definitions\/md-PolicyByRefType"
+        },
+        "dsigrw-DigestMethodType": {
+            "$ref": "./oasis-dss-core-schema-2.0-cs02.json#\/definitions\/dsigrw-DigestMethodType"
+        },
+        "dsb-OptionalInputsType": {
+            "type": "object",
+            "properties": {
+                "policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "other": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/dsb-AnyType"
+                    }
+                }
+            }
+        },
+        "dsb-OptionalOutputsType": {
+            "type": "object",
+            "properties": {
+                "policy": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "other": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/dsb-AnyType"
+                    }
+                }
+            }
+        },
+        "pres-PreservePOType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "pro": {
+                    "type": "string"
+                },
+                "po": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-POType"
+                    }
+                }
+            },
+            "required": ["pro"]
+        },
+        "pres-POType": {
+            "type": "object",
+            "properties": {
+                "binaryData": {
+                    "$ref": "#\/definitions\/pres-POType:BinaryData"
+                },
+                "xmlData": {
+                    "$ref": "#\/definitions\/pres-POType:XmlData"
+                },
+                "formatId": {
+                    "type": "string"
+                },
+                "mimeType": {
+                    "type": "string"
+                },
+                "pronomId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "relObj": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "minProperties": 1
+        },
+        "pres-POType:BinaryData": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "pres-POType:XmlData": {
+            "type": "object",
+            "properties": {
+                "b64Content": {
+                    "type": "string"
+                }
+            }
+        },
+        "pres-PreservePOResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "poId": {
+                    "type": "string"
+                },
+                "po": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-POType"
+                    }
+                }
+            }
+        },
+        "pres-UpdatePOCType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "poId": {
+                    "type": "string"
+                },
+                "deltaPoc": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-POType"
+                    }
+                }
+            },
+            "required": ["poId", "deltaPoc"]
+        },
+        "pres-UpdatePOCResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "versionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "pres-RetrievePOType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "poId": {
+                    "type": "string"
+                },
+                "versionId": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sor": {
+                    "type": "string"
+                },
+                "poFormat": {
+                    "type": "string"
+                },
+                "evFormat": {
+                    "type": "string"
+                }
+            },
+            "required": ["poId"]
+        },
+        "pres-RetrievePOResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "po": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-POType"
+                    }
+                }
+            }
+        },
+        "pres-DeletePOType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "poId": {
+                    "type": "string"
+                },
+                "mod": {
+                    "type": "string"
+                },
+                "crn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                }
+            },
+            "required": ["poId"]
+        },
+        "pres-ResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                }
+            },
+            "required": ["result"]
+        },
+        "pres-RetrieveTraceType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "poId": {
+                    "type": "string"
+                }
+            },
+            "required": ["poId"]
+        },
+        "pres-RetrieveTraceResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "trace": {
+                    "$ref": "#\/definitions\/pres-TraceType"
+                }
+            },
+            "required": ["trace"]
+        },
+        "pres-TraceType": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-EventType"
+                    }
+                }
+            }
+        },
+        "pres-EventType": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "sub": {
+                    "type": "string"
+                },
+                "op": {
+                    "type": "string"
+                },
+                "obj": {
+                    "type": "string"
+                },
+                "det": {
+                    "type": "string"
+                }
+            },
+            "required": ["time", "sub", "op"]
+        },
+        "pres-ValidateEvidenceType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "ev": {
+                    "$ref": "#\/definitions\/pres-EvidenceType"
+                },
+                "po": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-POType"
+                    }
+                }
+            }
+        },
+        "pres-EvidenceType": {
+            "type": "object",
+            "properties": {
+                "binaryData": {
+                    "$ref": "#\/definitions\/pres-POType:BinaryData"
+                },
+                "xmlData": {
+                    "$ref": "#\/definitions\/pres-POType:XmlData"
+                },
+                "formatId": {
+                    "type": "string"
+                },
+                "mimeType": {
+                    "type": "string"
+                },
+                "pronomId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "relObj": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "poId": {
+                    "type": "string"
+                },
+                "verId": {
+                    "type": "string"
+                }
+            }
+        },
+        "pres-ValidateEvidenceResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "valRep": {
+                    "$ref": "#\/definitions\/pres-POType"
+                },
+                "poe": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "pres-ProfileType": {
+            "type": "object",
+            "properties": {
+                "pid": {
+                    "type": "string"
+                },
+                "spec": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/dsb-InternationalStringType"
+                    }
+                },
+                "op": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/md-OperationType"
+                    }
+                },
+                "pol": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/md-PolicyType"
+                    }
+                },
+                "ext": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/md-ExtensionType"
+                    }
+                },
+                "sid": {
+                    "type": "string"
+                },
+                "pvp": {
+                    "$ref": "#\/definitions\/pres-ProfileValidityPeriodType"
+                },
+                "psm": {
+                    "type": "string"
+                },
+                "pg": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ef": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/md-FormatType"
+                    }
+                },
+                "eed": {
+                    "type": "string"
+                },
+                "perp": {
+                    "type": "string"
+                }
+            },
+            "required": ["pvp", "psm", "pg", "ef"]
+        },
+        "pres-ProfileValidityPeriodType": {
+            "type": "object",
+            "properties": {
+                "vfrom": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "vuntl": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "required": ["vfrom"]
+        },
+        "pres-RetrieveInfoType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "pro": {
+                    "type": "string"
+                },
+                "stat": {
+                    "type": "string"
+                }
+            }
+        },
+        "pres-RetrieveInfoResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "pro": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#\/definitions\/pres-ProfileType"
+                    }
+                }
+            }
+        },
+        "pres-SearchType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "fi": {
+                    "type": "string"
+                }
+            },
+            "required": ["fi"]
+        },
+        "pres-SearchResponseType": {
+            "type": "object",
+            "properties": {
+                "optOut": {
+                    "$ref": "#\/definitions\/dsb-OptionalOutputsType"
+                },
+                "result": {
+                    "$ref": "#\/definitions\/dsb-ResultType"
+                },
+                "reqId": {
+                    "type": "string"
+                },
+                "poId": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "pres-DigestListType": {
+            "type": "object",
+            "properties": {
+                "digAlg": {
+                    "$ref": "#\/definitions\/dsigrw-DigestMethodType"
+                },
+                "digVal": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ev": {
+                    "$ref": "#\/definitions\/pres-EvidenceType"
+                }
+            },
+            "required": ["digAlg", "digVal"]
+        },
+        "pres-RequestType": {
+            "type": "object",
+            "properties": {
+                "optIn": {
+                    "$ref": "#\/definitions\/dsb-OptionalInputsType"
+                },
+                "reqId": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "presPO": {
+            "$ref": "#\/definitions\/pres-PreservePOType"
+        },
+        "preserveResp": {
+            "$ref": "#\/definitions\/pres-PreservePOResponseType"
+        },
+        "updPoc": {
+            "$ref": "#\/definitions\/pres-UpdatePOCType"
+        },
+        "updPocResp": {
+            "$ref": "#\/definitions\/pres-UpdatePOCResponseType"
+        },
+        "getPO": {
+            "$ref": "#\/definitions\/pres-RetrievePOType"
+        },
+        "getPOResp": {
+            "$ref": "#\/definitions\/pres-RetrievePOResponseType"
+        },
+        "delPO": {
+            "$ref": "#\/definitions\/pres-DeletePOType"
+        },
+        "getResp": {
+            "$ref": "#\/definitions\/pres-ResponseType"
+        },
+        "getTrace": {
+            "$ref": "#\/definitions\/pres-RetrieveTraceType"
+        },
+        "getTraceResp": {
+            "$ref": "#\/definitions\/pres-RetrieveTraceResponseType"
+        },
+        "valEvidence": {
+            "$ref": "#\/definitions\/pres-ValidateEvidenceType"
+        },
+        "valEvidenceResp": {
+            "$ref": "#\/definitions\/pres-ValidateEvidenceResponseType"
+        },
+        "sor": {
+            "type": "string"
+        },
+        "profile": {
+            "$ref": "#\/definitions\/pres-ProfileType"
+        },
+        "stat": {
+            "type": "string"
+        },
+        "retrvInfo": {
+            "$ref": "#\/definitions\/pres-RetrieveInfoType"
+        },
+        "retrvInfoResp": {
+            "$ref": "#\/definitions\/pres-RetrieveInfoResponseType"
+        },
+        "presStoreModel": {
+            "type": "string"
+        },
+        "search": {
+            "$ref": "#\/definitions\/pres-SearchType"
+        },
+        "searchResp": {
+            "$ref": "#\/definitions\/pres-SearchResponseType"
+        },
+        "digestList": {
+            "$ref": "#\/definitions\/pres-DigestListType"
+        },
+        "req": {
+            "$ref": "#\/definitions\/pres-RequestType"
+        },
+        "resp": {
+            "$ref": "#\/definitions\/pres-ResponseType"
+        }
+    }
+}

@@ -1,0 +1,259 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ETSI TS 119 512",
+        "description": "Protocols for trust service providers providing long-term data preservation services",
+        "contact": {
+            "name": "ETSI ESI",
+            "url": "https://www.etsi.org/committee/esi",
+            "email": "ESI@LIST.ETSI.ORG"
+        },
+        "license": {
+            "name": "BSD-3-Clause",
+            "url": "https://forge.etsi.org/legal-matters"
+        },
+        "version": "1.1.2"
+    },
+    "servers": [
+        {
+            "url": "127.0.0.1:{port}/{basePath}",
+            "description": "ETSI TS 119 512 instance",
+            "variables": {
+                "port": {
+                    "default": "443"
+                },
+                "basePath": {
+                    "default": "pres"
+                }
+            }
+        }
+    ],
+    "paths": {
+        "/RetrieveInfo": {
+            "post": {
+                "requestBody": {
+                    "description": "The RetrieveInfo request allows to retrieve information about the preservation profiles supported by the preservation service.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-RetrieveInfoType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Info response object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-RetrieveInfoResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/PreservePO": {
+            "post": {
+                "requestBody": {
+                    "description": "The PreservePO request allows to submit zero or more preservation data objects to the preservation service.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-PreservePOType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "PreservePOResponse object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-PreservePOResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/RetrievePO": {
+            "post": {
+                "requestBody": {
+                    "description": "The RetrievePO request allows to retrieve stored preservation data objects",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-RetrievePOType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "RetrievePOResponse object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-RetrievePOResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/DeletePO": {
+            "post": {
+                "requestBody": {
+                    "description": "The DeletePO request allows to delete a stored preservation data object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-DeletePOType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "DeletePOResponse object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-ResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/UpdatePOC": {
+            "post": {
+                "requestBody": {
+                    "description": "The UpdatePOC request allows to provide a new version of a stored preservation data object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-UpdatePOCType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "UpdatePOCResponse object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-UpdatePOCResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/RetrieveTrace": {
+            "post": {
+                "requestBody": {
+                    "description": "The RetrieveTrace request allows to request an audit trail element, which contains information with respect to relevant events, which happened within a preservation service for a specific (set of) submission data object(s).",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-RetrieveTraceType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Info response object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-RetrieveTraceResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ValidateEvidence": {
+            "post": {
+                "requestBody": {
+                    "description": "The ValidateEvidence request allows to validate a provided preservation evidence and optionally a set of preservation objects, which are protected by it.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-ValidateEvidenceType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evidence validation response object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-ValidateEvidenceResponseType"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Evidence validation response object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-ValidateEvidenceResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/Search": {
+            "post": {
+                "requestBody": {
+                    "description": "The Search request allows to search among the preservation objects, which are accessible by the client.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-SearchType"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Found POIDs response object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "./19512-Preservation-API-schema-1.1.2.json#/definitions/pres-SearchResponseType"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

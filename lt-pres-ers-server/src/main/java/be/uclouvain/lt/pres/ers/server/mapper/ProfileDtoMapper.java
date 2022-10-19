@@ -15,7 +15,7 @@ import be.uclouvain.lt.pres.ers.model.OperationInputDto;
 import be.uclouvain.lt.pres.ers.model.OperationOutputDto;
 import be.uclouvain.lt.pres.ers.model.ParameterDto;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
-import be.uclouvain.lt.pres.ers.server.model.DsbInternationalStringType1;
+import be.uclouvain.lt.pres.ers.server.model.DsbInternationalStringType;
 import be.uclouvain.lt.pres.ers.server.model.MdFormatType;
 import be.uclouvain.lt.pres.ers.server.model.MdOperationType;
 import be.uclouvain.lt.pres.ers.server.model.MdParameterType;
@@ -116,7 +116,7 @@ public interface ProfileDtoMapper {
         return period + duration.substring(1);
     }
 
-    default List<DsbInternationalStringType1> toDsbInternationalStringType1List(final String str) {
-        return List.of(new DsbInternationalStringType1().value(str).lang("EN"));
+    default List<DsbInternationalStringType> toDsbInternationalStringType1List(final String str) {
+        return List.of(new DsbInternationalStringType().value(str).lang("EN"));
     }
 }

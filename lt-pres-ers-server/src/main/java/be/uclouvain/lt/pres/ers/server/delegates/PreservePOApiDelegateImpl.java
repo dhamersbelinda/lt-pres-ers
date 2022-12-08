@@ -1,10 +1,9 @@
 package be.uclouvain.lt.pres.ers.server.delegates;
 
-import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.service.ProfileService;
-import be.uclouvain.lt.pres.ers.model.ProfileDto;
-import be.uclouvain.lt.pres.ers.model.ProfileStatus;
+import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.api.PreservePOApiDelegate;
+import be.uclouvain.lt.pres.ers.server.mapper.PresPOTypeMapper;
 import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType.MajEnum;
@@ -15,18 +14,19 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+// TODO is this ASYNC ? check for all API methods ...
 @Component
 @AllArgsConstructor
 public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
     // TODO implement service in core
-    private final ProfileService service;
+//    private final ProfileService service;
     // TODO maybe we need another mapper, but as we should only return a POID maybe not ...
     //we'll have to map both ways so if you need one both will be there
-    private final ProfileDtoMapper mapper;
+//    private final ProfileDtoMapper mapper;
+    private final PresPOTypeMapper mapperPOType;
 
     //TODO for Belinda : there will be a addPoItem
 
@@ -36,60 +36,40 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         // TODO : optIn ?
         // TODO reqID ?
         // pro : verify profile is supported
-        final URI profileIdentifier;
+        final URI profileIdentifier; // TODO adapt everything according to the profile
         try {
             profileIdentifier = (request.getPro() == null) ? null : new URI(request.getPro());
         } catch (final URISyntaxException e) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
-                    request.getPro() + " is not a valid URI.", null, HttpStatus.BAD_REQUEST);
+                    request.getPro() + " is not a valid URI.", HttpStatus.BAD_REQUEST);
         }
         // po : verify preservation object(s)
 
-        // Validate inputs
-        final ProfileStatus status;
-        try {
-            status = (request.getStat() == null) ? ProfileStatus.ACTIVE
-                    : ProfileStatus.fromStandardizedValue(request.getStat());
-        } catch (final IllegalArgumentException e) {
+        List<PresPOType> pos = request.getPo();
+        if(pos == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
-                    e.getMessage(), null, HttpStatus.BAD_REQUEST);
+                    "Missing po", HttpStatus.BAD_REQUEST);
         }
 
-        try {
-            profileIdentifier = (request.getPro() == null) ? null : new URI(request.getPro());
-        } catch (final URISyntaxException e) {
-            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
-                    request.getPro() + " is not a valid URI.", null, HttpStatus.BAD_REQUEST);
-        }
-
-        // If profile identifier is specified, fetch it and check its status
-        if (profileIdentifier != null) {
+        URI formatID;
+        List<PODto> poDtos = new ArrayList<>(pos.size()); // TODO : will be sent to core service
+        int idx = 1;
+        for (PresPOType po : pos) {
             try {
-                final ProfileDto profile = this.service.getProfile(profileIdentifier);
-                switch (status) {
-                    case ALL:
-                        return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null,
-                                List.of(this.mapper.toPresProfileType(profile)), HttpStatus.OK);
-                    case ACTIVE:
-                        if ((profile.getValidUntil() == null) || (profile.getValidUntil().isAfter(OffsetDateTime.now()))) {
-                            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null,
-                                    List.of(this.mapper.toPresProfileType(profile)), HttpStatus.OK);
-                        } else {
-                            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null,
-                                    List.of(), HttpStatus.OK);
-                        }
-                    case INACTIVE:
-                        if ((profile.getValidUntil() != null) && (profile.getValidUntil().isBefore(OffsetDateTime.now()))) {
-                            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null,
-                                    List.of(this.mapper.toPresProfileType(profile)), HttpStatus.OK);
-                        } else {
-                            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null,
-                                    List.of(), HttpStatus.OK);
-                        }
+                formatID = (po.getFormatId() == null) ? null : new URI(request.getPro());
+                if(! SubDOFormatID.DigestList.getUri().equals(formatID)){
+                    return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                            "Unsupported format ID: "+po.getFormatId(), HttpStatus.BAD_REQUEST);
                 }
-            } catch (final ProfileNotFoundException e) {
-                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
-                        MinEnum.PARAMETER_ERROR, e.getMessage(), null, HttpStatus.BAD_REQUEST);
+
+                poDtos.add(mapperPOType.toPODto(po));
+                idx++;
+            } catch (URISyntaxException e) {
+                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                        po.getFormatId() + " is not a valid URI.", HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                        "Error verifying PO "+ idx + " : "+e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
 
@@ -97,13 +77,12 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         // always not null
         return this
                 .buildResponse(
-                        request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null, this.service.getProfiles(status)
-                                .stream().map(this.mapper::toPresProfileType).collect(Collectors.toList()),
+                        request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, "Success !",
                         HttpStatus.OK);
     }
 
     private ResponseEntity<PresPreservePOResponseType> buildResponse(final String reqId, final MajEnum maj,
-                                                                     final MinEnum min, final String msg, final List<PresProfileType> profiles, final HttpStatus httpStatus) {
+                                                                     final MinEnum min, final String msg, final HttpStatus httpStatus) {
         final PresPreservePOResponseType response = new PresPreservePOResponseType();
         response.setReqId(reqId);
 
@@ -112,8 +91,6 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         result.setMin((min != null) ? min.getUri().toString() : null);
         result.setMsg((msg != null) ? new DsbInternationalStringType().value(msg).lang("EN") : null);
         response.setResult(result);
-
-        response.setPro(profiles);
 
         return ResponseEntity.status(httpStatus).body(response);
     }

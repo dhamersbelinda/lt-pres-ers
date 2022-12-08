@@ -564,3 +564,37 @@ databaseChangeLog:
        - rollback:
            - delete:
               tableName: PARAMETER
+
+  - changeSet:
+      id: 25
+      author: belinda
+      changes:
+        - createTable:
+            tableName: PO
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_PO
+                    nullable: false
+              - column:
+                  name: UNIQUE_IDENTIFIER
+                  type: varchar(2048)
+                  constraints:
+                    nullable: true
+                    unique: true
+                    uniqueConstraintName: UK_PO_IDENTIFIER
+              - column:
+                  name: VALUE
+                  type: varchar(2048)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FORMAT_IDENTIFIER
+                  type: varchar(2048)
+                  constraints:
+                    nullable: true
+

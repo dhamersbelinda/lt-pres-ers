@@ -66,7 +66,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         int idx = 1;
         for (PresPOType po : pos) {
             try {
-                formatID = (po.getFormatId() == null) ? null : new URI(request.getPro());
+                formatID = (po.getFormatId() == null) ? null : URI.create(po.getFormatId());
                 if(! SubDOFormatID.DigestList.getUri().equals(formatID)){
                     return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                             "Unsupported format ID: "+po.getFormatId(), HttpStatus.BAD_REQUEST);

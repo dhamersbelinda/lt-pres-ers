@@ -5,7 +5,7 @@ import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.model.PresPOType;
 
 import java.net.URI;
-
+// TODO Delete this if PresPOTypeMapper works
 public class ApiToDtoMapper {
     PODto toPODto(PresPOType presPOType) {
         PODto poDto = new PODto();

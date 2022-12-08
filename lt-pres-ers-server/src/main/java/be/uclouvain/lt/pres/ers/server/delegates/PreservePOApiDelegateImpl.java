@@ -1,10 +1,11 @@
 package be.uclouvain.lt.pres.ers.server.delegates;
 
+import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.service.ProfileService;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import be.uclouvain.lt.pres.ers.server.api.PreservePOApiDelegate;
 import be.uclouvain.lt.pres.ers.server.mapper.PresPOTypeMapper;
-import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType.MajEnum;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
     // TODO implement service in core
-//    private final ProfileService service;
+    private final ProfileService profileService;
     // TODO maybe we need another mapper, but as we should only return a POID maybe not ...
     //we'll have to map both ways so if you need one both will be there
 //    private final ProfileDtoMapper mapper;
@@ -43,6 +44,15 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     request.getPro() + " is not a valid URI.", HttpStatus.BAD_REQUEST);
         }
+
+        try {
+            final ProfileDto profile = this.profileService.getProfile(profileIdentifier);
+        } catch (final ProfileNotFoundException e) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
+                    MinEnum.PARAMETER_ERROR, e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+
         // po : verify preservation object(s)
 
         List<PresPOType> pos = request.getPo();

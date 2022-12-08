@@ -27,7 +27,7 @@ public interface PresPOTypeMapper {
     //this is the DigestList Java object you need at the interface
             //we can create it here and you can examine it at the interface
     //TODO add other fields here later
-    PODto toPODto(PresPOType presPOType);
+    PODto toPODto(PresPOType presPOType) throws IllegalArgumentException, IOException, URISyntaxException;
 
     default URI toURI(final String string) { //from String to URI
         return URI.create(string);

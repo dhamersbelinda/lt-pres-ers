@@ -1,5 +1,6 @@
 package be.uclouvain.lt.pres.ers.server.mapper;
 
+import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.model.PresPOType;
 
@@ -20,10 +21,13 @@ public class ApiToDtoMapper {
         return poDto;
     }
 
+    /*
     DigestListDto toPODto(DigestList dl) {
         DigestListDto dlDto = new DigestListDto();
         dlDto.setDigestMethod(URI.create(dl.getDigestMethod()));
         dlDto.setDigests(dl.getDigests());
         return dlDto;
     }
+
+     */
 }

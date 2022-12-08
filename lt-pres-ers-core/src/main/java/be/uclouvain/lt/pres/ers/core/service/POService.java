@@ -1,4 +1,4 @@
-package be.uclouvain.lt.pres.ers.core.service;
+/*package be.uclouvain.lt.pres.ers.core.service;
 
 import be.uclouvain.lt.pres.ers.core.exception.POInsertionException;
 import be.uclouvain.lt.pres.ers.core.exception.PONotFoundException;
@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * Service that allows to retrieve (active and inactive) profiles.
  */
+/*
 public interface POService {
 
     /**
@@ -35,6 +36,7 @@ public interface POService {
      * @throws ProfileNotFoundException If there is no profile with identifier
      *                                  <code>identifier</code>.
      */
+    /*
     //TODO URI as identifier ?
     PODto getPO(@NotNull URI identifier) throws PONotFoundException;
 
@@ -44,3 +46,4 @@ public interface POService {
     String insertPO(@NotNull PO po) throws POInsertionException;
 
 }
+*/

@@ -8,29 +8,32 @@ import be.uclouvain.lt.pres.ers.model.PODto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper
-public interface POMapper {
+public interface PODtoMapper {
 
     @Mapping(target = "uid", source = "uid")
     @Mapping(target = "value", source = "value")
     @Mapping(target = "formatId", source = "formatId")
-    @Mapping(target = "digestList", source = "digestList") //
-    PODto toDto(PO po);
+    @Mapping(target = "digestList", source = "digestList")
+    PO toPO(PODto poDto);
 
     @Mapping(target = "digestMethod", source = "digestMethod")
-    @Mapping(target = "digests", source = "digests") // from Set<Digest> to List<String>
-    DigestListDto toDto(DigestList digestList);
+    @Mapping(target = "digests", source = "digests") // from List<String> to Set<Digest>
+    @Mapping(target = "po", ignore = true) //TODO check if this is really correct
+    //don't want to set null
+    DigestList toDigestList(DigestListDto digestListDto);
 
-    default List<String> fromDigestSetToStringList(Set<Digest> digestSet) {
-        List<String> digests = digestSet.stream().map((d) -> {
-            return d.getDigest();
-        }).collect(Collectors.toList());
-        return digests;
+    default Set<Digest> fromDigestListToDigestSet(List<String> digestList) {
+        Set<Digest> set = digestList.stream().map((digest) -> {
+            Digest d = new Digest();
+            d.setDigest(digest);
+            return d;
+        }).collect(Collectors.toSet());
+        return set;
     }
     /*
     URI uid; -> URI uid

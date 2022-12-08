@@ -1,4 +1,4 @@
-/*package be.uclouvain.lt.pres.ers.core.persistence.model;
+package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import lombok.*;
 
@@ -67,4 +67,3 @@ public class PO {
     
 
 }
-*/

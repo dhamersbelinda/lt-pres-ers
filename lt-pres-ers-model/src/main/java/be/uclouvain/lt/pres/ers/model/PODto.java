@@ -8,11 +8,14 @@ import java.util.List;
 @Data
 public class PODto {
 
-    private URI evidenceIdentifier;
+    private String value; //xmlData at the moment (don't know about encoding)
+    private URI formatId;
+    private URI id; //is this the POID ?
+
+    /*
     private URI mimeType;
     private URI pronomPUID;
     private List<RelatedObjectDto> relatedObjects;
-    //RelatedObject is just supposed to a string (that identifies related objects i guess ?)
-    private URI poIdentifier;
-    private URI versionIdentifier;
+     */
+    //These fields might be needed later
 }

@@ -1,9 +1,10 @@
-package be.uclouvain.lt.pres.ers.core.service.impl;
+/*package be.uclouvain.lt.pres.ers.core.service.impl;
 
 import be.uclouvain.lt.pres.ers.core.exception.POInsertionException;
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.mapper.POMapper;
 import be.uclouvain.lt.pres.ers.core.mapper.ProfileMapper;
+import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
 import be.uclouvain.lt.pres.ers.core.persistence.model.Profile;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.PORepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.ProfileRepository;
@@ -56,7 +57,7 @@ public class POServiceImpl implements POService {
         }
     }
      */
-
+/*
     @Override
     public PODto getPO(URI identifier) throws ProfileNotFoundException {
         return null;
@@ -66,6 +67,7 @@ public class POServiceImpl implements POService {
     public String insertPO(PO po) throws POInsertionException {
         return null;
     }
+    */
 
     /*
     @Override
@@ -73,6 +75,7 @@ public class POServiceImpl implements POService {
         return this.mapper.toDto(this.repository.findByProfileIdentifier(identifier)
                 .orElseThrow(() -> new ProfileNotFoundException("There is no profile with identifier " + identifier)));
     }
-     */
+
 
 }
+*/

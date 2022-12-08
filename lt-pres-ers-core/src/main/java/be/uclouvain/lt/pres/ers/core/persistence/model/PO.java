@@ -6,6 +6,13 @@ import javax.persistence.*;
 import java.net.URI;
 import java.util.Set;
 
+@NamedEntityGraph(name = "po-entity-graph", attributeNodes = {
+        @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph") }, subgraphs = {
+        @NamedSubgraph(name = "digestList-subgraph", attributeNodes = {
+                @NamedAttributeNode(value = "digests", subgraph = "digest-subgraph")}),
+        @NamedSubgraph(name = "digest-subgraph", attributeNodes = {
+                @NamedAttributeNode("digest")}) }) //don't know of the last step is really necessary
+
 @NamedEntityGraph(name = "po-entity-graph")
 @Entity
 @Table(name = "PO")
@@ -36,6 +43,12 @@ public class PO {
     private URI formatId;
     //TODO does this have to be joined with the Format type ?
 
+
+    @OneToOne
+    @JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
+    private DigestList digestList;
+
+    //TODO fields for later
     /*
     @Column(name = "MIME_TYPE", nullable = true, length = 2048)
     private URI mimeType;

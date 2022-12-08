@@ -17,6 +17,8 @@ public class PODto {
     //should be nullable or not ? -> at the moment yes because null at submission probably
     //POID will be given by db
 
+    private DigestListDto digestList;
+
     /*
     private URI mimeType;
     private URI pronomPUID;

@@ -13,7 +13,6 @@ import java.util.Set;
         @NamedSubgraph(name = "digest-subgraph", attributeNodes = {
                 @NamedAttributeNode("digest")}) }) //don't know of the last step is really necessary
 
-@NamedEntityGraph(name = "po-entity-graph")
 @Entity
 @Table(name = "PO")
 @Getter

@@ -1,7 +1,9 @@
-/*package be.uclouvain.lt.pres.ers.core.service.impl;
+package be.uclouvain.lt.pres.ers.core.service.impl;
 
 import be.uclouvain.lt.pres.ers.core.exception.POInsertionException;
+import be.uclouvain.lt.pres.ers.core.exception.PONotFoundException;
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
+import be.uclouvain.lt.pres.ers.core.mapper.PODtoMapperCore;
 import be.uclouvain.lt.pres.ers.core.mapper.POMapper;
 import be.uclouvain.lt.pres.ers.core.mapper.ProfileMapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
@@ -33,49 +35,23 @@ public class POServiceImpl implements POService {
     private final PORepository repository;
 
     private final POMapper mapper;
+    private final PODtoMapperCore dtoMapper;
 
-    /*
+
     @Override
-    public List<ProfileDto> getProfiles(final ProfileStatus status) {
-        switch (status) {
-        case ALL:
-            try (final Stream<Profile> stream = this.repository.streamAllBy()) {
-                return stream.map(this.mapper::toDto).collect(Collectors.toList());
-            }
-        case ACTIVE:
-            try (final Stream<Profile> stream = this.repository
-                    .findByValidUntilIsNullOrValidUntilAfter(OffsetDateTime.now())) {
-                return stream.map(this.mapper::toDto).collect(Collectors.toList());
-            }
-        case INACTIVE:
-            try (final Stream<Profile> stream = this.repository
-                    .findByValidUntilIsNotNullAndValidUntilBefore(OffsetDateTime.now())) {
-                return stream.map(this.mapper::toDto).collect(Collectors.toList());
-            }
-        default:
-            throw new IllegalArgumentException("Unhandled value: " + status);
-        }
+    public PODto getPO(long identifier) throws PONotFoundException {
+        return this.mapper.toDto(this.repository.findById(identifier)
+                .orElseThrow(() -> new PONotFoundException("There is no preservation object with identifier " + identifier)));
     }
-     */
-/*
+
     @Override
-    public PODto getPO(URI identifier) throws ProfileNotFoundException {
+    public String insertPOs(List<PODto> poDtoList) throws POInsertionException {
+        poDtoList.stream().map(this.dtoMapper::toPO).forEach((po) -> {
+            this.repository.save(po);
+        });
         return null;
     }
 
-    @Override
-    public String insertPO(PO po) throws POInsertionException {
-        return null;
-    }
-    */
-
-    /*
-    @Override
-    public ProfileDto getProfile(final URI identifier) throws ProfileNotFoundException {
-        return this.mapper.toDto(this.repository.findByProfileIdentifier(identifier)
-                .orElseThrow(() -> new ProfileNotFoundException("There is no profile with identifier " + identifier)));
-    }
 
 
 }
-*/

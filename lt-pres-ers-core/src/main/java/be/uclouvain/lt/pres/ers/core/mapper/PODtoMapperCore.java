@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper
-public interface PODtoMapper {
+public interface PODtoMapperCore {
 
     @Mapping(target = "uid", source = "uid")
     @Mapping(target = "value", source = "value")

@@ -24,7 +24,7 @@ public interface POMapper {
 
     @Mapping(target = "digestMethod", source = "digestMethod")
     @Mapping(target = "digests", source = "digests") // from Set<Digest> to List<String>
-    DigestListDto toDto(DigestList digestList);
+    DigestListDto toDigestDto(DigestList digestList);
 
     default List<String> fromDigestSetToStringList(Set<Digest> digestSet) {
         List<String> digests = digestSet.stream().map((d) -> {

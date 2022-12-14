@@ -29,8 +29,6 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 //    private final ProfileDtoMapper mapper;
     private final PresPOTypeMapper mapperPOType;
 
-    //TODO for Belinda : there will be a addPoItem
-
     @Override
     public ResponseEntity<PresPreservePOResponseType> preservePOPost(final PresPreservePOType request) {
         // Validate inputs

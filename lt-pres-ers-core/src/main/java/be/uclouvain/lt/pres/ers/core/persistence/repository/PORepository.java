@@ -1,4 +1,4 @@
-/*package be.uclouvain.lt.pres.ers.core.persistence.repository;
+package be.uclouvain.lt.pres.ers.core.persistence.repository;
 
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
 import be.uclouvain.lt.pres.ers.core.persistence.model.Profile;
@@ -13,19 +13,11 @@ import java.util.stream.Stream;
 
 public interface PORepository extends CrudRepository<PO, URI> {
 
-    // Find all active profiles
     @EntityGraph(value = "po-entity-graph", type = EntityGraphType.FETCH)
-    Stream<Profile> findByValidUntilIsNullOrValidUntilAfter(OffsetDateTime now);
-
-    // Find all inactive profiles
-    @EntityGraph(value = "po-entity-graph", type = EntityGraphType.FETCH)
-    Stream<Profile> findByValidUntilIsNotNullAndValidUntilBefore(OffsetDateTime now);
+    Optional<PO> findById(Long id);
 
     @EntityGraph(value = "po-entity-graph", type = EntityGraphType.FETCH)
-    Stream<Profile> streamAllBy();
+    Stream<PO> streamAllBy();
 
-    @EntityGraph(value = "po-entity-graph", type = EntityGraphType.FETCH)
-    Optional<Profile> findByProfileIdentifier(URI profileIdentifier);
 
 }
-*/

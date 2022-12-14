@@ -9,8 +9,8 @@ import java.net.URI;
         @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph") }, subgraphs = {
         @NamedSubgraph(name = "digestList-subgraph", attributeNodes = {
                 @NamedAttributeNode(value = "digests", subgraph = "digest-subgraph")}),
-        @NamedSubgraph(name = "digest-subgraph", attributeNodes = {
-                @NamedAttributeNode("digest")}) }) //don't know of the last step is really necessary
+        @NamedSubgraph(name = "digest-subgraph" , attributeNodes = {
+                @NamedAttributeNode(value = "digest")}) }) //don't know of the last step is really necessary
 
 @Entity
 @Table(name = "PO")

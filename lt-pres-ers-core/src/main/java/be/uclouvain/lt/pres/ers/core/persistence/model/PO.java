@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.net.URI;
-import java.util.Set;
 
 @NamedEntityGraph(name = "po-entity-graph", attributeNodes = {
         @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph") }, subgraphs = {

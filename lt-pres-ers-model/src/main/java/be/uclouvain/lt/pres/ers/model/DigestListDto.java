@@ -15,6 +15,6 @@ public class DigestListDto {
     @JsonProperty("DigestValue")
     @JsonAlias("digVal")
     private List<String> digests;
-
+    // TODO : Handle "ev" field !
 
 }

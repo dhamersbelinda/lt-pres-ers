@@ -4,6 +4,7 @@ import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.model.PresPOType;
 import be.uclouvain.lt.pres.ers.server.model.PresPOTypeXmlData;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.mapstruct.Mapper;
@@ -19,14 +20,13 @@ import java.util.Objects;
 public interface PresPOTypeMapper {
 
     @Mapping(target = "uid", source = "id") //from String to URI
-    @Mapping(target = "formatId", source = "formatId") //from String to URI
-    @Mapping(target = "value", source = "xmlData") //from PresPOTypeXmlData to String
+    @Mapping(target = "formatId", source = "formatId") //from String to String (this actually 'belongs' to the customer's structure
     //This is the (b64 encoded ?) string we get from inside the PO
-    @Mapping(target = "digestList", expression = "java(mapToDigestList(presPOType))")
-    //from String to DigestListDto
+    @Mapping(target = "digestList", expression = "java(mapToDigestList(presPOType))") //from String to DigestListDto
     //this is the DigestList Java object you need at the interface
             //we can create it here and you can examine it at the interface
     //TODO add other fields here later
+
     PODto toPODto(PresPOType presPOType) throws IllegalArgumentException, IOException, URISyntaxException;
 
     default URI toURI(final String string) { //from String to URI
@@ -40,7 +40,7 @@ public interface PresPOTypeMapper {
 
     //from String to DigestListDTO
     // TODO : Do we keep the logic here or do we add a POJO and handle the logic elsewhere ?
-    default DigestListDto mapToDigestList(PresPOType presPOType) throws IllegalArgumentException, IOException, URISyntaxException {
+    default DigestListDto mapToDigestList(PresPOType presPOType) throws IllegalArgumentException, IOException {
         DigestListDto dld;
 
         if(presPOType.getXmlData() == null && presPOType.getBinaryData() == null){
@@ -67,25 +67,30 @@ public interface PresPOTypeMapper {
         } else {
             // parse JSON from binary
             // verify PresPOTypeBinaryData object
-            if(presPOType.getBinaryData().getValue() == null) {
-                throw new IllegalArgumentException("Missing value  in BinaryData.");
-            }
             String b64Content = presPOType.getBinaryData().getValue();
+            if(b64Content == null) {
+                throw new IllegalArgumentException("Missing value in BinaryData.");
+            }
             // Decode base 64
-            // TODO is XML data encoded in base 64 ? Here we consider that yes
-            byte[] decodedContent = Base64.getDecoder().decode(b64Content);
-            // parse JSON
-
-            JsonMapper jsonMapper = new JsonMapper();
-            dld = jsonMapper.readValue(decodedContent, DigestListDto.class);
+            try {
+                byte[] decodedContent = Base64.getDecoder().decode(b64Content);
+                // parse JSON
+                JsonMapper jsonMapper = new JsonMapper();
+                jsonMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+                dld = jsonMapper.readValue(decodedContent, DigestListDto.class);
+            } catch(IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid base64 encoding.");
+            } catch(Exception e) {
+                throw new IllegalArgumentException("Invalid JSON syntax, do not forget the root braces, the top level element must be named 'pres-DigestListType'.");
+            }
         }
 
         URI digAlg = dld.getDigestMethod();
-        // TODO : verify more algos ! only SHA156 here !
-        if(!Objects.equals(digAlg, new URI("urn:oid:2.16.840.1.101.3.4.2.1"))) {
+        // TODO : verify more algos ! only SHA156 here ! RFC 3061
+        if(!Objects.equals(digAlg, DigestAlgEnum.SHA256.getUri())) {
             throw new IllegalArgumentException("Invalid or unsupported digest algorithm : "+digAlg);
         }
-        // TODO : Check digVal according to digAlg !
+        // TODO : Check digVal according to digAlg ?
 
         return dld;
     }

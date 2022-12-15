@@ -15,3 +15,4 @@
 
  - Insert received POs in DB
  - Check format IDs of received POs with the specified profile's format IDs.
+ - DigestList : either completely ignore or completely accept XMLdata

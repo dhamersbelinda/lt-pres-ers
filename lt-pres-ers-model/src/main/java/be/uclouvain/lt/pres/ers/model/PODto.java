@@ -8,16 +8,14 @@ import java.util.List;
 @Data
 public class PODto {
 
-    private String value; //xmlData at the moment (don't know about encoding)
+//    private String value; //xmlData at the moment (don't know about encoding)
     //this is the only non-nullable field in general i think
     private URI formatId;
     //has to be non-null in our implem probably (but that is not the case in general)
-    private URI uid; //is this the POID ? The POID refers to the set of SubDOS
-    //renamed id into uid so as not to mix with id in model
-    //should be nullable or not ? -> at the moment yes because null at submission probably
-    //POID will be given by db
+    private String uid; // Belongs to client so don't modify
+    private List<String> relatedObjects; // Belongs to client so don't modify
 
-    private DigestListDto digestList;
+    private DigestListDto digestList; // TODO support more than digestLists
 
     /*
     private URI mimeType;

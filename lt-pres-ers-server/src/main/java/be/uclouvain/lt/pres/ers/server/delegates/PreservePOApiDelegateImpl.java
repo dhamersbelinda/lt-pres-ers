@@ -50,9 +50,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                     MinEnum.PARAMETER_ERROR, e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-
         // po : verify preservation object(s)
-
         List<PresPOType> pos = request.getPo();
         if(pos == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
@@ -61,8 +59,10 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 
         URI formatID;
         List<PODto> poDtos = new ArrayList<>(pos.size()); // TODO : will be sent to core service
+        PODto temp;
         int idx = 1;
         for (PresPOType po : pos) {
+
             try {
                 formatID = (po.getFormatId() == null) ? null : URI.create(po.getFormatId());
                 if(! SubDOFormatID.DigestList.getUri().equals(formatID)){
@@ -70,7 +70,8 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                             "Unsupported format ID: "+po.getFormatId(), HttpStatus.BAD_REQUEST);
                 }
 
-                poDtos.add(mapperPOType.toPODto(po));
+                temp = mapperPOType.toPODto(po);
+                poDtos.add(temp);
                 idx++;
             } catch (URISyntaxException e) {
                 return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,

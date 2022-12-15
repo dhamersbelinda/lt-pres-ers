@@ -3,6 +3,7 @@ package be.uclouvain.lt.pres.ers.server.mapper;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.model.PresPOType;
+import be.uclouvain.lt.pres.ers.server.model.PresPOTypeBinaryData;
 import be.uclouvain.lt.pres.ers.server.model.PresPOTypeXmlData;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -19,9 +20,9 @@ import java.util.Objects;
 @Mapper
 public interface PresPOTypeMapper {
 
-    @Mapping(target = "uid", source = "id") //from String to URI
+    @Mapping(target = "clientId", source = "id") //from String to URI
     @Mapping(target = "formatId", source = "formatId") //from String to String (this actually 'belongs' to the customer's structure
-    //This is the (b64 encoded ?) string we get from inside the PO
+    @Mapping(target = "binaryValue", expression = "java(binaryOrXML(presPOType.getBinaryData(), presPOType.getXmlData()))") //This is the (b64 encoded ?) string we get from inside the PO TODO adapt this if we acutally keep the xml data
     @Mapping(target = "digestList", expression = "java(mapToDigestList(presPOType))") //from String to DigestListDto
     //this is the DigestList Java object you need at the interface
             //we can create it here and you can examine it at the interface
@@ -37,6 +38,18 @@ public interface PresPOTypeMapper {
     //from PresPOTypeXmlData to String
     default String toString(PresPOTypeXmlData presPOTypeXmlData) {
         return presPOTypeXmlData.getB64Content();
+    }
+
+    default String binaryOrXML(PresPOTypeBinaryData binary, PresPOTypeXmlData xml) throws IllegalArgumentException {
+        if(binary == null && xml == null) {
+            throw new IllegalArgumentException("No binary or xml data");
+        } else if(binary != null && xml != null) {
+            throw new IllegalArgumentException("Ambiguity : both binary and xml data");
+        } else if(binary != null){
+            return binary.getValue();
+        } else {
+            return xml.getB64Content();
+        }
     }
 
     //from String to DigestListDTO

@@ -12,7 +12,9 @@ public class PODto {
     //this is the only non-nullable field in general i think
     private URI formatId;
     //has to be non-null in our implem probably (but that is not the case in general)
-    private String uid; // Belongs to client so don't modify
+    private String binaryValue; // Holds the binary data
+    private String clientId; // Belongs to client so don't modify
+
     private List<String> relatedObjects; // Belongs to client so don't modify
 
     private DigestListDto digestList; // TODO support more than digestLists

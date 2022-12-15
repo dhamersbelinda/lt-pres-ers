@@ -5,8 +5,10 @@ import be.uclouvain.lt.pres.ers.core.persistence.model.DigestList;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 import java.util.Set;
@@ -17,8 +19,8 @@ public interface PODtoMapperCore {
 
     @Mapping(target = "uid", source = "clientId")
     @Mapping(target = "value", source = "binaryValue")
-    @Mapping(target = "formatId", source = "formatId")
-    @Mapping(target = "digestList", source = "digestList")
+    //@Mapping(target = "formatId", source = "formatId")
+    //@Mapping(target = "digestList", source = "digestList")
     PO toPO(PODto poDto);
 
     @Mapping(target = "digestMethod", source = "digestMethod")
@@ -34,6 +36,20 @@ public interface PODtoMapperCore {
             return d;
         }).collect(Collectors.toSet());
         return set;
+    }
+
+    @AfterMapping
+    default void setDigestListId(@MappingTarget DigestList dl) {
+        for (Digest digest : dl.getDigests()) {
+            digest.setDigestList(dl);
+        }
+    }
+
+
+    @AfterMapping
+    default void setPOObject(@MappingTarget PO po) {
+        DigestList dl = po.getDigestList();
+        dl.setPo(po);
     }
     /*
     URI uid; -> URI uid

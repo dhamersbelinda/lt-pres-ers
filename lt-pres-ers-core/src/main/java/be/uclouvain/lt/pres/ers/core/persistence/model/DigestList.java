@@ -30,5 +30,6 @@ public class DigestList {
     //@OneToOne //check if this does what it should
     @JoinColumn(name = "PO_ID", nullable = false, referencedColumnName = "ID")
     //how to make po_id the same value as id of po ?
+    //@MapsId("id")
     private PO po;
 }

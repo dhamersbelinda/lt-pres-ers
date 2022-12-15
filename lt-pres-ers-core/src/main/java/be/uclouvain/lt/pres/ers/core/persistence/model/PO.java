@@ -42,7 +42,7 @@ public class PO {
     //TODO does this have to be joined with the Format type ?
 
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL, optional = false)
     //@JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
     private DigestList digestList;
 

@@ -18,7 +18,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 @Mapper
-public interface PresPOTypeMapper {
+public interface PresPOToPODtoMapper {
 
     @Mapping(target = "clientId", source = "id") //from String to URI
     @Mapping(target = "formatId", source = "formatId") //from String to String (this actually 'belongs' to the customer's structure

@@ -2,16 +2,14 @@ package be.uclouvain.lt.pres.ers.server.mapper;
 
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.model.PresPOType;
-import be.uclouvain.lt.pres.ers.server.model.PresPOTypeBinaryData;
 import be.uclouvain.lt.pres.ers.server.model.PresPOTypeXmlData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.net.URI;
-import java.util.List;
 
 @Mapper
-public interface PODtoMapper {
+public interface PODtoToPresPOMapper {
 
     //ignore = true is for attributes that are not going to be used on the model side i guess
     //how to implement the choice between binary and xml ?
@@ -26,7 +24,7 @@ public interface PODtoMapper {
     @Mapping(target = "binaryData", ignore = true)
     //TODO do we need binary data or xmlData or both ?
     // where does DigestList fit in ?
-    @Mapping(target = "xmlData", source = "value")
+    @Mapping(target = "xmlData", ignore = true)
     //we assume value is a string for now
     @Mapping(target = "formatId", source = "formatId")
     //formatId needs to be specific if it is an evidence
@@ -36,7 +34,7 @@ public interface PODtoMapper {
     //we will only handle digestlists and evidences, which have their specific formatIds
     @Mapping(target = "pronomId", ignore = true)
     //TODO maybe later if we need additional classification info we might need pronomId
-    @Mapping(target = "id", source = "uid")
+    @Mapping(target = "id", source = "clientId")
     //For unique identification within larger data structure -> is this the POID we can return ?
     @Mapping(target = "relObj", ignore = true)
     //TODO ignored for now but will be needed later when submitting several POs

@@ -6,7 +6,7 @@ import be.uclouvain.lt.pres.ers.core.service.ProfileService;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import be.uclouvain.lt.pres.ers.server.api.PreservePOApiDelegate;
-import be.uclouvain.lt.pres.ers.server.mapper.PresPOTypeMapper;
+import be.uclouvain.lt.pres.ers.server.mapper.PresPOToPODtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType.MajEnum;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
     // TODO maybe we need another mapper, but as we should only return a POID maybe not ...
     //we'll have to map both ways so if you need one both will be there
 //    private final ProfileDtoMapper mapper;
-    private final PresPOTypeMapper mapperPOType;
+    private final PresPOToPODtoMapper mapperPOType;
 
     @Override
     public ResponseEntity<PresPreservePOResponseType> preservePOPost(final PresPreservePOType request) {

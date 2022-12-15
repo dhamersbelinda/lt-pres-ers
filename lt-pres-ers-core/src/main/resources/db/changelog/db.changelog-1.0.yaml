@@ -588,7 +588,7 @@ databaseChangeLog:
                     unique: true
                     uniqueConstraintName: UK_PO_IDENTIFIER
               - column:
-                  name: VALUE
+                  name: PO_VALUE
                   type: varchar(2048)
                   constraints:
                     nullable: false
@@ -597,11 +597,11 @@ databaseChangeLog:
                   type: varchar(2048)
                   constraints:
                     nullable: true
-              - column:
-                  name: DIGESTLIST_ID
-                  type: BIGINT
-                  constraints:
-                    nullable: true
+              #- column:
+              #    name: DIGESTLIST_ID
+              #    type: BIGINT
+              #    constraints:
+              #      nullable: true
 
   - changeSet:
       id: 26
@@ -627,7 +627,7 @@ databaseChangeLog:
                   name: PO_ID
                   type: BIGINT
                   constraints:
-                    nullable: false
+                    nullable: true
 
   - changeSet:
       id: 27
@@ -653,24 +653,24 @@ databaseChangeLog:
                   name: DIGESTLIST_ID
                   type: BIGINT
                   constraints:
-                    nullable: false
+                    nullable: true
 
 
-  - changeSet:
-      id: 28
-      author: belinda
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: DIGESTLIST_ID
-            baseTableName: PO
-            constraintName: FK_PO_DIGESTLIST
-            deferrable: false
-            initiallyDeferred: false
-            onDelete: RESTRICT
-            onUpdate: RESTRICT
-            referencedColumnNames: ID
-            referencedTableName: DIGESTLIST
-            validate: true
+  #- changeSet:
+  #    id: 28
+  #    author: belinda
+  #    changes:
+  #      - addForeignKeyConstraint:
+  #          baseColumnNames: DIGESTLIST_ID
+  #          baseTableName: PO
+  #          constraintName: FK_PO_DIGESTLIST
+  #          deferrable: false
+  #          initiallyDeferred: false
+  #          onDelete: RESTRICT
+  #          onUpdate: RESTRICT
+  #          referencedColumnNames: ID
+  #          referencedTableName: DIGESTLIST
+  #          validate: true
 
   - changeSet:
       id: 29

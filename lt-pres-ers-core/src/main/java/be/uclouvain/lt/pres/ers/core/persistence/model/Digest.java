@@ -23,7 +23,7 @@ public class Digest {
     @Column(name = "DIGEST_VALUE", nullable = false, length = 128)
     private String digest;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) //what about this ???
     @JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
     private DigestList digestList;
 

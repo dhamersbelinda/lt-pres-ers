@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 @Mapper
 public interface PODtoMapperCore {
 
-    @Mapping(target = "uid", source = "uid")
-    @Mapping(target = "value", source = "value")
+    @Mapping(target = "uid", source = "clientId")
+    @Mapping(target = "value", source = "binaryValue")
     @Mapping(target = "formatId", source = "formatId")
     @Mapping(target = "digestList", source = "digestList")
     PO toPO(PODto poDto);

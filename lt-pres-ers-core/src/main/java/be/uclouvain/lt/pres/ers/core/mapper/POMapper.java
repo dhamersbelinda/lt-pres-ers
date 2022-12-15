@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 @Mapper
 public interface POMapper {
 
-    @Mapping(target = "uid", source = "uid")
-    @Mapping(target = "value", source = "value")
+    @Mapping(target = "clientId", source = "uid")
+    @Mapping(target = "binaryValue", source = "value")
     @Mapping(target = "formatId", source = "formatId")
-    @Mapping(target = "digestList", source = "digestList") //
+    @Mapping(target = "digestList", source = "digestList")
+    @Mapping(target = "relatedObjects", ignore = true)
     PODto toDto(PO po);
 
     @Mapping(target = "digestMethod", source = "digestMethod")

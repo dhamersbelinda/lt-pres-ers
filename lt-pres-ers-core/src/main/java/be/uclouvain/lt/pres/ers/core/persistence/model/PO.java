@@ -29,11 +29,11 @@ public class PO {
     //the poid needs to be returned as a string at the end, so it needs to be converted on receipt
 
     @Column(name = "UNIQUE_IDENTIFIER", nullable = true, length = 2048)
-    private URI uid;
+    private String uid;
     //nullable = true because it doesn't necessarily have an id when submitted
 
     // TODO how to represent xml ? does the length need to be adjusted ?
-    @Column(name = "VALUE", nullable = false, length = 2048)
+    @Column(name = "PO_VALUE", nullable = false, length = 2048)
     private String value;
 
     //TODO has to be non-null in our implem
@@ -42,8 +42,8 @@ public class PO {
     //TODO does this have to be joined with the Format type ?
 
 
-    @OneToOne
-    @JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL)
+    //@JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
     private DigestList digestList;
 
     //TODO fields for later

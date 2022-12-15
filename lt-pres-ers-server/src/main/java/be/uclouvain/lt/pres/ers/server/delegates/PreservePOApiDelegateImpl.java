@@ -1,6 +1,7 @@
 package be.uclouvain.lt.pres.ers.server.delegates;
 
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
+import be.uclouvain.lt.pres.ers.core.service.POService;
 import be.uclouvain.lt.pres.ers.core.service.ProfileService;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
@@ -24,6 +25,7 @@ import java.util.List;
 public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
     // TODO implement service in core
     private final ProfileService profileService;
+    private final POService poService;
     // TODO maybe we need another mapper, but as we should only return a POID maybe not ...
     //we'll have to map both ways so if you need one both will be there
 //    private final ProfileDtoMapper mapper;
@@ -84,6 +86,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 
         // Profile identifier is not specified, fetch profiles using the status which is
         // always not null
+        this.poService.insertPOs(poDtos);
         return this
                 .buildResponse(
                         request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, "Success !",

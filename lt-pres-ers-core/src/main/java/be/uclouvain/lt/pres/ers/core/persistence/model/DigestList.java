@@ -26,7 +26,9 @@ public class DigestList {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "digestList", cascade = CascadeType.ALL)
     private Set<Digest> digests;
 
-    @OneToOne //check if this does what it should
+    @OneToOne(fetch = FetchType.LAZY, optional = false) //TODO set the optional here later (false if possible)
+    //@OneToOne //check if this does what it should
     @JoinColumn(name = "PO_ID", nullable = false, referencedColumnName = "ID")
+    //how to make po_id the same value as id of po ?
     private PO po;
 }

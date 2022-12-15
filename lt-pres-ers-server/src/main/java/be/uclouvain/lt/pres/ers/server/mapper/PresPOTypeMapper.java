@@ -25,6 +25,7 @@ public interface PresPOTypeMapper {
     @Mapping(target = "digestList", expression = "java(mapToDigestList(presPOType))") //from String to DigestListDto
     //this is the DigestList Java object you need at the interface
             //we can create it here and you can examine it at the interface
+    @Mapping(target = "relatedObjects", source = "relObj")
     //TODO add other fields here later
 
     PODto toPODto(PresPOType presPOType) throws IllegalArgumentException, IOException, URISyntaxException;

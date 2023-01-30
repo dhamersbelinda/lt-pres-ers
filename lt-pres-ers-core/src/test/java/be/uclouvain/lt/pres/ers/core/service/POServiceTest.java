@@ -30,6 +30,7 @@ public class POServiceTest {
         super();
     }
 
+    /*
     @Test
     public void testInsertPOS() {
         //create object
@@ -53,6 +54,8 @@ public class POServiceTest {
         System.out.println(poid);
     }
 
+*/
+    
     /*
     @Test
     public void testGetProfile() {

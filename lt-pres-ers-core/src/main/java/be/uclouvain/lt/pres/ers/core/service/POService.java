@@ -5,6 +5,7 @@ import be.uclouvain.lt.pres.ers.core.exception.PONotFoundException;
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import be.uclouvain.lt.pres.ers.model.ProfileStatus;
 
@@ -24,6 +25,6 @@ public interface POService {
     //TODO String returned ?
     // TODO PO or Dto as arg ?
     //TODO implem exceptions
-    String insertPOs(@NotNull List<PODto> poDtoList) throws POInsertionException;
+    String insertPOs(@NotNull PreservePORequestDto requestDto) throws POInsertionException;
 
 }

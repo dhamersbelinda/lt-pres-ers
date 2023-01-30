@@ -20,15 +20,15 @@ import java.util.Objects;
 @Mapper
 public interface PresPOToPODtoMapper {
 
-    @Mapping(target = "clientId", source = "id") //from String to URI
     @Mapping(target = "formatId", source = "formatId") //from String to String (this actually 'belongs' to the customer's structure
-    @Mapping(target = "binaryValue", expression = "java(binaryOrXML(presPOType.getBinaryData(), presPOType.getXmlData()))") //This is the (b64 encoded ?) string we get from inside the PO TODO adapt this if we acutally keep the xml data
+    @Mapping(target = "id", source = "id") //from String to URI
+    //@Mapping(target = "binaryValue", expression = "java(binaryOrXML(presPOType.getBinaryData(), presPOType.getXmlData()))") //This is the (b64 encoded ?) string we get from inside the PO TODO adapt this if we acutally keep the xml data
+    @Mapping(target = "mimeType", source = "mimeType")
+    @Mapping(target = "pronomId", source = "pronomId")
+    @Mapping(target = "relatedObjects", source = "relObj")
     @Mapping(target = "digestList", expression = "java(mapToDigestList(presPOType))") //from String to DigestListDto
     //this is the DigestList Java object you need at the interface
             //we can create it here and you can examine it at the interface
-    @Mapping(target = "relatedObjects", source = "relObj")
-    //TODO add other fields here later
-
     PODto toPODto(PresPOType presPOType) throws IllegalArgumentException, IOException, URISyntaxException;
 
     default URI toURI(final String string) { //from String to URI

@@ -4,6 +4,7 @@ import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.service.POService;
 import be.uclouvain.lt.pres.ers.core.service.ProfileService;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import be.uclouvain.lt.pres.ers.server.api.PreservePOApiDelegate;
 import be.uclouvain.lt.pres.ers.server.mapper.PresPOToPODtoMapper;
@@ -37,6 +38,9 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         // TODO : optIn ?
         // TODO reqID ?
         // pro : verify profile is supported
+
+        Integer clientId = 1;
+
         final URI profileIdentifier; // TODO adapt everything according to the profile
         try {
             profileIdentifier = (request.getPro() == null) ? null : new URI(request.getPro());
@@ -45,18 +49,26 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                     request.getPro() + " is not a valid URI.", HttpStatus.BAD_REQUEST);
         }
 
+        final ProfileDto profileDto;
         try {
-            final ProfileDto profile = this.profileService.getProfile(profileIdentifier);
+            profileDto = this.profileService.getProfile(profileIdentifier);
         } catch (final ProfileNotFoundException e) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
                     MinEnum.PARAMETER_ERROR, e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+
 
         // po : verify preservation object(s)
         List<PresPOType> pos = request.getPo();
         if(pos == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     "Missing po", HttpStatus.BAD_REQUEST);
+        }
+
+        // TODO : Support more than one PO ? BUT : what about response ? => can only respond with one POID ...
+        if(pos.size() != 1) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
+                    MinEnum.PARAMETER_ERROR, "At most one PO per request !", HttpStatus.BAD_REQUEST);
         }
 
         URI formatID;
@@ -86,7 +98,10 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 
         // Profile identifier is not specified, fetch profiles using the status which is
         // always not null
-        this.poService.insertPOs(poDtos);
+        PreservePORequestDto requestDto = new PreservePORequestDto(poDtos, profileDto, clientId);
+
+
+        this.poService.insertPOs(requestDto);
         return this
                 .buildResponse(
                         request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, "Success !",

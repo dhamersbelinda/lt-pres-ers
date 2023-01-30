@@ -5,9 +5,11 @@ import be.uclouvain.lt.pres.ers.core.exception.PONotFoundException;
 import be.uclouvain.lt.pres.ers.core.mapper.PODtoMapperCore;
 import be.uclouvain.lt.pres.ers.core.mapper.POMapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
+import be.uclouvain.lt.pres.ers.core.persistence.model.PreservePORequest;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.PORepository;
 import be.uclouvain.lt.pres.ers.core.service.POService;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +37,17 @@ public class POServiceImpl implements POService {
     }
 
     @Override
-    public String insertPOs(List<PODto> poDtoList) throws POInsertionException {
+    public String insertPOs(PreservePORequestDto requestDto) throws POInsertionException {
+        //map into a request object + save it
         AtomicReference<String> toReturn = new AtomicReference<>();
-        poDtoList.stream().map(this.dtoMapper::toPO).forEach((po) -> {
-            PO returnedPO = this.repository.save(po);
-            toReturn.set(returnedPO.getId().toString());
-        });
+        PreservePORequest request = this.dtoMapper.toPreservePORequest(requestDto);
+        PreservePORequest req = this.repository.save(request);
+        toReturn.set(req.getId().toString());
+
+        //add received POID to temp table
+
+
+
         return toReturn.get();
     }
 

@@ -3,8 +3,10 @@ package be.uclouvain.lt.pres.ers.core.mapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.Digest;
 import be.uclouvain.lt.pres.ers.core.persistence.model.DigestList;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
+import be.uclouvain.lt.pres.ers.core.persistence.model.PreservePORequest;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,8 +16,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(uses = ProfileMapper.class)
 public interface PODtoMapperCore {
+
+
+    @Mapping(target = "profile", source = "profileDto")
+    //TODO handle this a bit better someday hehe
+    //hope this is the right getter
+    @Mapping(target = "po", expression = "java(toPO(requestDto.getPoDtos()[0]))")
+    PreservePORequest toPreservePORequest(PreservePORequestDto requestDto);
+
+
+
 
     @Mapping(target = "uid", source = "clientId")
     @Mapping(target = "value", source = "binaryValue")

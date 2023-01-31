@@ -1,9 +1,6 @@
 package be.uclouvain.lt.pres.ers.core.mapper;
 
-import be.uclouvain.lt.pres.ers.core.persistence.model.Digest;
-import be.uclouvain.lt.pres.ers.core.persistence.model.DigestList;
-import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
-import be.uclouvain.lt.pres.ers.core.persistence.model.PreservePORequest;
+import be.uclouvain.lt.pres.ers.core.persistence.model.*;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
@@ -29,11 +26,16 @@ public interface PODtoMapperCore {
 
 
 
-    @Mapping(target = "uid", source = "clientId")
-    @Mapping(target = "value", source = "binaryValue")
-    //@Mapping(target = "formatId", source = "formatId")
-    //@Mapping(target = "digestList", source = "digestList")
+    @Mapping(target = "uid", source = "id")
     PO toPO(PODto poDto);
+
+    default Set<RelatedObject> fromStringToRelObjSet(List<String> relatedObjects) {
+        return relatedObjects.stream().map((elem) -> {
+            RelatedObject relObj = new RelatedObject();
+            relObj.setRelatedObject(elem);
+            return relObj;
+        }).collect(Collectors.toSet());
+    }
 
     @Mapping(target = "digestMethod", source = "digestMethod")
     @Mapping(target = "digests", source = "digests") // from List<String> to Set<Digest>
@@ -51,6 +53,11 @@ public interface PODtoMapperCore {
     }
 
     @AfterMapping
+    default void setReqId(@MappingTarget PreservePORequest req) {
+        req.getPo().setReq(req);
+    }
+
+    @AfterMapping
     default void setDigestListId(@MappingTarget DigestList dl) {
         for (Digest digest : dl.getDigests()) {
             digest.setDigestList(dl);
@@ -58,10 +65,13 @@ public interface PODtoMapperCore {
     }
 
 
+
     @AfterMapping
     default void setPOObject(@MappingTarget PO po) {
         DigestList dl = po.getDigestList();
         dl.setPo(po);
+
+        po.getRelatedObjects().forEach((elem) -> elem.setPo(po));
     }
     /*
     URI uid; -> URI uid

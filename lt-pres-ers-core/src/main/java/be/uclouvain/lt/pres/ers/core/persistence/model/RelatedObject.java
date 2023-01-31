@@ -1,4 +1,4 @@
-/*package be.uclouvain.lt.pres.ers.core.persistence.model;
+package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import lombok.*;
 
@@ -24,8 +24,6 @@ public class RelatedObject {
     private String relatedObject;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "EVIDENCE_IDENTIFIER", nullable = false, referencedColumnName = "ID")
-    private Evidence evidence;
-
+    @JoinColumn(name = "PO_ID", nullable = false, referencedColumnName = "ID")
+    private PO po;
 }
-*/

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.net.URI;
+import java.util.Set;
 
 @NamedEntityGraph(name = "po-entity-graph", attributeNodes = {
         @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph") }, subgraphs = {
@@ -28,35 +29,40 @@ public class PO {
     //we can use this as the POID for the moment, as long as we don't submit sets
     //the poid needs to be returned as a string at the end, so it needs to be converted on receipt
 
-    @Column(name = "UNIQUE_IDENTIFIER", nullable = true, length = 2048)
-    private String uid;
-    //nullable = true because it doesn't necessarily have an id when submitted
-
-    // TODO how to represent xml ? does the length need to be adjusted ?
-    @Column(name = "PO_VALUE", nullable = false, length = 2048)
-    private String value;
-
     //TODO has to be non-null in our implem
     @Column(name = "FORMAT_IDENTIFIER", nullable = true, length = 2048)
     private URI formatId;
     //TODO does this have to be joined with the Format type ?
+
+    @Column(name = "UNIQUE_IDENTIFIER", nullable = true, length = 2048)
+    private String uid;
+
+    @Column(name = "MIMETYPE", nullable = true, length = 2048)
+    private URI mimeType;
+
+    @Column(name = "PRONOM_ID", nullable = true, length = 2048)
+    private URI pronomId;
+
+    /*
+    // TODO how to represent xml ? does the length need to be adjusted ?
+    @Column(name = "PO_VALUE", nullable = false, length = 2048)
+    private String value;
+     */
+
+    @OneToMany(mappedBy = "po", cascade = CascadeType.ALL)
+    private Set<RelatedObject> relatedObjects;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false) //TODO set the optional here later (false if possible)
+    //@OneToOne //check if this does what it should
+    @JoinColumn(name = "REQ_ID", nullable = false, referencedColumnName = "POID")
+    //how to make po_id the same value as id of po ?
+    //@MapsId("id")
+    private PreservePORequest req;
 
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL, optional = false)
     //@JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
     private DigestList digestList;
 
-    //TODO fields for later
-    /*
-    @Column(name = "MIME_TYPE", nullable = true, length = 2048)
-    private URI mimeType;
-
-    @Column(name = "PRONOM_PUID", nullable = true, length = 2048)
-    private URI pronomPUID;
-
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "evidence", cascade = CascadeType.ALL)
-    private Set<RelatedObject> relatedObjects;
-     */
 
 }

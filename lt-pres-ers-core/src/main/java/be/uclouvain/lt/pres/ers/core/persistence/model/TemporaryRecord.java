@@ -26,11 +26,18 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 public class TemporaryRecord {
-    @MapsId("poid")
+    //@MapsId("poid")
+    /*
+    @Id
     @Column(name = "POID")
     @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
     @JoinColumn(name = "POID", referencedColumnName = "POID", foreignKey = @ForeignKey(name = "fk_poid"))
     private UUID poid;
+     */
+
+    @EmbeddedId
+    private TemporaryRecordID trID;
+    //maybe the other option would be better
 
     //TODO faire gaffe que rien ne s'insère ici et que ça sert juste à avoir la FK
     @JoinColumn(name = "PROFILE_ID", nullable = false, referencedColumnName = "ID")

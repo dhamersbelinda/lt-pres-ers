@@ -9,7 +9,8 @@ import java.util.UUID;
         @NamedAttributeNode(value = "clientId"),
         @NamedAttributeNode(value = "po", subgraph = "po-subgraph"),
         @NamedAttributeNode(value = "node", subgraph = "node-subgraph")
-},
+        },
+
         subgraphs = {
         @NamedSubgraph(name = "po-subgraph", attributeNodes = {
                 @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph") }),
@@ -49,7 +50,7 @@ public class PreservePORequest {
     @Column(name = "CLIENT_ID", nullable = false, length = 2048)
     private Integer clientId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private PO po;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

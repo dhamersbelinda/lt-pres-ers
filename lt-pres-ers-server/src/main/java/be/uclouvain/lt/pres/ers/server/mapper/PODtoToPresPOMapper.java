@@ -34,7 +34,7 @@ public interface PODtoToPresPOMapper {
     //we will only handle digestlists and evidences, which have their specific formatIds
     @Mapping(target = "pronomId", ignore = true)
     //TODO maybe later if we need additional classification info we might need pronomId
-    @Mapping(target = "id", source = "clientId")
+    @Mapping(target = "id", source = "id")
     //For unique identification within larger data structure -> is this the POID we can return ?
     @Mapping(target = "relObj", ignore = true)
     //TODO ignored for now but will be needed later when submitting several POs

@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Mapper
 public interface POMapper {
 
-    @Mapping(target = "clientId", source = "uid")
-    @Mapping(target = "binaryValue", source = "value")
+    @Mapping(target = "id", source = "uid")
+    //@Mapping(target = "binaryValue", source = "value")
     @Mapping(target = "formatId", source = "formatId")
     @Mapping(target = "digestList", source = "digestList")
     @Mapping(target = "relatedObjects", ignore = true)

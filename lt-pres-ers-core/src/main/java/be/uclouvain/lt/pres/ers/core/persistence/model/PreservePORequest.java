@@ -19,11 +19,12 @@ import java.util.UUID;
         @NamedSubgraph(name = "digest-subgraph" , attributeNodes = {
                 @NamedAttributeNode(value = "digest")}),
 
+
         @NamedSubgraph(name = "node-subgraph", attributeNodes = {
                @NamedAttributeNode(value = "parent"),
                @NamedAttributeNode(value = "neighbour"),
                 @NamedAttributeNode(value = "treeId"),
-                @NamedAttributeNode(value = "inTreeID")
+                @NamedAttributeNode(value = "inTreeId")
         })
 
         }
@@ -43,15 +44,19 @@ public class PreservePORequest {
     private UUID id; //-> will become the POID
 
     //TODO faire gaffe que rien ne s'insère ici et que ça sert juste à avoir la FK
-    @JoinColumn(name = "PROFILE_ID", nullable = false, referencedColumnName = "ID", insertable = false, updatable = false)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    //@Transient
+    //@Detached
+    @JoinColumn(name = "PROFILE_ID", nullable = false, referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) //removed cascadetype , cascade = CascadeType.DETACH
     private Profile profile;
 
     @Column(name = "CLIENT_ID", nullable = false, length = 2048)
     private Integer clientId;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, mappedBy = "req")
+    //@JoinColumn
     private PO po;
+
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "NODE_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "fk_node_id"))

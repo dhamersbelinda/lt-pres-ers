@@ -718,7 +718,7 @@ databaseChangeLog:
                   nullable: true
             - column:
                 name: REQ_ID
-                type: varchar(36)
+                type: binary(255)
                 constraints:
                   nullable: false
       - dropColumn:
@@ -736,15 +736,21 @@ databaseChangeLog:
             columns:
               - column:
                   name: POID
-                  type: varchar(36)
+                  type: binary(255)
                   #autoIncrement: true
                   constraints:
                     primaryKey: true
                     primaryKeyName: PK_POID
                     nullable: false
               - column:
-                  name: CLIENT_ID
+                  name: PROFILE_ID
                   type: BIGINT
+                  #autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CLIENT_ID
+                  type: integer
                   constraints:
                     nullable: false
                     unique: false
@@ -777,7 +783,7 @@ databaseChangeLog:
                     unique: false
               - column:
                   name: PO_ID
-                  type: varchar(36)
+                  type: BIGINT
                   constraints:
                     nullable: false
 
@@ -797,35 +803,9 @@ databaseChangeLog:
             referencedTableName: PO
             validate: true
 
-  - changeSet:
-      id: 35
-      author: bimbambel
-      changes:
-        - createTable:
-            tableName: POIDs
-            columns:
-              - column:
-                  name: POID
-                  type: varchar(36)
-                  #autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    primaryKeyName: PK_POID
-                    nullable: false
-              - column:
-                  name: CLIENT_ID
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-                    unique: false
-              - column:
-                  name: NODE_ID
-                  type: varchar(2048)
-                  constraints:
-                    nullable: true
 
   - changeSet:
-      id: 36
+      id: 35
       author: bimbambel
       changes:
         - addForeignKeyConstraint:

@@ -8,6 +8,7 @@ import be.uclouvain.lt.pres.ers.core.mapper.POMapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.*;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.POIDRepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.ProfileRepository;
+import be.uclouvain.lt.pres.ers.core.persistence.repository.TemporaryRepository;
 import be.uclouvain.lt.pres.ers.core.service.POService;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
@@ -29,6 +30,7 @@ public class POServiceImpl implements POService {
 
     private final POIDRepository poidRepository;
     private final ProfileRepository profileRepository;
+    private final TemporaryRepository temporaryRepository;
 
     private final POMapper mapper;
     private final PODtoMapperCore dtoMapper;
@@ -53,6 +55,19 @@ public class POServiceImpl implements POService {
         toReturn.set(req.getId().toString());
 
         //add received POID to temp table
+        //for each digest in each digestlist
+        //TODO modif here if going to handle several POs by request
+        Iterator<Digest> iterator = request.getPo().getDigestList().getDigests().iterator();
+        IntStream.range(0, request.getPo().getDigestList().getDigests().size()).forEach((index) -> {
+            Digest digest = iterator.next();
+            TemporaryRecord temp = new TemporaryRecord();
+            temp.setPoid(req);
+            temp.setDigNum(index);
+            temp.setDigestList(req.getPo().getDigestList());
+            temp.setDigest(digest);
+            temp.setClientId(req.getClientId());
+            this.temporaryRepository.save(temp);
+        });
 
         return toReturn.get();
     }

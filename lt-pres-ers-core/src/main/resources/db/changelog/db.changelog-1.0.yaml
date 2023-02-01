@@ -756,7 +756,7 @@ databaseChangeLog:
                     unique: false
               - column:
                   name: NODE_ID
-                  type: varchar(2048)
+                  type: BIGINT
                   constraints:
                     nullable: true
 
@@ -812,6 +812,148 @@ databaseChangeLog:
             baseColumnNames: REQ_ID
             baseTableName: PO
             constraintName: FK_REQ_PO
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: POID
+            referencedTableName: POIDs
+            validate: true
+
+  - changeSet:
+      id: 36
+      author: sasha
+      changes:
+        - createTable:
+            tableName: Nodes
+            columns:
+              - column:
+                  name: NODE_ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_NODE_ID
+                    nullable: false
+              - column:
+                  name: PARENT_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    unique: false
+              - column:
+                  name: NEIGHBOUR_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    unique: true    # TODO : Here we consider only binary trees
+              - column:
+                  name: TREE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: IN_TREE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: false
+
+  - changeSet:
+      id: 37
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: PARENT_ID
+            baseTableName: NODES
+            constraintName: FK_PARENT_ID
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
+            validate: true
+
+  - changeSet:
+      id: 38
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: NEIGHBOUR_ID
+            baseTableName: NODES
+            constraintName: FK_NEIGHBOUR_ID
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
+            validate: true
+
+  - changeSet:
+      id: 39
+      author: sasha
+      changes:
+        - addUnqiueConstraint:
+            columnNames: TREE_ID, IN_TREE_ID
+            tableName: NODES
+            constraintName: UQ_TREE_ID__IN_TREE_ID
+            deferrable: false
+            initiallyDeferred: false
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
+            validate: true
+
+  - changeSet:
+      id: 40
+      author: sasha
+      changes:
+        - createTable:
+            tableName: Temporary_records
+            columns:
+              - column:
+                  name: POID
+                  type: BINARY(255)
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_POID__DIG_NUM
+                    nullable: false
+              - column:
+                  name: DIG_NUM
+                  type: INTEGER
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_POID__DIG_NUM
+                    nullable: false
+              - column:
+                  name: DIG_METHOD
+                  type: VARCHAR(2048)
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: VALUE
+                  type: VARCHAR(128)
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: CLIENT_ID
+                  type: integer
+                  constraints:
+                    nullable: false
+                    unique: false
+
+  - changeSet:
+      id: 41
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: POID
+            baseTableName: Temporary_records
+            constraintName: FK_POID
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT

@@ -32,6 +32,7 @@ public interface PresPOToPODtoMapper {
     PODto toPODto(PresPOType presPOType) throws IllegalArgumentException, IOException, URISyntaxException;
 
     default URI toURI(final String string) { //from String to URI
+        if(string == null) return null;
         return URI.create(string);
     }
 

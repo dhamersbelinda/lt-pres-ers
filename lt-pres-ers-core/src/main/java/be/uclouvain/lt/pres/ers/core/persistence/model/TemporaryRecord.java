@@ -8,24 +8,30 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "TEMPORARY_RECORDS")
+@IdClass(TemporaryRecordID.class)
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 public class TemporaryRecord {
-    //@MapsId("poid")
-    /*
     @Id
-    @Column(name = "POID")
-    @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
-    @JoinColumn(name = "POID", referencedColumnName = "POID", foreignKey = @ForeignKey(name = "fk_poid"))
+    @JoinColumn(name = "POID", referencedColumnName = "POID", foreignKey = @ForeignKey(name = "FK_POID"))
     private UUID poid;
-     */
 
-    @EmbeddedId
-    private TemporaryRecordID trID;
-    //maybe the other option would be better
+    @Id
+    @Column(name = "DIG_NUM")
+    private Integer digNum;
 
+    @Column(name = "DIG_METHOD", nullable = false, length = 2048)
+    private URI digMethod;
+
+    @Column(name = "VALUE", nullable = false, length = 128)
+    private String value;
+
+    @Column(name = "CLIENT_ID", nullable = false)
+    private int clientId;
+
+    /*
     //TODO faire gaffe que rien ne s'insère ici et que ça sert juste à avoir la FK
     @JoinColumn(name = "PROFILE_ID", nullable = false, referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -40,6 +46,7 @@ public class TemporaryRecord {
     @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "NODE_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "fk_node_id"))
     private Node node;
+    */
 }
 
 

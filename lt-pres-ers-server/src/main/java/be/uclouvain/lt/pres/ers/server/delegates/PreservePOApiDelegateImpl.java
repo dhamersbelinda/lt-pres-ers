@@ -84,6 +84,8 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                             "Unsupported format ID: "+po.getFormatId(), HttpStatus.BAD_REQUEST);
                 }
 
+                System.out.println("This is the PO: " + po);
+
                 temp = mapperPOType.toPODto(po);
                 poDtos.add(temp);
                 idx++;
@@ -91,6 +93,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                 return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                         po.getFormatId() + " is not a valid URI.", HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
+                e.printStackTrace();
                 return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                         "Error verifying PO "+ idx + " : "+e.getMessage(), HttpStatus.BAD_REQUEST);
             }

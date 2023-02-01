@@ -42,6 +42,7 @@ public interface PODtoMapperCore {
     PO toPO(PODto poDto);
 
     default Set<RelatedObject> fromStringToRelObjSet(List<String> relatedObjects) {
+        if (relatedObjects == null) return null;
         return relatedObjects.stream().map((elem) -> {
             RelatedObject relObj = new RelatedObject();
             relObj.setRelatedObject(elem);

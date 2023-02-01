@@ -1,6 +1,7 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.net.URI;
@@ -15,8 +16,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TemporaryRecord {
     @Id
-    @JoinColumn(name = "POID", referencedColumnName = "POID", foreignKey = @ForeignKey(name = "FK_POID"))
-    private UUID poid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "POID", referencedColumnName = "POID", nullable = false, foreignKey = @ForeignKey(name = "FK_POID"))
+//    @JoinColumns({
+//            @JoinColumn(name = "POID", referencedColumnName = "POID", nullable = false, foreignKey = @ForeignKey(name = "FK_POID")),
+//            @JoinColumn(name = "CLIENT_ID", nullable = false, referencedColumnName = "CLIENT_ID") //TODO put foreign key (if link should be made later)
+//    })
+    private POID poid;
 
     @Id
     @Column(name = "DIG_NUM")

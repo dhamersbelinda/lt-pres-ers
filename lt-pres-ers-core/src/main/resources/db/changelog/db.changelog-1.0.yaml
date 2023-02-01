@@ -718,7 +718,7 @@ databaseChangeLog:
                   nullable: true
             - column:
                 name: REQ_ID
-                type: binary(255)
+                type: VARCHAR(255)
                 constraints:
                   nullable: false
       - dropColumn:
@@ -736,7 +736,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: POID
-                  type: binary(255)
+                  type: VARCHAR(255)
                   #autoIncrement: true
                   constraints:
                     primaryKey: true

@@ -1,17 +1,14 @@
 package be.uclouvain.lt.pres.ers.core.mapper;
 
 import be.uclouvain.lt.pres.ers.core.persistence.model.*;
-import be.uclouvain.lt.pres.ers.core.persistence.repository.ProfileRepository;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
-import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +22,7 @@ public interface PODtoMapperCore {
     //hope this is the right getter
     @Mapping(target = "po", expression = "java(toPO(requestDto.getPoDtos().get(0)))")
     @Mapping(target = "node", ignore = true) //TODO remove later
-    PreservePORequest toPreservePORequest(PreservePORequestDto requestDto);
+    POID toPreservePORequest(PreservePORequestDto requestDto);
 
     /*
     default Profile toProfile(ProfileDto profileDto) {
@@ -67,7 +64,7 @@ public interface PODtoMapperCore {
     }
 
     @AfterMapping
-    default void setReqId(@MappingTarget PreservePORequest req) {
+    default void setReqId(@MappingTarget POID req) {
         req.getPo().setReq(req);
     }
 

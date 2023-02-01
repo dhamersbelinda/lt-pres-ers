@@ -12,6 +12,7 @@ import be.uclouvain.lt.pres.ers.model.ProfileStatus;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service that allows to retrieve (active and inactive) profiles.
@@ -20,7 +21,7 @@ import java.util.List;
 public interface POService {
 
     //TODO URI as identifier ?
-    PODto getPO(@NotNull long identifier) throws PONotFoundException;
+    PODto getPO(@NotNull UUID identifier) throws PONotFoundException;
 
     //TODO String returned ?
     // TODO PO or Dto as arg ?

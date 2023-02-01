@@ -52,12 +52,13 @@ public class PO {
     @OneToMany(mappedBy = "po", cascade = CascadeType.ALL)
     private Set<RelatedObject> relatedObjects;
 
+    // TODO with one to one we consider only one PO per request
     @OneToOne(fetch = FetchType.LAZY, optional = false) //TODO set the optional here later (false if possible)
     //@OneToOne //check if this does what it should
     @JoinColumn(name = "REQ_ID", nullable = false, referencedColumnName = "POID")
     //how to make po_id the same value as id of po ?
     //@MapsId("id")
-    private PreservePORequest req;
+    private POID req;
 
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL, optional = false)

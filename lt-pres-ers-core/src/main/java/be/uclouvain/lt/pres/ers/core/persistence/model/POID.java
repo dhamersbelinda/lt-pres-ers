@@ -1,6 +1,8 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -36,11 +38,16 @@ import java.util.UUID;
 @Setter
 @ToString
 @NoArgsConstructor
-public class PreservePORequest {
+public class POID {
     @Id
     @Column(name = "POID")
     @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
-    @GeneratedValue //(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Type(type="uuid-char")
     private UUID id; //-> will become the POID
 
     //TODO faire gaffe que rien ne s'insère ici et que ça sert juste à avoir la FK
@@ -53,7 +60,7 @@ public class PreservePORequest {
     @Column(name = "CLIENT_ID", nullable = false, length = 2048)
     private Integer clientId;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, mappedBy = "req")
+    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL, optional = false, mappedBy = "req")
     //@JoinColumn
     private PO po;
 

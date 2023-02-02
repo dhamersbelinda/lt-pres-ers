@@ -961,3 +961,30 @@ databaseChangeLog:
             referencedColumnNames: POID
             referencedTableName: POIDs
             validate: true
+  - changeSet:
+      id: 42
+      author: sasha
+      changes:
+        - createTable:
+            tableName: shedlock
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: lock_until
+                  type: TIMESTAMP(3)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: locked_at
+                  type: TIMESTAMP(3)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: locked_by
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false

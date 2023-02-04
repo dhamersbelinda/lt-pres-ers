@@ -1,13 +1,23 @@
 package be.uclouvain.lt.pres.ers.core.scheduler;
 
+import be.uclouvain.lt.pres.ers.core.persistence.model.TemporaryRecord;
+import be.uclouvain.lt.pres.ers.core.persistence.repository.TemporaryRepository;
+import lombok.AllArgsConstructor;
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 @Component
+@AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services
 public class BuildTreeTask {
+
+
+    private final TemporaryRepository temporaryRepository;
 
 //    @Scheduled(cron = "* 59 23 * * ?") // TODO : this should be every day at midnight
 //    @Scheduled(cron = "0 0 0 1/1 * ?") // TODO : this should be every day at midnight (fancy)
@@ -16,6 +26,33 @@ public class BuildTreeTask {
             lockAtLeastForString = "PT5s", lockAtMostForString = "PT25s") // TODO find proper duration
     public void scheduledTask() {
         System.out.println("Done at " + OffsetDateTime.now());
+
+        List<TemporaryRecord> temporaryRecords = temporaryRepository.findAllBy();
+
+        //make a list of HashTreeBases
+
+        temporaryRecords.sort(new Comparator<TemporaryRecord>() {
+            @Override
+            public int compare(TemporaryRecord o1, TemporaryRecord o2) {
+                int comp = Integer.compare(o1.getClientId(), o2.getClientId());
+                //separate by clients
+                if (comp == 0) {
+                    //sort by POID
+                    int comp1 = o1.getPoid().getId().compareTo(o2.getPoid().getId());
+                    if (comp1 == 0) {
+                        //sort by digest value
+                        int comp2 =
+                    }
+                }
+                return comp;
+            }
+        });
+
+        int prevClient =
+        do {
+            temp
+        } while ();
+
 
         // building the tree : array layout, array size depending on nbr of leaves (trimmed)
 

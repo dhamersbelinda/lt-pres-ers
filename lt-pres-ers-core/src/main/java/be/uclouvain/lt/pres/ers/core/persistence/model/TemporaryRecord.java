@@ -7,6 +7,22 @@ import javax.persistence.*;
 import java.net.URI;
 import java.util.UUID;
 
+@NamedEntityGraph(name = "tempRecord-entity-graph",
+    attributeNodes = {
+        @NamedAttributeNode(value = "poid"),
+        @NamedAttributeNode(value = "digNum"),
+        @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph"),
+        @NamedAttributeNode(value ="digest"),
+        @NamedAttributeNode(value = "clientId")
+    },
+    subgraphs = {
+        @NamedSubgraph(name = "digestList-subgraph", attributeNodes = {
+                @NamedAttributeNode(value = "digestMethod")
+        })
+    }
+
+)
+
 @Entity
 @Table(name = "TEMPORARY_RECORDS")
 @IdClass(TemporaryRecordID.class)

@@ -5,7 +5,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: PROFILE
+            tableName: profile
             columns:
               - column:
                  name: ID
@@ -78,7 +78,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: OPERATION
+            tableName: operation
             columns:
               - column:
                  name: ID
@@ -114,7 +114,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: OPERATION_INPUT
+            tableName: operation_input
             columns:
               - column:
                  name: ID
@@ -150,7 +150,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: OPERATION_OUTPUT
+            tableName: operation_output
             columns:
               - column:
                  name: ID
@@ -229,14 +229,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PROFILE_ID
-            baseTableName: OPERATION
+            baseTableName: operation
             constraintName: FK_OPERATION_PROFILE
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: PROFILE
+            referencedTableName: profile
             validate: true
 
   - changeSet:
@@ -245,14 +245,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: FORMAT_ID
-            baseTableName: OPERATION_INPUT
+            baseTableName: operation_input
             constraintName: FK_OPERATION_INPUT_FORMAT
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: FORMAT
+            referencedTableName: format
             validate: true
 
   - changeSet:
@@ -261,14 +261,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: OPERATION_ID
-            baseTableName: OPERATION_INPUT
+            baseTableName: operation_input
             constraintName: FK_OPERATION_INPUT_OPERATION
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: OPERATION
+            referencedTableName: operation
             validate: true
 
   - changeSet:
@@ -277,14 +277,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: OPERATION_ID
-            baseTableName: OPERATION_OUTPUT
+            baseTableName: operation_output
             constraintName: FK_OPERATION_OUTPUT_OPERATION
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: OPERATION
+            referencedTableName: operation
             validate: true
 
   - changeSet:
@@ -293,14 +293,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PARENT_FORMAT_ID
-            baseTableName: PARAMETER
+            baseTableName: parameter
             constraintName: FK_PARAMETER_PARENT_FORMAT
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: FORMAT
+            referencedTableName: format
             validate: true
 
   - changeSet:
@@ -309,14 +309,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: FORMAT_ID
-            baseTableName: PARAMETER
+            baseTableName: parameter
             constraintName: FK_PARAMETER_FORMAT
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: FORMAT
+            referencedTableName: format
             validate: true
 
   - changeSet:
@@ -355,10 +355,10 @@ databaseChangeLog:
              - column:
                  name: PRESERVATION_EVIDENCE_RETENTION_DURATION  
                  value: PT0S
-           tableName: PROFILE
+           tableName: profile
        - rollback:
            - delete:
-              tableName: PROFILE
+              tableName: profile
 
   - changeSet:
      id: 14
@@ -377,7 +377,7 @@ databaseChangeLog:
                  value: See clause 5.3.3
              - column:
                  name: PROFILE_ID  
-                 valueComputed: (SELECT ID FROM PROFILE)
+                 valueComputed: (SELECT ID FROM profile)
            tableName: OPERATION
        - rollback:
            - delete:
@@ -400,7 +400,7 @@ databaseChangeLog:
                  value: See clause 5.3.4
              - column:
                  name: PROFILE_ID  
-                 valueComputed: (SELECT ID FROM PROFILE)
+                 valueComputed: (SELECT ID FROM profile)
            tableName: OPERATION
        - rollback:
            - delete:
@@ -570,7 +570,7 @@ databaseChangeLog:
       author: belinda
       changes:
         - createTable:
-            tableName: PO
+            tableName: po
             columns:
               - column:
                   name: ID
@@ -657,14 +657,14 @@ databaseChangeLog:
   #    changes:
   #      - addForeignKeyConstraint:
   #          baseColumnNames: DIGESTLIST_ID
-  #          baseTableName: PO
+  #          baseTableName: po
   #          constraintName: FK_PO_DIGESTLIST
   #          deferrable: false
   #          initiallyDeferred: false
   #          onDelete: RESTRICT
   #          onUpdate: RESTRICT
   #          referencedColumnNames: ID
-  #          referencedTableName: DIGESTLIST
+  #          referencedTableName: digestlist
   #          validate: true
 
   - changeSet:
@@ -673,14 +673,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PO_ID
-            baseTableName: DIGESTLIST
+            baseTableName: digestlist
             constraintName: FK_DIGESTLIST_PO
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: PO
+            referencedTableName: po
             validate: true
 
   - changeSet:
@@ -689,14 +689,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: DIGESTLIST_ID
-            baseTableName: DIGEST
+            baseTableName: digest
             constraintName: FK_DIGEST_DIGESTLIST
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: DIGESTLIST
+            referencedTableName: digestlist
             validate: true
 
   - changeSet:
@@ -704,7 +704,7 @@ databaseChangeLog:
       author: bimbambel
       changes:
       - addColumn:
-          tableName: PO
+          tableName: po
           columns:
             - column:
                 name: MIMETYPE
@@ -722,7 +722,7 @@ databaseChangeLog:
                 constraints:
                   nullable: false
       - dropColumn:
-          tableName: PO
+          tableName: po
           columns:
           - column:
               name: PO_VALUE
@@ -732,7 +732,7 @@ databaseChangeLog:
       author: bimbambel
       changes:
         - createTable:
-            tableName: POIDs
+            tableName: POIDS
             columns:
               - column:
                   name: POID
@@ -793,14 +793,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PO_ID
-            baseTableName: RELATED_OBJECT
+            baseTableName: related_object
             constraintName: FK_RELOBJ
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: PO
+            referencedTableName: po
             validate: true
 
 
@@ -810,14 +810,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: REQ_ID
-            baseTableName: PO
+            baseTableName: po
             constraintName: FK_REQ_PO
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: POID
-            referencedTableName: POIDs
+            referencedTableName: poids
             validate: true
 
   - changeSet:
@@ -825,7 +825,7 @@ databaseChangeLog:
       author: sasha
       changes:
         - createTable:
-            tableName: Nodes
+            tableName: NODES
             columns:
               - column:
                   name: NODE_ID
@@ -866,14 +866,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PARENT_ID
-            baseTableName: NODES
+            baseTableName: nodes
             constraintName: FK_PARENT_ID
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: NODE_ID
-            referencedTableName: NODES
+            referencedTableName: nodes
             validate: true
 
   - changeSet:
@@ -882,14 +882,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: NEIGHBOUR_ID
-            baseTableName: NODES
+            baseTableName: nodes
             constraintName: FK_NEIGHBOUR_ID
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: NODE_ID
-            referencedTableName: NODES
+            referencedTableName: nodes
             validate: true
 
   - changeSet:
@@ -903,7 +903,7 @@ databaseChangeLog:
             deferrable: false
             initiallyDeferred: false
             referencedColumnNames: NODE_ID
-            referencedTableName: NODES
+            referencedTableName: nodes
             validate: true
 
   - changeSet:
@@ -911,7 +911,7 @@ databaseChangeLog:
       author: sasha
       changes:
         - createTable:
-            tableName: Temporary_records
+            tableName: temporary_records
             columns:
               - column:
                   name: POID
@@ -952,14 +952,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: POID
-            baseTableName: Temporary_records
+            baseTableName: temporary_records
             constraintName: FK_POID
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: POID
-            referencedTableName: POIDs
+            referencedTableName: poids
             validate: true
   - changeSet:
       id: 42

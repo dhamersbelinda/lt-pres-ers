@@ -55,6 +55,36 @@ public class BuildTreeTask {
 
 
         // building the tree : array layout, array size depending on nbr of leaves (trimmed)
+        /*
+            List<TemporaryRecords> toStore; => what we receive
+            int branchingFactor = 2;  => parameter, number of childs of each node, must be >=2
+
+            toStore.sort(); => sort in a way if we have to (binary ascending would be great)
+            int nLeaves = toStore.length();
+            int depth = Math.ceil(Math.log(branchingFactor ,nLeaves));    // root at depth 0
+            int treeSize = (branchingFactor ^ (depth+1)   - 1)/(branchingFactor - 1)     // https://math.stackexchange.com/questions/664608/number-of-nodes-in-binary-tree-given-number-of-leaves#:~:text=The%20number%20of%20nodes%20would,the%20number%20of%20leaf%20nodes.
+            TreeNode[] tree = new TreeNode[treeSize] => cannot trim the array's size here ... but will be trimmed in DB storage ! idx 0 = root
+            // index of 'first' node at depth d : branchingFactor^d  - 1
+            int i = 0, d = 0, g = 0;
+            // add all leaves
+            foreach(TemporaryRecord leaf:toStore) {
+                tree[branchingFactor^depth +i-2] = leaf;
+                i++;
+            }
+            int nNodesLayer;
+            String toConcat; => or byte array ? idk yet how we store hash values
+            for(d=depth-1 ; d >= 0 ; d--) {
+                // per layer
+                nNodesLayer = Math.pow(branchingFactor,d);
+                for(i=0 ; i < nNodesLayer ; i++) { // programmed explicitly : foreach parent { foreach of its child {concatenate value}}, probably better to do it like forall nodes in the child layer
+                    for(g=0 ; g < branchingFactor ; g++){
+                        toConcat.append(tree[(branchingFactor^(d+1)) + i*branchingFactor + g].getDigest());
+                    }
+                    tree[(branchingFactor^(d)) + i] = hash(toConcat);
+                    toConcat = "";
+                }
+            }
+         */
 
         // Add timestamps to be extended to temporary table
         // Get nbr of items per (user, algo) from temp table

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services
+@AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services ("necessary" to have the repo)
 public class BuildTreeTask {
 
 
@@ -41,6 +41,7 @@ public class BuildTreeTask {
                     int comp1 = o1.getPoid().getId().compareTo(o2.getPoid().getId());
                     if (comp1 == 0) {
                         //sort by digest value
+                        //compare by binary form (how to obtain ?)
                         int comp2 =
                     }
                 }
@@ -53,6 +54,11 @@ public class BuildTreeTask {
             temp
         } while ();
 
+        //BIG TODO
+        //concatenation : which canonicalization ?
+        // find good hash method
+        // impose digestMethod on client ?
+        // some attributes (in the classes before construction of the tree) can be removed (or added)
 
         // building the tree : array layout, array size depending on nbr of leaves (trimmed)
         /*

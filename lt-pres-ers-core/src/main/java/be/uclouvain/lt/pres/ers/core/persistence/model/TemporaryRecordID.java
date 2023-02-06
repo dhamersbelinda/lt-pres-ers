@@ -14,5 +14,6 @@ import java.util.UUID;
 public class TemporaryRecordID implements Serializable {
     @Type(type="uuid-char")
     public UUID poid; // corresponds to the POID's key, /!\ FK to request/POID
+    //TODO I think this needs to be changed to the POID object
     public Integer digNum;
 }

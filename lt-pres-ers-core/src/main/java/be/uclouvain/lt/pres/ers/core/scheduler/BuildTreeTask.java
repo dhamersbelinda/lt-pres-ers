@@ -1,16 +1,16 @@
 package be.uclouvain.lt.pres.ers.core.scheduler;
 
-import be.uclouvain.lt.pres.ers.core.persistence.model.TemporaryRecord;
+import be.uclouvain.lt.pres.ers.core.persistence.model.*;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.TemporaryRepository;
 import lombok.AllArgsConstructor;
 import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services ("necessary" to have the repo)
@@ -37,22 +37,106 @@ public class BuildTreeTask {
                 int comp = Integer.compare(o1.getClientId(), o2.getClientId());
                 //separate by clients
                 if (comp == 0) {
-                    //sort by POID
-                    int comp1 = o1.getPoid().getId().compareTo(o2.getPoid().getId());
+                    int comp1 = o1.getDigestList().getDigestMethod().compareTo(o2.getDigestList().getDigestMethod());
                     if (comp1 == 0) {
-                        //sort by digest value
-                        //compare by binary form (how to obtain ?)
-                        int comp2 =
+                        //sort by POID
+                        int comp2 = o1.getPoid().getId().compareTo(o2.getPoid().getId());
+                        if (comp2 == 0) {
+                            //sort by digest value
+                            //compare by binary form (how to obtain ?)
+                            int comp3 = 0;
+                            //TODO complete here, sort by binary value
+                        }
+                        return comp2;
                     }
+                    return comp1;
                 }
                 return comp;
             }
         });
 
-        int prevClient =
-        do {
-            temp
-        } while ();
+        //collect all bases for tree construction
+        List<HashTreeBase> hashTreeBaseList = new ArrayList<>();
+
+        int prevClientId = temporaryRecords.get(0).getClientId();
+        URI prevDigestMethod = temporaryRecords.get(0).getDigestList().getDigestMethod();
+        int index = 1;
+        HashTreeBase htb = new HashTreeBase();
+        htb.setClientId(prevClientId);
+        htb.setDigestMethod(prevDigestMethod);
+        List<POCompressed> poCompressedList = new ArrayList<>();
+        POCompressed poCompressed = new POCompressed();
+        POID prevPoid = temporaryRecords.get(0).getPoid();
+        poCompressed.setPoid(prevPoid);
+        List<Digest> digests = new ArrayList<>();
+        digests.add(temporaryRecords.get(0).getDigest());
+        List<Integer> digNums = new ArrayList<>();
+        digNums.add(temporaryRecords.get(0).getDigNum()); //TODO check how we handle this order
+        while (index < temporaryRecords.size()) {
+            TemporaryRecord curr = temporaryRecords.get(index);
+            int currClientId = curr.getClientId();
+            URI currDigestMethod = curr.getDigestList().getDigestMethod();
+            //continue checking for POID
+
+            if (currClientId != prevClientId || !currDigestMethod.equals(prevDigestMethod)) {
+                htb.setPoCompressedList(poCompressedList);
+                hashTreeBaseList.add(htb);
+
+                htb = new HashTreeBase();
+                htb.setClientId(currClientId);
+                htb.setDigestMethod(currDigestMethod);
+
+                prevClientId = currClientId;
+                prevDigestMethod = currDigestMethod;
+
+                poCompressedList = new ArrayList<>();
+            }
+
+            if (!prevPoid.equals(curr.getPoid())) { //we create a new POCompressed
+                poCompressed.setDigests(digests);
+                poCompressed.setDigNums(digNums);
+
+                poCompressedList.add(poCompressed);
+
+                //new digests and dignums and POCompressed
+                digests = new ArrayList<>();
+                digNums = new ArrayList<>();
+                poCompressed = new POCompressed();
+                poCompressed.setPoid(curr.getPoid());
+
+                prevPoid = curr.getPoid();
+
+                //there might be a potential problem here with the references (but probably not)
+                //(check POCompressedList)
+            }
+            digests.add(curr.getDigest());
+            digNums.add(curr.getDigNum());
+
+            index++;
+        }
+        poCompressed.setDigests(digests);
+        poCompressed.setDigNums(digNums);
+
+        poCompressedList.add(poCompressed);
+        htb.setPoCompressedList(poCompressedList);
+        hashTreeBaseList.add(htb);
+
+        //all trees are in HashTreeBase
+        for (HashTreeBase hashTreeBase: hashTreeBaseList) {
+            TreeID treeID = new TreeID();
+            hashTreeBase.setTreeID(treeID);
+            Node rootNode = buildTree(hashTreeBase);
+            // TODO : get a real timestamp with DSS
+            int timestamp = 2;
+
+            Root root = new Root();
+            root.setNode(rootNode); // necessary ? useful ? TODO : EXPERIMENT
+            root.setTimestamp(timestamp);
+            rootNode.setRoot(root);
+
+            // TODO : insert rootNode, check cascade types !
+        }
+
 
         //BIG TODO
         //concatenation : which canonicalization ?

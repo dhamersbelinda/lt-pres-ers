@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.xml.crypto.dsig.DigestMethod;
+import java.net.URI;
 import java.util.List;
 
 //class that can be used to build a Merkle hash-tree
@@ -18,6 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 public class HashTreeBase {
     private Integer clientId;
-    private DigestMethod digestMethod; //has become superfluous now
+    private URI digestMethod; //has become superfluous now, or maybe not ? correct type ?
     private List<POCompressed> poCompressedList;
 }

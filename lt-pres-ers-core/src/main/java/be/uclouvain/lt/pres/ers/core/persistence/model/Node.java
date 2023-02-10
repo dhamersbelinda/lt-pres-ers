@@ -3,6 +3,7 @@ package be.uclouvain.lt.pres.ers.core.persistence.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "Nodes",

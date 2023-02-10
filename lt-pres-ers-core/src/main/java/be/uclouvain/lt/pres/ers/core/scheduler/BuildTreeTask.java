@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services ("necessary" to have the repo)
 public class BuildTreeTask {
 
+    private final static int BRANCHING_FACTOR = 2;
 
     private final TemporaryRepository temporaryRepository;
 
@@ -176,35 +177,147 @@ public class BuildTreeTask {
             }
          */
 
-        // Add timestamps to be extended to temporary table
-        // Get nbr of items per (user, algo) from temp table
-        // Foreach pair (user, algo)
-            // query SELECT * FROM Temp WHERE user=user AND algo=algo LIMIT i,i+X (i starts at 0, X is max leaf per tree)
-            // each query response :
-        //          HashTreeBase(
-        //          clientId,
-        //          digestMethod,
-        //          List of POIDs
-        //              List of values
-        //              List of dignums (maybe not necessary)
-        //          )
+    }
+    // TODO : support root nodes
+    private static Node buildTree(HashTreeBase input) {
 
-            // Building tree (1 tree per HashTreeBase):
-                // create list of base nodes
-                    // Each base node has (Node object)
-                        // treeId (empty)
-                        // inTreeId (incremental)
-                        // combined PK, but we probably/maybe need inTreeId for computation
+        // InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
+        /*
+           0             0
+                       /   \
+           1          1     2
+                     / \   / \
+           2        3   4 5   6
+         */
 
-                        // broId (empty)
-                        // a children field (empty, nullable) -> list
-                        // a parent field (empty, nullable)
+        int nLeaves = input.getPoCompressedList().size();
+        int depth = (int) Math.ceil(Math.log(nLeaves) / Math.log(BRANCHING_FACTOR)); // log_b (x) = ln(x)/ln(b)
+        // int treeSize = (int) ((Math.pow(BRANCHING_FACTOR, depth+1) - 1)/((double) (BRANCHING_FACTOR - 1)));
 
-                        // value
-                        // AODG object
-                            //
+        Node[] buf = new Node[nLeaves % 2 == 0 ? nLeaves : nLeaves + 1];
+        int d = 0;
+        int firstLvlNodeNum = (int) Math.pow(2,depth);
+        Node temp;
+        TreeID treeID = input.getTreeID();
+        // transform leaves in node object & put in array
+        for (POCompressed po:input.getPoCompressedList()) {
+            temp = new Node();
+            temp.setPoid(po.getPoid());
+            // TODO : treeid : create table to generate those IDs on the DB side, before calling this function insert in table to generate id and add it to the HashTreeBase object
+            temp.setTreeId(treeID);
+            temp.setInTreeId(firstLvlNodeNum - 1 + d);
+            buf[d] = temp;
+            d++;
+        }
 
 
 
+        //number of nodes on a level given depth (knowing previous number of nodes)
+        //ceil_even(num_prev_level / 2)
+
+        int leapIndex = 0; //advance by 2
+        int insertIndex = 0;
+        int full_num = nLeaves % BRANCHING_FACTOR == 0 ? nLeaves : nLeaves + BRANCHING_FACTOR - (nLeaves % BRANCHING_FACTOR);
+
+        int runnerIndex = 0;
+        int real_num = nLeaves; //at current level
+        // Loop on every 'floor' of the tree
+        Node currentNode;
+        Node parentNode;
+        Set<Node> children = new HashSet();
+        for (d = depth-1; d >= 0; d++) {
+            firstLvlNodeNum = (int) Math.pow(2,d);
+            // reduce all nodes in the array to their parent
+            for (leapIndex = 0; leapIndex < full_num; leapIndex = leapIndex + BRANCHING_FACTOR) {
+                int sum = 0; //placeholder for empty hash
+                //create parent Node
+                parentNode = new Node();
+                parentNode.setTreeId(treeID);
+                for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
+                    //might go over the real number
+                    if (runnerIndex > real_num - 1) {
+                        //generate random hash (keep ref)
+                        currentNode = new Node();
+                    } else {
+                        currentNode = buf[runnerIndex];
+                    }
+                    //set parent-child-neighbour relation
+                    currentNode.setParent(parentNode);
+                    children.add(currentNode);
+                    // InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
+        /*
+           0             0
+                       /   \
+           1          1     2
+                     / \   / \
+           2        3   4 5   6
+         */
+
+                    currentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
+
+                    //supposing branching factor of 2
+                    //leapIndex + BRANCHING_FACTOR-1 - (runnerIndex-leapIndex)
+                    currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + BRANCHING_FACTOR - 1]);
+
+
+                    sum = sum + 1; //placeholder op to concatenate hash
+                }
+
+                //compute concatenated hash value, set value in parent node
+
+                parentNode.setChildren(children);
+                //insert parent Node
+
+                insertIndex++;
+                sum = 0;
+            }
+            real_num = full_num / BRANCHING_FACTOR;
+            full_num = full_num % 2 == 0 ? full_num : full_num + 1;
+            insertIndex = 0;
+        }
+        /*
+            [ x x x x x x
+              | |
+              &
+                  | |
+                &
+                     | |
+                  &
+         */
+        return buf[0];
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

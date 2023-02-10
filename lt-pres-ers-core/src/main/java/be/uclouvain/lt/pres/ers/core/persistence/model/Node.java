@@ -27,13 +27,23 @@ public class Node {
     @JoinColumn(name = "PARENT_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_PARENT_ID"))
     private Node parent;
 
+    @OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
+    private Set<Node> children;
+
     @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY) // TODO : Change to support more than one neighbour ?
     private Node neighbour;
 
-    @Column(name = "TREE_ID", nullable = false)
-    private long treeId;
+    @JoinColumn(name = "TREE_ID", referencedColumnName = "TREE_ID", foreignKey = @ForeignKey(name = "FK_TREE_ID"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    private TreeID treeId;
 
     @Column(name = "IN_TREE_ID", nullable = false)
     private long inTreeId;
+
+    @OneToOne(mappedBy = "nodeId", optional = true)
+    private Root root;
+
+    @OneToOne(mappedBy = "node", optional = true)
+    private POID poid;
 }

@@ -17,11 +17,11 @@ public class Root {
     @Id
     private long nodeId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "NODE_ID", referencedColumnName = "NODE_ID")
     private Node node;
 
-    @Column(name = "timestamp")
+    @Column(name = "TIMESTAMP")
     private int timestamp;
 }

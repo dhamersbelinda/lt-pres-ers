@@ -618,11 +618,11 @@ databaseChangeLog:
                   type: varchar(2048)
                   constraints:
                     nullable: true
-              - column:
-                  name: PO_ID
-                  type: BIGINT
-                  constraints:
-                    nullable: true
+#              - column:
+#                  name: PO_ID
+#                  type: BIGINT
+#                  constraints:
+#                    nullable: true
 
   - changeSet:
       id: 27
@@ -673,7 +673,7 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PO_ID
-            baseTableName: digestlist
+            baseTableName: POID
             constraintName: FK_DIGESTLIST_PO
             deferrable: false
             initiallyDeferred: false
@@ -896,14 +896,12 @@ databaseChangeLog:
       id: 39
       author: sasha
       changes:
-        - addUnqiueConstraint:
+        - addUniqueConstraint:
             columnNames: TREE_ID, IN_TREE_ID
             tableName: NODES
             constraintName: UQ_TREE_ID__IN_TREE_ID
             deferrable: false
             initiallyDeferred: false
-            referencedColumnNames: NODE_ID
-            referencedTableName: nodes
             validate: true
 
   - changeSet:
@@ -911,7 +909,7 @@ databaseChangeLog:
       author: sasha
       changes:
         - createTable:
-            tableName: temporary_records
+            tableName: TEMPORARY_RECORDS
             columns:
               - column:
                   name: POID
@@ -952,7 +950,7 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: POID
-            baseTableName: temporary_records
+            baseTableName: TEMPORARY_RECORDS
             constraintName: FK_POID
             deferrable: false
             initiallyDeferred: false
@@ -961,30 +959,95 @@ databaseChangeLog:
             referencedColumnNames: POID
             referencedTableName: poids
             validate: true
+
   - changeSet:
       id: 42
       author: sasha
       changes:
         - createTable:
-            tableName: shedlock
+            tableName: SHEDLOCK
             columns:
               - column:
-                  name: name
+                  name: NAME
                   type: VARCHAR(64)
                   constraints:
                     primaryKey: true
               - column:
-                  name: lock_until
+                  name: LOCK_UNTIL
                   type: TIMESTAMP(3)
                   constraints:
                     nullable: true
               - column:
-                  name: locked_at
+                  name: LOCKED_AT
                   type: TIMESTAMP(3)
                   constraints:
                     nullable: true
               - column:
-                  name: locked_by
+                  name: LOCKED_BY
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 43
+      author: sasha
+      changes:
+        - createTable:
+            tableName: ROOT
+            columns:
+              - column:
+                  name: NODE_ID
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: TIMESTAMP
+                  type: INT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 44
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: NODE_ID
+            baseTableName: ROOT
+            constraintName: FK_NODE_ID_ROOT
+            deferrable: true
+            initiallyDeferred: true
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
+            validate: true
+
+  - changeSet:
+      id: 45
+      author: sasha
+      changes:
+        - createTable:
+            tableName: TREE_ID
+            columns:
+              - column:
+                  name: TREE_ID
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+
+  - changeSet:
+      id: 46
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: TREE_ID
+            baseTableName: NODES
+            constraintName: FK_TREE_ID_NODES
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: TREE_ID
+            referencedTableName: TREE_ID
+            validate: true
+

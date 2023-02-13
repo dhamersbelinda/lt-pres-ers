@@ -1,9 +1,12 @@
 package be.uclouvain.lt.pres.ers.core.scheduler;
 
 import be.uclouvain.lt.pres.ers.core.persistence.model.*;
+import be.uclouvain.lt.pres.ers.core.persistence.repository.RootRepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.TemporaryRepository;
 import lombok.AllArgsConstructor;
 import net.javacrumbs.shedlock.core.SchedulerLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +19,12 @@ import java.util.List;
 @AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services ("necessary" to have the repo)
 public class BuildTreeTask {
 
+    private final Logger logger = LoggerFactory.getLogger(BuildTreeTask.class);
+
     private final static int BRANCHING_FACTOR = 2;
 
     private final TemporaryRepository temporaryRepository;
+    private final RootRepository rootRepository;
 
 //    @Scheduled(cron = "* 59 23 * * ?") // TODO : this should be every day at midnight
 //    @Scheduled(cron = "0 0 0 1/1 * ?") // TODO : this should be every day at midnight (fancy)
@@ -26,9 +32,14 @@ public class BuildTreeTask {
     @SchedulerLock(name = "TaskScheduler_scheduledTask",
             lockAtLeastForString = "PT5s", lockAtMostForString = "PT25s") // TODO find proper duration
     public void scheduledTask() {
-        System.out.println("Done at " + OffsetDateTime.now());
+        OffsetDateTime start = OffsetDateTime.now();
 
         List<TemporaryRecord> temporaryRecords = temporaryRepository.findAllBy();
+
+        if(temporaryRecords.isEmpty()) {
+            logger.info("No temporary records to process this time (" + start + ").");
+            return;
+        }
 
         //make a list of HashTreeBases
 

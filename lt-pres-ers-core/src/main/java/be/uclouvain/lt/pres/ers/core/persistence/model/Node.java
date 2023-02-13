@@ -27,7 +27,7 @@ public class Node {
     @JoinColumn(name = "PARENT_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_PARENT_ID"))
     private Node parent;
 
-    @OneToMany(mappedBy="parent", fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Node> children;
 
     @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
@@ -35,13 +35,13 @@ public class Node {
     private Node neighbour;
 
     @JoinColumn(name = "TREE_ID", referencedColumnName = "TREE_ID", foreignKey = @ForeignKey(name = "FK_TREE_ID"))
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private TreeID treeId;
 
     @Column(name = "IN_TREE_ID", nullable = false)
     private long inTreeId;
 
-    @OneToOne(mappedBy = "nodeId", optional = true)
+    @OneToOne(mappedBy = "node", optional = true)
     private Root root;
 
     @OneToOne(mappedBy = "node", optional = true)

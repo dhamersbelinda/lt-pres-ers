@@ -618,11 +618,11 @@ databaseChangeLog:
                   type: varchar(2048)
                   constraints:
                     nullable: true
-#              - column:
-#                  name: PO_ID
-#                  type: BIGINT
-#                  constraints:
-#                    nullable: true
+              - column:
+                  name: PO_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
 
   - changeSet:
       id: 27
@@ -673,7 +673,7 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PO_ID
-            baseTableName: POID
+            baseTableName: digestlist
             constraintName: FK_DIGESTLIST_PO
             deferrable: false
             initiallyDeferred: false

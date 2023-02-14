@@ -1032,8 +1032,10 @@ databaseChangeLog:
               - column:
                   name: TREE_ID
                   type: BIGINT
+                  autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
 
   - changeSet:
       id: 46

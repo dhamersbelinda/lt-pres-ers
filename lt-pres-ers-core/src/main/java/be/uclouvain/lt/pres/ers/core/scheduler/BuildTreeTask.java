@@ -145,8 +145,10 @@ public class BuildTreeTask {
             root.setNode(rootNode); // necessary ? useful ? TODO : EXPERIMENT
             root.setTimestamp(timestamp);
             rootNode.setRoot(root);
-
+            logger.info("Built a tree.");
+            System.out.println(root);
             // TODO : insert rootNode, check cascade types !
+            rootRepository.save(root);
         }
 
 

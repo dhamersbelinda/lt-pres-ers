@@ -14,13 +14,14 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class Node {
     @Id
     @Column(name = "NODE_ID")
     @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ToString.Include
     private long nodeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,22 +29,31 @@ public class Node {
     private Node parent;
 
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Include
     private Set<Node> children;
 
     @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
     @OneToOne(fetch = FetchType.LAZY) // TODO : Change to support more than one neighbour ?
     private Node neighbour;
 
-    @JoinColumn(name = "TREE_ID", referencedColumnName = "TREE_ID", foreignKey = @ForeignKey(name = "FK_TREE_ID"))
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "TREE_ID", referencedColumnName = "TREE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TREE_ID"))
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Include
     private TreeID treeId;
 
     @Column(name = "IN_TREE_ID", nullable = false)
+    @ToString.Include
     private long inTreeId;
 
     @OneToOne(mappedBy = "node", optional = true)
     private Root root;
 
-    @OneToOne(mappedBy = "node", optional = true)
+    @OneToOne(mappedBy = "node", optional = true, cascade = CascadeType.ALL)
+    @Setter(AccessLevel.NONE)
     private POID poid;
+
+    public void setPoid(POID poid) {
+        this.poid = poid;
+        poid.setNode(this);
+    }
 }

@@ -3,6 +3,7 @@ package be.uclouvain.lt.pres.ers.core.persistence.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 @Setter
 @ToString
 @NoArgsConstructor
-public class Digest {
+public class Digest implements Serializable {
 
     @Id
     @Column(name = "ID")

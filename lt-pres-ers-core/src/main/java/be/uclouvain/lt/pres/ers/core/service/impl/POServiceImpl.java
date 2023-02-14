@@ -51,7 +51,7 @@ public class POServiceImpl implements POService {
         Profile profile = this.profileRepository.findByProfileIdentifier(request.getProfile().getProfileIdentifier())
                 .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
         request.setProfile(profile);
-        POID req = this.poidRepository.save(request);
+        POID req = this.poidRepository.save(request); // TODO : handle in case of primary key conflict for POID (regenerate and retry)
         toReturn.set(req.getId().toString());
 
         //add received POID to temp table

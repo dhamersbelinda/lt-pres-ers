@@ -11,15 +11,17 @@ import java.util.UUID;
     attributeNodes = {
         @NamedAttributeNode(value = "poid"),
         @NamedAttributeNode(value = "digNum"),
-        @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph"),
+//        @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph"),
+        @NamedAttributeNode(value = "digestList"),
         @NamedAttributeNode(value ="digest"),
         @NamedAttributeNode(value = "clientId")
-    },
-    subgraphs = {
-        @NamedSubgraph(name = "digestList-subgraph", attributeNodes = {
-                @NamedAttributeNode(value = "digestMethod")
-        })
     }
+//    ,
+//    subgraphs = {
+//        @NamedSubgraph(name = "digestList-subgraph", attributeNodes = {
+//                @NamedAttributeNode(value = "digestMethod")
+//        })
+//    }
 
 )
 
@@ -32,7 +34,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TemporaryRecord {
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "POID", referencedColumnName = "POID", nullable = false, foreignKey = @ForeignKey(name = "FK_POID"))
 //    @JoinColumns({
 //            @JoinColumn(name = "POID", referencedColumnName = "POID", nullable = false, foreignKey = @ForeignKey(name = "FK_POID")),
@@ -44,13 +46,19 @@ public class TemporaryRecord {
     @Column(name = "DIG_NUM")
     private Integer digNum;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DIG_METHOD", nullable = false, referencedColumnName = "DIGEST_METHOD")
-    private DigestList digestList;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "DIG_METHOD", nullable = false, referencedColumnName = "DIGEST_METHOD")
+//    private DigestList digestList;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "VALUE", nullable = false, referencedColumnName = "DIGEST_VALUE")
-    private Digest digest;
+    @Column(name = "DIG_METHOD", nullable = false)
+    private URI digestList;
+
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "VALUE", nullable = false, referencedColumnName = "DIGEST_VALUE")
+//    private Digest digest;
+
+    @Column(name = "VALUE")
+    private String digest;
 
     //TODO make foreign key out of this
     @Column(name = "CLIENT_ID", nullable = false)

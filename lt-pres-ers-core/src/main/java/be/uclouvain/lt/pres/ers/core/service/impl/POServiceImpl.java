@@ -63,8 +63,10 @@ public class POServiceImpl implements POService {
             TemporaryRecord temp = new TemporaryRecord();
             temp.setPoid(req);
             temp.setDigNum(index);
-            temp.setDigestList(req.getPo().getDigestList());
-            temp.setDigest(digest);
+//            temp.setDigestList(req.getPo().getDigestList());
+            temp.setDigestList(req.getPo().getDigestList().getDigestMethod());
+//            temp.setDigest(digest);
+            temp.setDigest(digest.getDigest());
             temp.setClientId(req.getClientId());
             this.temporaryRepository.save(temp);
         });

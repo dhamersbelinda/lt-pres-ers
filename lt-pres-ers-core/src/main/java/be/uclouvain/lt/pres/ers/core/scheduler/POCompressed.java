@@ -15,6 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class POCompressed {
     private POID poid;
-    private List<Digest> digests;
+    private List<String> digests;
     private List<Integer> digNums;
 }

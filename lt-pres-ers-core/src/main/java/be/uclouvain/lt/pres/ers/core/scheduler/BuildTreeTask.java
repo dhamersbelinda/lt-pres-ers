@@ -49,7 +49,8 @@ public class BuildTreeTask {
                 int comp = Integer.compare(o1.getClientId(), o2.getClientId());
                 //separate by clients
                 if (comp == 0) {
-                    int comp1 = o1.getDigestList().getDigestMethod().compareTo(o2.getDigestList().getDigestMethod());
+//                    int comp1 = o1.getDigestList().getDigestMethod().compareTo(o2.getDigestList().getDigestMethod());
+                    int comp1 = o1.getDigestList().compareTo(o2.getDigestList());
                     if (comp1 == 0) {
                         //sort by POID
                         int comp2 = o1.getPoid().getId().compareTo(o2.getPoid().getId());
@@ -71,7 +72,8 @@ public class BuildTreeTask {
         List<HashTreeBase> hashTreeBaseList = new ArrayList<>();
 
         int prevClientId = temporaryRecords.get(0).getClientId();
-        URI prevDigestMethod = temporaryRecords.get(0).getDigestList().getDigestMethod();
+//        URI prevDigestMethod = temporaryRecords.get(0).getDigestList().getDigestMethod();
+        URI prevDigestMethod = temporaryRecords.get(0).getDigestList();
         int index = 1;
         HashTreeBase htb = new HashTreeBase();
         htb.setClientId(prevClientId);
@@ -80,14 +82,15 @@ public class BuildTreeTask {
         POCompressed poCompressed = new POCompressed();
         POID prevPoid = temporaryRecords.get(0).getPoid();
         poCompressed.setPoid(prevPoid);
-        List<Digest> digests = new ArrayList<>();
+        List<String> digests = new ArrayList<>();
         digests.add(temporaryRecords.get(0).getDigest());
         List<Integer> digNums = new ArrayList<>();
         digNums.add(temporaryRecords.get(0).getDigNum()); //TODO check how we handle this order
         while (index < temporaryRecords.size()) {
             TemporaryRecord curr = temporaryRecords.get(index);
             int currClientId = curr.getClientId();
-            URI currDigestMethod = curr.getDigestList().getDigestMethod();
+//            URI currDigestMethod = curr.getDigestList().getDigestMethod();
+            URI currDigestMethod = curr.getDigestList();
             //continue checking for POID
 
             if (currClientId != prevClientId || !currDigestMethod.equals(prevDigestMethod)) {

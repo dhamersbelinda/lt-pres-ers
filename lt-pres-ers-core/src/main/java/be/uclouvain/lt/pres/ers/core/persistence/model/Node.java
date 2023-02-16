@@ -24,7 +24,7 @@ public class Node {
     @ToString.Include
     private long nodeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "PARENT_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_PARENT_ID"))
     private Node parent;
 
@@ -33,7 +33,7 @@ public class Node {
     private Set<Node> children;
 
     @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
-    @OneToOne(fetch = FetchType.LAZY) // TODO : Change to support more than one neighbour ?
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // TODO : Change to support more than one neighbour ?
     private Node neighbour;
 
     @JoinColumn(name = "TREE_ID", referencedColumnName = "TREE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TREE_ID"))

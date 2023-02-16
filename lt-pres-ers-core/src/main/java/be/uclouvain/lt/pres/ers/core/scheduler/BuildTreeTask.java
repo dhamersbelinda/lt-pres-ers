@@ -209,8 +209,9 @@ public class BuildTreeTask {
         int nLeaves = input.getPoCompressedList().size();
         int depth = (int) Math.ceil(Math.log(nLeaves) / Math.log(BRANCHING_FACTOR)); // log_b (x) = ln(x)/ln(b)
         // int treeSize = (int) ((Math.pow(BRANCHING_FACTOR, depth+1) - 1)/((double) (BRANCHING_FACTOR - 1)));
-
-        Node[] buf = new Node[nLeaves % 2 == 0 ? nLeaves : nLeaves + 1];
+        int mod = nLeaves % BRANCHING_FACTOR;
+        int fullNum = mod == 0 ? nLeaves : nLeaves + BRANCHING_FACTOR - mod;
+        Node[] buf = new Node[fullNum];
         int d = 0;
         int firstLvlNodeNum = (int) Math.pow(2,depth);
         Node temp;
@@ -226,34 +227,34 @@ public class BuildTreeTask {
             d++;
         }
 
-
-
         //number of nodes on a level given depth (knowing previous number of nodes)
         //ceil_even(num_prev_level / 2)
 
-        int leapIndex = 0; //advance by 2
-        int insertIndex = 0;
-        int full_num = nLeaves % BRANCHING_FACTOR == 0 ? nLeaves : nLeaves + BRANCHING_FACTOR - (nLeaves % BRANCHING_FACTOR);
+        int leapIndex = 0;   // Advance by BRANCHING_FACTOR
+        int insertIndex = 0; // Advance of 1
+        int runnerIndex = 0; // Used to scan children
 
-        int runnerIndex = 0;
-        int real_num = nLeaves; //at current level
+        int realNum = nLeaves; //at current level
         // Loop on every 'floor' of the tree
         Node currentNode;
         Node parentNode;
-        Set<Node> children = new HashSet();
-        for (d = depth-1; d >= 0; d++) {
+        Set<Node> children = new HashSet<>();
+        for (d = depth-1; d >= 0; d--) {
             firstLvlNodeNum = (int) Math.pow(2,d);
             // reduce all nodes in the array to their parent
-            for (leapIndex = 0; leapIndex < full_num; leapIndex = leapIndex + BRANCHING_FACTOR) {
+            for (leapIndex = 0; leapIndex < fullNum; leapIndex = leapIndex + BRANCHING_FACTOR) {
                 int sum = 0; //placeholder for empty hash
                 //create parent Node
                 parentNode = new Node();
                 parentNode.setTreeId(treeID);
+                parentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
                 for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
                     //might go over the real number
-                    if (runnerIndex > real_num - 1) {
+                    if (runnerIndex > realNum - 1) {
                         //generate random hash (keep ref)
                         currentNode = new Node();
+                        currentNode.setTreeId(treeID);
+                        currentNode.setInTreeId(2L * firstLvlNodeNum + runnerIndex - 1); // 2* as currentNode is on the floor below !
                     } else {
                         currentNode = buf[runnerIndex];
                     }
@@ -269,7 +270,7 @@ public class BuildTreeTask {
            2        3   4 5   6
          */
 
-                    currentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
+//                    currentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
 
                     //supposing branching factor of 2
                     //leapIndex + BRANCHING_FACTOR-1 - (runnerIndex-leapIndex)
@@ -287,8 +288,10 @@ public class BuildTreeTask {
                 insertIndex++;
                 sum = 0;
             }
-            real_num = full_num / BRANCHING_FACTOR;
-            full_num = full_num % 2 == 0 ? full_num : full_num + 1;
+            realNum = fullNum / BRANCHING_FACTOR;
+            mod = realNum % BRANCHING_FACTOR;
+            fullNum = mod == 0 ? realNum : realNum + BRANCHING_FACTOR - mod ;
+//            fullNum = fullNum % 2 == 0 ? fullNum : fullNum + 1;
             insertIndex = 0;
         }
         /*

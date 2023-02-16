@@ -868,8 +868,8 @@ databaseChangeLog:
             baseColumnNames: PARENT_ID
             baseTableName: nodes
             constraintName: FK_PARENT_ID
-            deferrable: false
-            initiallyDeferred: false
+            deferrable: true
+            initiallyDeferred: true
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: NODE_ID
@@ -884,8 +884,8 @@ databaseChangeLog:
             baseColumnNames: NEIGHBOUR_ID
             baseTableName: nodes
             constraintName: FK_NEIGHBOUR_ID
-            deferrable: false
-            initiallyDeferred: false
+            deferrable: true
+            initiallyDeferred: true
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: NODE_ID
@@ -1014,8 +1014,8 @@ databaseChangeLog:
             baseColumnNames: NODE_ID
             baseTableName: ROOT
             constraintName: FK_NODE_ID_ROOT
-            deferrable: true
-            initiallyDeferred: true
+            deferrable: false
+            initiallyDeferred: false
             onDelete: CASCADE
             onUpdate: CASCADE
             referencedColumnNames: NODE_ID

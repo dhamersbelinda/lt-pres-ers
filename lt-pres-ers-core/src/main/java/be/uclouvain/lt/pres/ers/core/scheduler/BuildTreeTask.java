@@ -242,8 +242,18 @@ public class BuildTreeTask {
         Node parentNode;
         Set<Node> children = new HashSet<>();
         for (d = depth-1; d >= 0; d--) {
-            firstLvlNodeNum = (int) Math.pow(2,d);
-            // reduce all nodes in the array to their parent
+            firstLvlNodeNum = (int) Math.pow(2,d); // for parent's in_tree_id field
+            // First check if we have to add dummy nodes
+            if(realNum < fullNum){
+                for (int i = realNum; i < fullNum; i++) {
+                    currentNode = new Node();
+                    currentNode.setTreeId(treeID);
+                    currentNode.setInTreeId(2L * firstLvlNodeNum + i - 1); // 2* as currentNode is on the floor below !
+                    // TODO set dummy value here
+                    buf[i] = currentNode;
+                }
+            }
+            // Second reduce all nodes in the array to their parent
             for (leapIndex = 0; leapIndex < fullNum; leapIndex = leapIndex + BRANCHING_FACTOR) {
                 int sum = 0; //placeholder for empty hash
                 //create parent Node
@@ -253,14 +263,15 @@ public class BuildTreeTask {
                 children = new HashSet<>();
                 for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
                     //might go over the real number
-                    if (runnerIndex > realNum - 1) {
-                        //generate random hash (keep ref)
-                        currentNode = new Node();
-                        currentNode.setTreeId(treeID);
-                        currentNode.setInTreeId(2L * firstLvlNodeNum + runnerIndex - 1); // 2* as currentNode is on the floor below !
-                    } else {
-                        currentNode = buf[runnerIndex];
-                    }
+//                    if (runnerIndex > realNum - 1) {
+//                        //generate random hash (keep ref)
+//                        currentNode = new Node();
+//                        currentNode.setTreeId(treeID);
+//                        currentNode.setInTreeId(2L * firstLvlNodeNum + runnerIndex - 1); // 2* as currentNode is on the floor below !
+//                    } else {
+//                        currentNode = buf[runnerIndex];
+//                    }
+                    currentNode = buf[runnerIndex];
                     //set parent-child-neighbour relation
                     currentNode.setParent(parentNode);
                     children.add(currentNode);

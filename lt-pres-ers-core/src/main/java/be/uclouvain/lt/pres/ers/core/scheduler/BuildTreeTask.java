@@ -152,6 +152,8 @@ public class BuildTreeTask {
             System.out.println(root);
             // TODO : insert rootNode, check cascade types !
             rootRepository.save(root);
+            logger.info("Saved the tree.");
+            System.out.println(root);
         }
 
 
@@ -248,6 +250,7 @@ public class BuildTreeTask {
                 parentNode = new Node();
                 parentNode.setTreeId(treeID);
                 parentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
+                children = new HashSet<>();
                 for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
                     //might go over the real number
                     if (runnerIndex > realNum - 1) {
@@ -274,17 +277,18 @@ public class BuildTreeTask {
 
                     //supposing branching factor of 2
                     //leapIndex + BRANCHING_FACTOR-1 - (runnerIndex-leapIndex)
+                    // TODO : problem here, what if the 'next node' is null because not created yet ? (passing realnum) so create dummy nodes in advance !
                     currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + BRANCHING_FACTOR - 1]);
 
 
-                    sum = sum + 1; //placeholder op to concatenate hash
+                    sum = sum + 1; // TODO placeholder op to concatenate hash
                 }
 
-                //compute concatenated hash value, set value in parent node
+                // TODO compute concatenated hash value, set value in parent node
 
                 parentNode.setChildren(children);
                 //insert parent Node
-
+                buf[insertIndex] = parentNode;
                 insertIndex++;
                 sum = 0;
             }

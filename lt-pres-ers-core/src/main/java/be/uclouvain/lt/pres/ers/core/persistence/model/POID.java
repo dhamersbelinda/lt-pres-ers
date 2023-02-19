@@ -40,7 +40,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class POID {
     @Id
-    @Column(name = "POID")
+    @Column(name = "POID", nullable = false, updatable = false)
     @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(

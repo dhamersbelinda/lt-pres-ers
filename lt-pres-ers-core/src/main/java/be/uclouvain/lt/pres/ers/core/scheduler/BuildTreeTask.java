@@ -34,6 +34,15 @@ public class BuildTreeTask {
     public void scheduledTask() {
         OffsetDateTime start = OffsetDateTime.now();
 
+        /*
+            distinctTrees = SELECT DISTINCT client_id, dig_method FROM er_test_schema.temporary_records ORDER BY client_id, dig_method LIMIT XXXXX;
+            foreach(client c, dig_meth m in distinctTrees):
+                workingSet = SELECT * FROM er_test_schema.temporary_records WHERE client_id=c AND dig_meth=m   (no limit for simplicity, and it becomes 'heavy' after millions of entries only)
+                root = buildTree(workingSet)
+                root.setTimestamp(getTimestamp(root.getValue))
+                save(root)
+         */
+
         List<TemporaryRecord> temporaryRecords = temporaryRepository.findAllBy();
 
         if(temporaryRecords.isEmpty()) {
@@ -222,6 +231,7 @@ public class BuildTreeTask {
         for (POCompressed po:input.getPoCompressedList()) {
             temp = new Node();
             temp.setPoid(po.getPoid());
+            temp.setNodeValue(po.getDigests().get(0)); // TODO : append and hash the digests in a single node AND add children to this node ...
             // TODO : treeid : create table to generate those IDs on the DB side, before calling this function insert in table to generate id and add it to the HashTreeBase object
             temp.setTreeId(treeID);
             temp.setInTreeId(firstLvlNodeNum - 1 + d);
@@ -250,6 +260,7 @@ public class BuildTreeTask {
                     currentNode.setTreeId(treeID);
                     currentNode.setInTreeId(2L * firstLvlNodeNum + i - 1); // 2* as currentNode is on the floor below !
                     // TODO set dummy value here
+                    currentNode.setNodeValue("random");
                     buf[i] = currentNode;
                 }
             }
@@ -296,6 +307,7 @@ public class BuildTreeTask {
                 }
 
                 // TODO compute concatenated hash value, set value in parent node
+                parentNode.setNodeValue("parent");
 
                 parentNode.setChildren(children);
                 //insert parent Node

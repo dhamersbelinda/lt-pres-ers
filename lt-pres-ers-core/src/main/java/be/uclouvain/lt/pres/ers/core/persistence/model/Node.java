@@ -45,6 +45,10 @@ public class Node {
     @ToString.Include
     private long inTreeId;
 
+    @Column(name = "NODE_VALUE", nullable = false)
+    @ToString.Include
+    private String nodeValue;
+
     @OneToOne(mappedBy = "node", optional = true)
     private Root root;
 

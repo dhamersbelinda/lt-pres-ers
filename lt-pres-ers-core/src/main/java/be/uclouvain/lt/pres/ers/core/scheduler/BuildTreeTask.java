@@ -172,6 +172,7 @@ public class BuildTreeTask {
             temp = new Node();
             temp.setPoid(po.getPoid());
             temp.setNodeValue(po.getDigests().get(0)); // TODO : append and hash the digests in a single node AND add children to this node ...
+            // TODO : for roots : verify that all verification data is present and if not get it then canonicalize then hash the canonical binary (rfc 6283 4.2.1)
             temp.setTreeId(treeID);
             temp.setInTreeId(firstLvlNodeNum - 1 + d);
             buf[d] = temp;

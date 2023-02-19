@@ -859,6 +859,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: false
+              - column:
+                  name: NODE_VALUE
+                  type: VARCHAR(2048)
+                  constraints:
+                    nullable: false
+                    unique: false
 
   - changeSet:
       id: 37
@@ -1051,5 +1057,21 @@ databaseChangeLog:
             onUpdate: CASCADE
             referencedColumnNames: TREE_ID
             referencedTableName: TREE_ID
+            validate: true
+
+  - changeSet:
+      id: 47
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: NODE_ID
+            baseTableName: POIDS
+            constraintName: FK_NODE_ID_POIDS
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT   # Safe check for when we delete ?
+            onUpdate: CASCADE
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
             validate: true
 

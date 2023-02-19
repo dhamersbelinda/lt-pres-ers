@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.List;
 
 @Component
-@AllArgsConstructor //TODO is this annotation here correct ? copied by imitation of services ("necessary" to have the repo)
+@AllArgsConstructor
 public class BuildTreeTask {
 
     private final Logger logger = LoggerFactory.getLogger(BuildTreeTask.class);
@@ -26,8 +26,8 @@ public class BuildTreeTask {
     private final TemporaryRepository temporaryRepository;
     private final RootRepository rootRepository;
 
-//    @Scheduled(cron = "* 59 23 * * ?") // TODO : this should be every day at midnight
-//    @Scheduled(cron = "0 0 0 1/1 * ?") // TODO : this should be every day at midnight (fancy)
+//    @Scheduled(cron = "* 59 23 * * ?") //  this should be every day at midnight
+//    @Scheduled(cron = "0 0 0 1/1 * ?") //  this should be every day at midnight (fancy)
     @Scheduled(cron = "0 * * * * ?") // TODO : every minute at 0 sec for development purpose
     @SchedulerLock(name = "TaskScheduler_scheduledTask",
             lockAtLeastForString = "PT5s", lockAtMostForString = "PT25s") // TODO find proper duration
@@ -43,6 +43,7 @@ public class BuildTreeTask {
                 save(root)
          */
 
+        // TODO : support root nodes
         List<TemporaryRecord> temporaryRecords = temporaryRepository.findAllBy();
 
         if(temporaryRecords.isEmpty()) {
@@ -51,32 +52,6 @@ public class BuildTreeTask {
         }
 
         //make a list of HashTreeBases
-
-        temporaryRecords.sort(new Comparator<TemporaryRecord>() {
-            @Override
-            public int compare(TemporaryRecord o1, TemporaryRecord o2) {
-                int comp = Integer.compare(o1.getClientId(), o2.getClientId());
-                //separate by clients
-                if (comp == 0) {
-//                    int comp1 = o1.getDigestList().getDigestMethod().compareTo(o2.getDigestList().getDigestMethod());
-                    int comp1 = o1.getDigestList().compareTo(o2.getDigestList());
-                    if (comp1 == 0) {
-                        //sort by POID
-                        int comp2 = o1.getPoid().getId().compareTo(o2.getPoid().getId());
-                        if (comp2 == 0) {
-                            //sort by digest value
-                            //compare by binary form (how to obtain ?)
-                            int comp3 = 0;
-                            //TODO complete here, sort by binary value
-                        }
-                        return comp2;
-                    }
-                    return comp1;
-                }
-                return comp;
-            }
-        });
-
         //collect all bases for tree construction
         List<HashTreeBase> hashTreeBaseList = new ArrayList<>();
 
@@ -94,7 +69,7 @@ public class BuildTreeTask {
         List<String> digests = new ArrayList<>();
         digests.add(temporaryRecords.get(0).getDigest());
         List<Integer> digNums = new ArrayList<>();
-        digNums.add(temporaryRecords.get(0).getDigNum()); //TODO check how we handle this order
+        digNums.add(temporaryRecords.get(0).getDigNum()); //TODO check how we handle this order (on insertion set binary ascending)
         while (index < temporaryRecords.size()) {
             TemporaryRecord curr = temporaryRecords.get(index);
             int currClientId = curr.getClientId();
@@ -154,62 +129,27 @@ public class BuildTreeTask {
             int timestamp = 2;
 
             Root root = new Root();
-            root.setNode(rootNode); // necessary ? useful ? TODO : EXPERIMENT
+            root.setNode(rootNode);
             root.setTimestamp(timestamp);
             rootNode.setRoot(root);
             logger.info("Built a tree.");
             System.out.println(root);
-            // TODO : insert rootNode, check cascade types !
+
             rootRepository.save(root);
             logger.info("Saved the tree.");
             System.out.println(root);
+            // TODO : delete from temporary  table
         }
 
 
-        //BIG TODO
-        //concatenation : which canonicalization ?
+        // BIG TODO
         // find good hash method
-        // impose digestMethod on client ?
         // some attributes (in the classes before construction of the tree) can be removed (or added)
-
-        // building the tree : array layout, array size depending on nbr of leaves (trimmed)
-        /*
-            List<TemporaryRecords> toStore; => what we receive
-            int branchingFactor = 2;  => parameter, number of childs of each node, must be >=2
-
-            toStore.sort(); => sort in a way if we have to (binary ascending would be great)
-            int nLeaves = toStore.length();
-            int depth = Math.ceil(Math.log(branchingFactor ,nLeaves));    // root at depth 0
-            int treeSize = (branchingFactor ^ (depth+1)   - 1)/(branchingFactor - 1)     // https://math.stackexchange.com/questions/664608/number-of-nodes-in-binary-tree-given-number-of-leaves#:~:text=The%20number%20of%20nodes%20would,the%20number%20of%20leaf%20nodes.
-            TreeNode[] tree = new TreeNode[treeSize] => cannot trim the array's size here ... but will be trimmed in DB storage ! idx 0 = root
-            // index of 'first' node at depth d : branchingFactor^d  - 1
-            int i = 0, d = 0, g = 0;
-            // add all leaves
-            foreach(TemporaryRecord leaf:toStore) {
-                tree[branchingFactor^depth +i-2] = leaf;
-                i++;
-            }
-            int nNodesLayer;
-            String toConcat; => or byte array ? idk yet how we store hash values
-            for(d=depth-1 ; d >= 0 ; d--) {
-                // per layer
-                nNodesLayer = Math.pow(branchingFactor,d);
-                for(i=0 ; i < nNodesLayer ; i++) { // programmed explicitly : foreach parent { foreach of its child {concatenate value}}, probably better to do it like forall nodes in the child layer
-                    for(g=0 ; g < branchingFactor ; g++){
-                        toConcat.append(tree[(branchingFactor^(d+1)) + i*branchingFactor + g].getDigest());
-                    }
-                    tree[(branchingFactor^(d)) + i] = hash(toConcat);
-                    toConcat = "";
-                }
-            }
-         */
-
     }
-    // TODO : support root nodes
+
     private static Node buildTree(HashTreeBase input) {
 
-        // InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
-        /*
+        /*  InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
            0             0
                        /   \
            1          1     2
@@ -232,25 +172,21 @@ public class BuildTreeTask {
             temp = new Node();
             temp.setPoid(po.getPoid());
             temp.setNodeValue(po.getDigests().get(0)); // TODO : append and hash the digests in a single node AND add children to this node ...
-            // TODO : treeid : create table to generate those IDs on the DB side, before calling this function insert in table to generate id and add it to the HashTreeBase object
             temp.setTreeId(treeID);
             temp.setInTreeId(firstLvlNodeNum - 1 + d);
             buf[d] = temp;
             d++;
         }
 
-        //number of nodes on a level given depth (knowing previous number of nodes)
-        //ceil_even(num_prev_level / 2)
-
         int leapIndex = 0;   // Advance by BRANCHING_FACTOR
         int insertIndex = 0; // Advance of 1
         int runnerIndex = 0; // Used to scan children
 
         int realNum = nLeaves; //at current level
-        // Loop on every 'floor' of the tree
         Node currentNode;
         Node parentNode;
         Set<Node> children = new HashSet<>();
+        // Loop on every 'floor' of the tree
         for (d = depth-1; d >= 0; d--) {
             firstLvlNodeNum = (int) Math.pow(2,d); // for parent's in_tree_id field
             // First check if we have to add dummy nodes
@@ -259,8 +195,8 @@ public class BuildTreeTask {
                     currentNode = new Node();
                     currentNode.setTreeId(treeID);
                     currentNode.setInTreeId(2L * firstLvlNodeNum + i - 1); // 2* as currentNode is on the floor below !
-                    // TODO set dummy value here
-                    currentNode.setNodeValue("random");
+                    // TODO set dummy value of proper length given hash algo
+                    currentNode.setNodeValue("dummy");
                     buf[i] = currentNode;
                 }
             }
@@ -273,33 +209,14 @@ public class BuildTreeTask {
                 parentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
                 children = new HashSet<>();
                 for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
-                    //might go over the real number
-//                    if (runnerIndex > realNum - 1) {
-//                        //generate random hash (keep ref)
-//                        currentNode = new Node();
-//                        currentNode.setTreeId(treeID);
-//                        currentNode.setInTreeId(2L * firstLvlNodeNum + runnerIndex - 1); // 2* as currentNode is on the floor below !
-//                    } else {
-//                        currentNode = buf[runnerIndex];
-//                    }
                     currentNode = buf[runnerIndex];
                     //set parent-child-neighbour relation
                     currentNode.setParent(parentNode);
                     children.add(currentNode);
-                    // InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
-        /*
-           0             0
-                       /   \
-           1          1     2
-                     / \   / \
-           2        3   4 5   6
-         */
-
-//                    currentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
 
                     //supposing branching factor of 2
                     //leapIndex + BRANCHING_FACTOR-1 - (runnerIndex-leapIndex)
-                    // TODO : problem here, what if the 'next node' is null because not created yet ? (passing realnum) so create dummy nodes in advance !
+                    // TODO : support more than one neighbour
                     currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + BRANCHING_FACTOR - 1]);
 
 
@@ -318,18 +235,8 @@ public class BuildTreeTask {
             realNum = fullNum / BRANCHING_FACTOR;
             mod = realNum % BRANCHING_FACTOR;
             fullNum = mod == 0 ? realNum : realNum + BRANCHING_FACTOR - mod ;
-//            fullNum = fullNum % 2 == 0 ? fullNum : fullNum + 1;
             insertIndex = 0;
         }
-        /*
-            [ x x x x x x
-              | |
-              &
-                  | |
-                &
-                     | |
-                  &
-         */
         return buf[0];
     }
 }

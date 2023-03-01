@@ -6,6 +6,7 @@ import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.mapper.PODtoMapperCore;
 import be.uclouvain.lt.pres.ers.core.mapper.POMapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.*;
+import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.POIDRepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.ProfileRepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.TemporaryRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
@@ -74,6 +76,8 @@ public class POServiceImpl implements POService {
         return toReturn.get();
     }
 
-
+    public List<EvidenceRecordDto> getERFromPOID(UUID poid) {
+        return poidRepository.getERPathFromPOID(poid);
+    }
 
 }

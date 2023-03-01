@@ -1,6 +1,9 @@
 package be.uclouvain.lt.pres.ers.server.delegates;
 
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
+import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
+import be.uclouvain.lt.pres.ers.core.scheduler.BuildTreeTask;
+import be.uclouvain.lt.pres.ers.core.service.POService;
 import be.uclouvain.lt.pres.ers.core.service.ProfileService;
 import be.uclouvain.lt.pres.ers.model.ProfileDto;
 import be.uclouvain.lt.pres.ers.model.ProfileStatus;
@@ -10,6 +13,8 @@ import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType.MajEnum;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -18,13 +23,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
-
-    private final ProfileService service;
+    private final Logger logger = LoggerFactory.getLogger(RetrievePOApiDelegate.class);
+    private final POService service;
 
     private final ProfileDtoMapper mapper;
 
@@ -48,7 +54,17 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             ID we receive from db (that we received from client in preservePO call)
             RelatedObjects we receive from db (that we received from client in preservePO call)
          */
+        UUID poid = UUID.fromString(request.getPoId());
+        List<EvidenceRecordDto> result = service.getERFromPOID(poid);
 
+        StringBuilder stringBuilder = new StringBuilder("ER from DB for "+ poid.toString() +", size = "+ result.size() +" raw :\n");
+        for (EvidenceRecordDto er:result) {
+            stringBuilder.append("\t");
+            stringBuilder.append(er);
+            stringBuilder.append("\n");
+        }
+//        logger.info(stringBuilder.toString());
+        System.out.print(stringBuilder.toString());
 
         return null;
     }

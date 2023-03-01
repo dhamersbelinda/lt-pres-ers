@@ -666,6 +666,21 @@ databaseChangeLog:
   #          referencedColumnNames: ID
   #          referencedTableName: digestlist
   #          validate: true
+  - changeSet:
+      id: 28
+      author: sasha
+      changes:
+        - createTable:
+            tableName: CLIENT
+            columns:
+              - column:
+                  name: CLIENT_ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_CLIENT
+                    nullable: false
 
   - changeSet:
       id: 29
@@ -718,7 +733,8 @@ databaseChangeLog:
                   nullable: true
             - column:
                 name: REQ_ID
-                type: VARCHAR(255)
+#                type: VARCHAR(255)
+                type: UUID
                 constraints:
                   nullable: false
       - dropColumn:
@@ -736,7 +752,9 @@ databaseChangeLog:
             columns:
               - column:
                   name: POID
-                  type: VARCHAR(255)
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+#                  type: VARCHAR(255)
                   #autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -919,7 +937,8 @@ databaseChangeLog:
             columns:
               - column:
                   name: POID
-                  type: VARCHAR(255)
+                  type: UUID
+#                  type: VARCHAR(255)
                   constraints:
                     primaryKey: true
                     primaryKeyName: PK_POID__DIG_NUM

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Service that allows to retrieve (active and inactive) profiles.
+ * Service that allows to insert Preservation Objects (POs) and retrieve the evidence of a PO.
  */
 
 public interface POService {
@@ -27,7 +27,7 @@ public interface POService {
     //TODO String returned ?
     // TODO PO or Dto as arg ?
     //TODO implem exceptions
-    String insertPOs(@NotNull PreservePORequestDto requestDto) throws POInsertionException;
+    UUID insertPOs(@NotNull PreservePORequestDto requestDto) throws POInsertionException;
 
     public List<EvidenceRecordDto> getERFromPOID(UUID poid);
 

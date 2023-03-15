@@ -3,7 +3,7 @@ package be.uclouvain.lt.pres.ers.core.persistence.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "Nodes",
@@ -30,7 +30,7 @@ public class Node {
 
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Include
-    private Set<Node> children;
+    private List<Node> children;
 
     @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // TODO : Change to support more than one neighbour ?
@@ -47,17 +47,51 @@ public class Node {
 
     @Column(name = "NODE_VALUE", nullable = false)
     @ToString.Include
-    private String nodeValue;
+    private byte[] nodeValue;
 
-    @OneToOne(mappedBy = "node", optional = true)
+    @OneToOne(mappedBy = "node", optional = true, cascade = CascadeType.ALL)
+    @Setter(AccessLevel.NONE)
     private Root root;
 
     @OneToOne(mappedBy = "node", optional = true, cascade = CascadeType.ALL)
     @Setter(AccessLevel.NONE)
     private POID poid;
 
+    public void setRoot(Root root) {
+//        if(root != null && this.poid != null) {
+//            throw new IllegalArgumentException("Cannot set node's root value as its POID field is not null.");
+//        }
+//        root.getNode().setParent(this);
+//        root.setIsExtended(true);
+        this.root = root;
+    }
+
     public void setPoid(POID poid) {
+//        if(poid != null && this.root != null) {
+//            throw new IllegalArgumentException("Cannot set node's poid value as its root field is not null.");
+//        }
         this.poid = poid;
         poid.setNode(this);
+    }
+
+    // TODO : is it possible to do this ?
+//    @OneToOne(mappedBy = "node", optional = true, cascade = CascadeType.ALL)
+//    @Setter(AccessLevel.NONE)
+//    private Treeable rootOrPOID;
+
+//    public Treeable getTreeable() {
+//
+//    }
+
+    // When creating leaves
+    public void setLeafLink(Treeable t){
+        if(t.isRoot()) {
+            Root r = (Root) t;
+            r.getNode().setParent(this);
+            r.setIsExtended(true);
+//            this.setRoot((Root) t);
+        } else {
+            this.setPoid((POID) t);
+        }
     }
 }

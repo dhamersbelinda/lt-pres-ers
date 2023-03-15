@@ -78,6 +78,11 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.8.2</version>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-enumerations</artifactId>
+            <version>5.12.RC1</version>
+        </dependency>
     </dependencies>
 
     <build>

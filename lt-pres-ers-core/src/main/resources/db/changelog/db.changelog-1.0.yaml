@@ -1,5 +1,4 @@
 databaseChangeLog:
-
   - changeSet:
       id: 1
       author: nowina
@@ -615,7 +614,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: DIGEST_METHOD
-                  type: varchar(2048)
+                  type: VARCHAR(512)
                   constraints:
                     nullable: true
               - column:
@@ -641,7 +640,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: DIGEST_VALUE
-                  type: varchar(2048)
+                  type: BYTEA   # TODO : adapt this with a variable depending on DBMS, here only for postgresql ...
                   constraints:
                     nullable: false
               - column:
@@ -650,22 +649,6 @@ databaseChangeLog:
                   constraints:
                     nullable: true
 
-
-  #- changeSet:
-  #    id: 28
-  #    author: belinda
-  #    changes:
-  #      - addForeignKeyConstraint:
-  #          baseColumnNames: DIGESTLIST_ID
-  #          baseTableName: po
-  #          constraintName: FK_PO_DIGESTLIST
-  #          deferrable: false
-  #          initiallyDeferred: false
-  #          onDelete: RESTRICT
-  #          onUpdate: RESTRICT
-  #          referencedColumnNames: ID
-  #          referencedTableName: digestlist
-  #          validate: true
   - changeSet:
       id: 28
       author: sasha
@@ -768,7 +751,19 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: CLIENT_ID
-                  type: integer
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: DIGEST_METHOD  # The digest method the POID's tree is going to be built with
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: DIGEST_VALUE  # TODO : keep or join with digestList then digest ? And bytea only for postgres
+                  type: BYTEA
                   constraints:
                     nullable: false
                     unique: false
@@ -777,6 +772,12 @@ databaseChangeLog:
                   type: BIGINT
                   constraints:
                     nullable: true
+              - column:
+                  name: CREATION_DATE
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
 
   - changeSet:
       id: 33
@@ -879,7 +880,7 @@ databaseChangeLog:
                     unique: false
               - column:
                   name: NODE_VALUE
-                  type: VARCHAR(2048)
+                  type: BYTEA    # TODO : only for postgres, check other similar todos
                   constraints:
                     nullable: false
                     unique: false
@@ -958,13 +959,13 @@ databaseChangeLog:
                     unique: false
               - column:
                   name: VALUE
-                  type: VARCHAR(2048)
+                  type: BYTEA    # TODO : only for postgres, check other todo
                   constraints:
                     nullable: false
                     unique: false
               - column:
                  name: CLIENT_ID
-                 type: integer
+                 type: BIGINT
                  constraints:
                    nullable: false
                    unique: false
@@ -1026,8 +1027,29 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: TIMESTAMP
-                  type: INT
+                  name: CERT_VALID_UNTIL
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: IS_EXTENDED
+                  type: BOOLEAN
+                  defaultValueBoolean: false # TODO do we keep it ?
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CLIENT_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DIGEST_METHOD
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ROOT_TIMESTAMP
+                  type: BYTEA
                   constraints:
                     nullable: false
 
@@ -1094,3 +1116,46 @@ databaseChangeLog:
             referencedTableName: NODES
             validate: true
 
+  - changeSet:
+      id: 48
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: CLIENT_ID
+            baseTableName: ROOT
+            constraintName: FK_CLIENT_ID_ROOT
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: CLIENT_ID
+            referencedTableName: CLIENT
+            validate: true
+
+  - changeSet:
+      id: 49
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: CLIENT_ID
+            baseTableName: POIDS
+            constraintName: FK_CLIENT_ID_POIDS
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: CLIENT_ID
+            referencedTableName: CLIENT
+            validate: true
+
+  # TODO : This is a dummy client, remove it when the authentication/identification has been done
+  - changeSet:
+      id: 50
+      author: sasha
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: CLIENT_ID
+                  value: "0"
+            tableName: CLIENT

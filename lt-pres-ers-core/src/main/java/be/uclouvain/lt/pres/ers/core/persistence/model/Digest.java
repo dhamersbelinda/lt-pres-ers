@@ -22,7 +22,7 @@ public class Digest implements Serializable {
     private Long id;
 
     @Column(name = "DIGEST_VALUE", nullable = false, length = 128)
-    private String digest;
+    private byte[] digest;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) //what about this ???
     @JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")

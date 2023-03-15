@@ -30,7 +30,7 @@ public class PO {
     //the poid needs to be returned as a string at the end, so it needs to be converted on receipt
 
     //TODO has to be non-null in our implem
-    @Column(name = "FORMAT_IDENTIFIER", nullable = true, length = 2048)
+    @Column(name = "FORMAT_IDENTIFIER", nullable = false, length = 2048)
     private URI formatId;
     //TODO does this have to be joined with the Format type ?
 
@@ -58,7 +58,9 @@ public class PO {
     @JoinColumn(name = "REQ_ID", nullable = false, referencedColumnName = "POID")
     //how to make po_id the same value as id of po ?
     //@MapsId("id")
-    private POID req;
+    private POID poid;
+
+
 
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL, optional = false)

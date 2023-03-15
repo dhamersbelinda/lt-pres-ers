@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -45,16 +46,17 @@ public class POServiceImpl implements POService {
     }
 
     @Override
-    public String insertPOs(PreservePORequestDto requestDto) throws POInsertionException {
+    public UUID insertPOs(PreservePORequestDto requestDto) throws POInsertionException {
         //map into a request object + save it
-        AtomicReference<String> toReturn = new AtomicReference<>();
+        AtomicReference<UUID> toReturn = new AtomicReference<>();
         POID request = this.dtoMapper.toPreservePORequest(requestDto);
-        // TODO this is a duplicated SELECT call with the check in server ...
+        // TODO this is a duplicated SELECT call with the check in server module ...
         Profile profile = this.profileRepository.findByProfileIdentifier(request.getProfile().getProfileIdentifier())
                 .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
         request.setProfile(profile);
+        request.setCreationDate(OffsetDateTime.now());
         POID req = this.poidRepository.save(request); // TODO : handle in case of primary key conflict for POID (regenerate and retry)
-        toReturn.set(req.getId().toString());
+        toReturn.set(req.getId());
 
         //add received POID to temp table
         //for each digest in each digestlist
@@ -66,10 +68,10 @@ public class POServiceImpl implements POService {
             temp.setPoid(req);
             temp.setDigNum(index);
 //            temp.setDigestList(req.getPo().getDigestList());
-            temp.setDigestList(req.getPo().getDigestList().getDigestMethod());
+            temp.setDigestMethod(req.getPo().getDigestList().getDigestMethod());
 //            temp.setDigest(digest);
             temp.setDigest(digest.getDigest());
-            temp.setClientId(req.getClientId());
+            temp.setClientId(req.getClientId().getClientId());
             this.temporaryRepository.save(temp);
         });
 

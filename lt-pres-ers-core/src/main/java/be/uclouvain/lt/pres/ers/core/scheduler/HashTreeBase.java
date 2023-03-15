@@ -3,10 +3,9 @@ package be.uclouvain.lt.pres.ers.core.scheduler;
 import be.uclouvain.lt.pres.ers.core.persistence.model.Digest;
 import be.uclouvain.lt.pres.ers.core.persistence.model.POID;
 import be.uclouvain.lt.pres.ers.core.persistence.model.TreeID;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import be.uclouvain.lt.pres.ers.core.persistence.model.Treeable;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import lombok.*;
 
 import javax.xml.crypto.dsig.DigestMethod;
 import java.net.URI;
@@ -18,9 +17,11 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class HashTreeBase {
     private TreeID treeID;
-    private Integer clientId;
-    private URI digestMethod; //has become superfluous now, or maybe not ? correct type ?
-    private List<POCompressed> poCompressedList;
+    private Long clientId;
+    private DigestAlgorithm digestMethod; //has become superfluous now, or maybe not ? correct type ?
+//    private List<POCompressed> poCompressedList;
+    private List<Treeable> leaves;
 }

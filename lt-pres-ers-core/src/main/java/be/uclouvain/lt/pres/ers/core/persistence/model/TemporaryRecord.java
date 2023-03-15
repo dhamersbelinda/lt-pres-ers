@@ -1,18 +1,16 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.net.URI;
-import java.util.UUID;
 
 @NamedEntityGraph(name = "tempRecord-entity-graph",
     attributeNodes = {
         @NamedAttributeNode(value = "poid"),
         @NamedAttributeNode(value = "digNum"),
 //        @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph"),
-        @NamedAttributeNode(value = "digestList"),
+        @NamedAttributeNode(value = "digestMethod"),
         @NamedAttributeNode(value ="digest"),
         @NamedAttributeNode(value = "clientId")
     }
@@ -51,18 +49,18 @@ public class TemporaryRecord {
 //    private DigestList digestList;
 
     @Column(name = "DIG_METHOD", nullable = false)
-    private URI digestList;
+    private URI digestMethod;
 
 //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "VALUE", nullable = false, referencedColumnName = "DIGEST_VALUE")
 //    private Digest digest;
 
     @Column(name = "VALUE")
-    private String digest;
+    private byte[] digest;
 
     //TODO make foreign key out of this
     @Column(name = "CLIENT_ID", nullable = false)
-    private Integer clientId;
+    private Long clientId;
 
 }
 

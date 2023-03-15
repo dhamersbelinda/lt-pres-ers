@@ -1,11 +1,13 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
+import be.uclouvain.lt.pres.ers.core.persistence.model.dto.TreeCategoryDto;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @NamedEntityGraph(name = "request-entity-graph", attributeNodes = {
@@ -80,13 +82,34 @@ import java.util.UUID;
                         @ColumnResult(name = "in_tree_num", type = Long.class),
                         @ColumnResult(name = "timestamp", type = String.class), // TODO : adapt for binary
                         @ColumnResult(name = "start", type = Boolean.class)}))
+@NamedNativeQuery(
+        name = "POID.getToPreserveCategoriesPOIDAndRoot",
+        query = """
+                    WITH
+                        poids1 AS (SELECT DISTINCT client_id, digest_method FROM (
+                                    ((SELECT poid, client_id FROM POIDs WHERE creation_date < :DATE_NOW) AS pds\s
+                                    JOIN
+                                    (SELECT id, req_id FROM PO) AS po ON pds.poid = po.req_id) AS pds_po
+                                    JOIN\s
+                                    (SELECT id, digest_method FROM digestlist) AS dg ON pds_po.id=dg.id) AS r),
+                        roots1 AS (SELECT DISTINCT client_id, digest_method FROM root WHERE :DATE_NOW <= cert_valid_until AND cert_valid_until <= :DATE_SHIFTED)\s
+                    SELECT * FROM (SELECT * FROM poids1 UNION DISTINCT (SELECT * FROM roots1)) AS r1;
+                    """,
+        resultSetMapping = "TreeCategoryDtoMapping"
+)
+@SqlResultSetMapping(name = "TreeCategoryDtoMapping",
+        classes = @ConstructorResult(
+                targetClass = TreeCategoryDto.class,
+                columns = {
+                        @ColumnResult(name = "client_id", type = Long.class),
+                        @ColumnResult(name = "digest_method", type = String.class)}))
 @Entity
 @Table(name = "POIDs")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class POID {
+public class POID implements Treeable{
     @Id
 //    @Column(name = "POID", nullable = false, updatable = false)
     @Setter(value = AccessLevel.PRIVATE) // Id is managed by DB
@@ -101,21 +124,41 @@ public class POID {
     private UUID id; //-> will become the POID
 
     //TODO faire gaffe que rien ne s'insère ici et que ça sert juste à avoir la FK
-    //@Transient
-    //@Detached
     @JoinColumn(name = "PROFILE_ID", nullable = false, referencedColumnName = "ID")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) //removed cascadetype , cascade = CascadeType.DETACH
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ToString.Exclude //removed cascadetype , cascade = CascadeType.DETACH
     private Profile profile;
 
-    @Column(name = "CLIENT_ID", nullable = false, length = 2048)
-    private Integer clientId;
+    @JoinColumn(name = "CLIENT_ID", referencedColumnName = "CLIENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_CLIENT_ID_POID"))
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Client clientId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL, optional = false, mappedBy = "req")
-    //@JoinColumn
+    @Column(name = "DIGEST_METHOD", nullable = false)
+    private String digestMethod;
+
+    @Column(name = "CREATION_DATE", nullable = false)
+    private OffsetDateTime creationDate;
+
+    @Column(name = "DIGEST_VALUE", nullable = false)
+    private byte[] digestValue;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL, optional = false, mappedBy = "poid")
+    @ToString.Exclude
     private PO po;
-
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "NODE_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "fk_node_id"))
+    @ToString.Exclude
     private Node node;
+
+    @Override
+    public boolean isRoot() {
+        return false;
+    }
+
+    @Override
+    public byte[] getHashValue() {
+        return this.digestValue;
+    }
 }

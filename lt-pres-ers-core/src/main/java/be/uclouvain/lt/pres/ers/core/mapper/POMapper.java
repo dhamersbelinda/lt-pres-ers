@@ -5,9 +5,12 @@ import be.uclouvain.lt.pres.ers.core.persistence.model.DigestList;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.utils.OidUtils;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,12 +30,24 @@ public interface POMapper {
     @Mapping(target = "digests", source = "digests") // from Set<Digest> to List<String>
     DigestListDto toDigestDto(DigestList digestList);
 
-    default List<String> fromDigestSetToStringList(Set<Digest> digestSet) {
-        List<String> digests = digestSet.stream().map((d) -> {
-            return d.getDigest();
-        }).collect(Collectors.toList());
-        return digests;
+    default DigestAlgorithm map(URI digestURI) {
+        return DigestAlgorithm.forOID(OidUtils.uidToOidString(digestURI));
     }
+
+    default List<byte[]> map(List<Digest> digests) {
+        List<byte[]> result = new ArrayList<>(digests.size());
+        for (Digest digest : digests) {
+            result.add(digest.getDigest());
+        }
+        return result;
+    }
+
+//    default List<String> fromDigestSetToStringList(Set<Digest> digestSet) {
+//        List<String> digests = digestSet.stream().map((d) -> {
+//            return d.getDigest();
+//        }).collect(Collectors.toList());
+//        return digests;
+//    }
     /*
     URI uid; -> URI uid
     String value; -> String value

@@ -5,8 +5,10 @@ import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.server.model.PresPOType;
 import be.uclouvain.lt.pres.ers.server.model.PresPOTypeBinaryData;
 import be.uclouvain.lt.pres.ers.server.model.PresPOTypeXmlData;
+import be.uclouvain.lt.pres.ers.model.deserializer.DigestListDeserializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
-import java.util.Objects;
 
 @Mapper
 public interface PresPOToPODtoMapper {
@@ -41,17 +42,18 @@ public interface PresPOToPODtoMapper {
         return presPOTypeXmlData.getB64Content();
     }
 
-    default String binaryOrXML(PresPOTypeBinaryData binary, PresPOTypeXmlData xml) throws IllegalArgumentException {
-        if(binary == null && xml == null) {
-            throw new IllegalArgumentException("No binary or xml data");
-        } else if(binary != null && xml != null) {
-            throw new IllegalArgumentException("Ambiguity : both binary and xml data");
-        } else if(binary != null){
-            return binary.getValue();
-        } else {
-            return xml.getB64Content();
-        }
-    }
+//    default String binaryOrXML(PresPOTypeBinaryData binary, PresPOTypeXmlData xml) throws IllegalArgumentException {
+//        if(binary == null && xml == null) {
+//            throw new IllegalArgumentException("No binary or xml data");
+//        } else if(binary != null && xml != null) {
+//            throw new IllegalArgumentException("Ambiguity : both binary and xml data");
+//        } else if(binary != null){
+//            return binary.getValue();
+//        } else {
+//            throw new IllegalArgumentException("XML data not supported, use binary.");
+////            return xml.getB64Content();
+//        }
+//    }
 
     //from String to DigestListDTO
     // TODO : Do we keep the logic here or do we add a POJO and handle the logic elsewhere ?
@@ -67,17 +69,18 @@ public interface PresPOToPODtoMapper {
         }
 
         if(presPOType.getXmlData() != null) {
+            throw new IllegalArgumentException("XML data not supported, use binary.");
             // verify PresPOTypeXmlData object
-            if(presPOType.getXmlData().getB64Content() == null) {
-                throw new IllegalArgumentException("Missing base64 content in XMLData.");
-            }
-            String b64Content = presPOType.getXmlData().getB64Content();
-            // Decode base 64
-            // TODO is XML data encoded in base 64 ? Here we consider that yes
-            byte[] decodedContent = Base64.getDecoder().decode(b64Content);
-            // parse XML
-            XmlMapper xmlMapper = new XmlMapper();
-            dld = xmlMapper.readValue(decodedContent, DigestListDto.class);
+//            if(presPOType.getXmlData().getB64Content() == null) {
+//                throw new IllegalArgumentException("Missing base64 content in XMLData.");
+//            }
+//            String b64Content = presPOType.getXmlData().getB64Content();
+//            // Decode base 64
+//            // TODO is XML data encoded in base 64 ? Here we consider that yes
+//            byte[] decodedContent = Base64.getDecoder().decode(b64Content);
+//            // parse XML
+//            XmlMapper xmlMapper = new XmlMapper();
+//            dld = xmlMapper.readValue(decodedContent, DigestListDto.class);
 
         } else {
             // parse JSON from binary
@@ -91,20 +94,24 @@ public interface PresPOToPODtoMapper {
                 byte[] decodedContent = Base64.getDecoder().decode(b64Content);
                 // parse JSON
                 JsonMapper jsonMapper = new JsonMapper();
-                jsonMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+//                jsonMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+//                SimpleModule module = new SimpleModule();
+//                module.addDeserializer(DigestListDto.class, new DigestListDeserializer());
+//                jsonMapper.registerModule(module);
+
                 dld = jsonMapper.readValue(decodedContent, DigestListDto.class);
             } catch(IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid base64 encoding.");
+                throw new IllegalArgumentException("Invalid base64 encoding. Error : " + e.getMessage());
             } catch(Exception e) {
-                throw new IllegalArgumentException("Invalid JSON syntax, do not forget the root braces, the top level element must be named 'pres-DigestListType'.");
+                throw new IllegalArgumentException("Invalid JSON syntax, do not forget the root braces, the top level element must be named 'pres-DigestListType'. Error : " + e.getMessage());
             }
         }
 
-        URI digAlg = dld.getDigestMethod();
+//        URI digAlg = dld.getDigestMethod();
         // TODO : verify more algos ! only SHA156 here ! RFC 3061
-        if(!Objects.equals(digAlg, DigestAlgEnum.SHA256.getUri())) {
-            throw new IllegalArgumentException("Invalid or unsupported digest algorithm : "+digAlg);
-        }
+//        if(!Objects.equals(digAlg, DigestAlgEnum.SHA256.getUri())) {
+//            throw new IllegalArgumentException("Invalid or unsupported digest algorithm : "+digAlg);
+//        }
         // TODO : Check digVal according to digAlg ?
 
         return dld;

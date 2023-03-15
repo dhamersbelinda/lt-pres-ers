@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.net.URI;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "DIGESTLIST")
@@ -25,7 +25,7 @@ public class DigestList implements Serializable {
     private URI digestMethod;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "digestList", cascade = CascadeType.ALL)
-    private Set<Digest> digests;
+    private List<Digest> digests;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false) //TODO set the optional here later (false if possible)
     //@OneToOne //check if this does what it should

@@ -1,44 +1,58 @@
 package be.uclouvain.lt.pres.ers.core.mapper;
 
 import be.uclouvain.lt.pres.ers.core.persistence.model.*;
+import be.uclouvain.lt.pres.ers.core.persistence.model.comparator.DigestComparator;
+import be.uclouvain.lt.pres.ers.core.persistence.repository.ClientRepository;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
 import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
+import be.uclouvain.lt.pres.ers.utils.ByteUtils;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.spi.DSSUtils;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(uses = ProfileDtoMapperCore.class)
-public interface PODtoMapperCore {
+@Mapper(componentModel = "spring",
+        uses = ProfileDtoMapperCore.class)
+public abstract class PODtoMapperCore {
     //ProfileRepository repository;
+    @Autowired
+    protected ClientRepository clientRepository;
 
     @Mapping(target = "profile", source = "profileDto")
     //TODO handle this a bit better someday hehe
     //hope this is the right getter
     @Mapping(target = "po", expression = "java(toPO(requestDto.getPoDtos().get(0)))")
+    @Mapping(target = "digestMethod", source = "digestMethod")
     @Mapping(target = "node", ignore = true) //TODO remove later
-    POID toPreservePORequest(PreservePORequestDto requestDto);
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "digestValue", ignore = true)
+    public abstract POID toPreservePORequest(PreservePORequestDto requestDto);
 
-    /*
-    default Profile toProfile(ProfileDto profileDto) {
-        URI id = profileDto.getProfileIdentifier();
-
+    Client map(long clientId) {
+        Optional<Client> c = clientRepository.findById(clientId);
+        if(c.isEmpty()){
+            throw new IllegalArgumentException("Unknown client : "+clientId);
+        }
+        return c.get();
     }
-     */
-
-
-
 
     @Mapping(target = "uid", source = "id")
-    @Mapping(target = "req", ignore = true)
-    PO toPO(PODto poDto);
+    @Mapping(target = "poid", ignore = true)
+    abstract PO toPO(PODto poDto);
 
-    default Set<RelatedObject> fromStringToRelObjSet(List<String> relatedObjects) {
+    Set<RelatedObject> fromStringToRelObjSet(List<String> relatedObjects) {
         if (relatedObjects == null) return null;
         return relatedObjects.stream().map((elem) -> {
             RelatedObject relObj = new RelatedObject();
@@ -51,25 +65,42 @@ public interface PODtoMapperCore {
     @Mapping(target = "digests", source = "digests") // from List<String> to Set<Digest>
     @Mapping(target = "po", ignore = true) //TODO check if this is really correct
     //don't want to set null
-    DigestList toDigestList(DigestListDto digestListDto);
+    abstract DigestList toDigestList(DigestListDto digestListDto);
 
-    default Set<Digest> fromDigestListToDigestSet(List<String> digestList) {
-        //TODO throu exception of dl not presetn
-        Set<Digest> set = digestList.stream().map((digest) -> {
-            Digest d = new Digest();
+    URI map(DigestAlgorithm value) throws URISyntaxException {
+        if(value == null) throw new IllegalArgumentException("Null digAlg");
+        return new URI(value.getOid());
+    }
+
+    List<Digest> map(List<byte[]> digests) {
+        List<Digest> result = new ArrayList<>(digests.size());
+        Digest d;
+        for (byte[] digest : digests) {
+            d = new Digest();
             d.setDigest(digest);
-            return d;
-        }).collect(Collectors.toSet());
-        return set;
+            result.add(d);
+        }
+        return result;
+    }
+
+//    default Set<Digest> fromDigestListToDigestSet(List<String> digestList) {
+//
+//        //TODO throu exception of dl not presetn
+//        Set<Digest> set = digestList.stream().map((digest) -> {
+//            Digest d = new Digest();
+//            d.setDigest(digest);
+//            return d;
+//        }).collect(Collectors.toSet());
+//        return set;
+//    }
+
+    @AfterMapping
+    void setPoid(@MappingTarget POID poid) {
+        poid.getPo().setPoid(poid);
     }
 
     @AfterMapping
-    default void setReqId(@MappingTarget POID req) {
-        req.getPo().setReq(req);
-    }
-
-    @AfterMapping
-    default void setDigestListId(@MappingTarget DigestList dl) {
+    void setDigestListId(@MappingTarget DigestList dl) {
         // TODO : check if null/empty ? if so error ?
         //if (dl == null) throw new DigestListEmptyException();
         for (Digest digest : dl.getDigests()) {
@@ -77,10 +108,8 @@ public interface PODtoMapperCore {
         }
     }
 
-
-
     @AfterMapping
-    default void setPOObject(@MappingTarget PO po) {
+    void setPOObject(@MappingTarget PO po) {
         if (po.getRelatedObjects() != null) {
             DigestList dl = po.getDigestList();
             dl.setPo(po);
@@ -88,4 +117,25 @@ public interface PODtoMapperCore {
         }
     }
 
+    @AfterMapping
+    void setPOIDDigestValue(@MappingTarget POID poid) {
+        // TODO : check if null/empty ? if so error ?
+        //if (dl == null) throw new DigestListEmptyException();
+        List<Digest> list = poid.getPo().getDigestList().getDigests();
+        byte[] concat;
+        if(list.size() == 1) {
+            concat = list.get(0).getDigest();
+            return;
+        } else {
+            list.sort(new DigestComparator());
+            List<byte[]> byteArrayList = new ArrayList<>(list.size());
+            for (Digest digest : list) {
+                byteArrayList.add(digest.getDigest());
+            }
+            concat = ByteUtils.concat(byteArrayList);
+        }
+
+        DigestAlgorithm alg = DigestAlgorithm.forOID(poid.getDigestMethod());
+        poid.setDigestValue(DSSUtils.digest(alg, concat));
+    }
 }

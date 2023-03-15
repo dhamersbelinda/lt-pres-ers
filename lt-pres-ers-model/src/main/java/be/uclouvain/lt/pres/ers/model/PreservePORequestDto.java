@@ -12,5 +12,5 @@ public class PreservePORequestDto {
     private List<PODto> poDtos;
     private ProfileDto profileDto;
     private Integer clientId;
-
+    private String digestMethod;
 }

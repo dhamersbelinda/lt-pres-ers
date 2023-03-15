@@ -15,5 +15,5 @@ public class Client {
     @Column(name = "CLIENT_ID")
     @Setter(value = AccessLevel.PRIVATE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long clientId;
+    private Long clientId;
 }

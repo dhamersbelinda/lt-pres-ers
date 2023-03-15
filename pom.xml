@@ -28,6 +28,7 @@
         <module>lt-pres-ers-model</module>
         <module>lt-pres-ers-server</module>
         <module>lt-pres-ers-test</module>
+        <module>lt-pres-ers-utils</module>
     </modules>
 
     <scm>
@@ -56,6 +57,13 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${org.mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+                <artifactId>dss-bom</artifactId>
+                <version>5.10.2</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

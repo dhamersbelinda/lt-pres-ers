@@ -3,6 +3,7 @@ package be.uclouvain.lt.pres.ers.core.persistence.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +30,6 @@ public class Node {
     private Node parent;
 
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
-    @ToString.Include
     private List<Node> children;
 
     @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
@@ -88,6 +88,10 @@ public class Node {
         if(t.isRoot()) {
             Root r = (Root) t;
             r.getNode().setParent(this);
+            if(this.children == null) {
+                this.children = new ArrayList<>(1);
+            }
+            this.children.add(r.getNode());
             r.setIsExtended(true);
 //            this.setRoot((Root) t);
         } else {

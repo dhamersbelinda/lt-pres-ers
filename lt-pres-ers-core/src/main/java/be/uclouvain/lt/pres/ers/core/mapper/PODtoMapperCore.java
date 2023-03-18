@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring",
@@ -125,6 +122,7 @@ public abstract class PODtoMapperCore {
         byte[] concat;
         if(list.size() == 1) {
             concat = list.get(0).getDigest();
+            poid.setDigestValue(concat);
             return;
         } else {
             list.sort(new DigestComparator());
@@ -134,7 +132,6 @@ public abstract class PODtoMapperCore {
             }
             concat = ByteUtils.concat(byteArrayList);
         }
-
         DigestAlgorithm alg = DigestAlgorithm.forOID(poid.getDigestMethod());
         poid.setDigestValue(DSSUtils.digest(alg, concat));
     }

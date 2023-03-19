@@ -80,9 +80,11 @@ public class BuildTreeTask {
         List<CertificateToken> certificateTokens;
         OffsetDateTime expirationDate;
 
-        boolean poidDone = false, rootDone = false;
-        int poidOffset = 0, rootOffset = 0, tempNPoidQueried;
+        boolean poidDone, rootDone;
+        int poidOffset, rootOffset, tempNPoidQueried;
         for (TreeCategoryDto treeCategory : treeCategories) {
+            poidDone = false;
+            rootDone = false;
             // TODO : here the client should always exist, but is it necessary ?
             try {
                 c = clientRepository.getReferenceById(treeCategory.getClientId());

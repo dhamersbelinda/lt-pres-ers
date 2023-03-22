@@ -131,7 +131,7 @@ public class BuildTreeTask {
 
                 try {
                     timestampToken = new TimestampToken(tsBinary.getBytes(), TimestampType.CONTENT_TIMESTAMP);
-                    // TODO : better errors and signaling
+                    // TODO : better errors and signalling
                 } catch (TSPException e) {
                     logger.error("TSP Exception ! "+e.getMessage());
                     continue;

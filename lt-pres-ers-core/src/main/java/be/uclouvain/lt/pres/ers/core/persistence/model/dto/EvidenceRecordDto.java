@@ -75,6 +75,7 @@ public class EvidenceRecordDto {
     private long treeId;
 
     // Specific numbering of nodes in a tree : per floor, from root to leaves and 'left to right', root is 0, always assumes a complete tree (when the tree is not complete there will be jumps in the numbering)
+    // sorted descending
     private long inTreeNum;
 
     private String timestamp;

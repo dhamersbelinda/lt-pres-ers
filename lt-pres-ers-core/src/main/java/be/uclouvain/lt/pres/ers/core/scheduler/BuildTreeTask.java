@@ -102,14 +102,13 @@ public class BuildTreeTask {
                 workingSet.addAll(poidRepository.getPOIDsForTree(taskStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES, poidOffset));
                 poidOffset += workingSet.size();
 
-                if(workingSet.size() < MAX_LEAVES) {
+                if(workingSet.size() < MAX_LEAVES && (MIX_RENEWALS || workingSet.size() == 0)) {
                     poidDone = true;
                     tempNPoidQueried = workingSet.size();
                     workingSet.addAll(rootRepository.getRootsForTree(taskStart, shiftedStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES - workingSet.size(), rootOffset));
                     rootOffset += workingSet.size() - tempNPoidQueried;
                     if(workingSet.size() < MAX_LEAVES) rootDone = true;
                 }
-
 
                 hashTreeBase = new HashTreeBase(new TreeID(), treeCategory.getClientId(), alg, workingSet);
 
@@ -279,7 +278,7 @@ public class BuildTreeTask {
         // some attributes (in the classes before construction of the tree) can be removed (or added)
     }
 
-    private static Node buildTree(HashTreeBase input) {
+    public static Node buildTree(HashTreeBase input) {
 
         /*  InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
            0             0
@@ -296,7 +295,7 @@ public class BuildTreeTask {
         int fullNum = mod == 0 ? nLeaves : nLeaves + BRANCHING_FACTOR - mod;
         Node[] buf = new Node[fullNum];
         int d = 0;
-        int firstLvlNodeNum = (int) Math.pow(2,depth);
+        int firstLvlNodeNum = (int) ((Math.pow(BRANCHING_FACTOR, depth) - 1)/((double) (BRANCHING_FACTOR - 1)));
         Node temp;
         TreeID treeID = input.getTreeID();
         // transform leaves in node object & put in array
@@ -306,7 +305,7 @@ public class BuildTreeTask {
             temp.setNodeValue(leaf.getHashValue()); // TODO : append and hash the digests in a single node AND add children to this node ...
             // TODO : for roots : verify that all verification data is present and if not get it then canonicalize then hash the canonical binary (rfc 6283 4.2.1)
             temp.setTreeId(treeID);
-            temp.setInTreeId(firstLvlNodeNum - 1 + d);
+            temp.setInTreeId(firstLvlNodeNum + d);
             buf[d] = temp;
             d++;
         }
@@ -323,13 +322,14 @@ public class BuildTreeTask {
         byte[] toHash;
         // Loop on every 'floor' of the tree
         for (d = depth-1; d >= 0; d--) {
-            firstLvlNodeNum = (int) Math.pow(2,d); // for parent's in_tree_id field
+            firstLvlNodeNum = (int) ((Math.pow(BRANCHING_FACTOR, d) - 1)/((double) (BRANCHING_FACTOR - 1))); // for parent's in_tree_id field
             // First check if we have to add dummy nodes
             if(realNum < fullNum){
+                int lowerLvlNodeNum = firstLvlNodeNum + ((int) Math.pow(BRANCHING_FACTOR, d));
                 for (int i = realNum; i < fullNum; i++) {
                     currentNode = new Node();
                     currentNode.setTreeId(treeID);
-                    currentNode.setInTreeId(2L * firstLvlNodeNum + i - 1); // 2* as currentNode is on the floor below !
+                    currentNode.setInTreeId(lowerLvlNodeNum + i);
                     // TODO set dummy value of proper length given hash algo
                     currentNode.setNodeValue("dummy".getBytes(StandardCharsets.UTF_8));
                     buf[i] = currentNode;
@@ -341,7 +341,7 @@ public class BuildTreeTask {
                 //create parent Node
                 parentNode = new Node();
                 parentNode.setTreeId(treeID);
-                parentNode.setInTreeId(firstLvlNodeNum - 1 + insertIndex);
+                parentNode.setInTreeId(firstLvlNodeNum + insertIndex);
                 children = new ArrayList<>(BRANCHING_FACTOR);
                 toConcat.clear();
                 for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
@@ -353,7 +353,7 @@ public class BuildTreeTask {
                     //supposing branching factor of 2
                     //leapIndex + BRANCHING_FACTOR-1 - (runnerIndex-leapIndex)
                     // TODO : support more than one neighbour
-                    currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + BRANCHING_FACTOR - 1]);
+//                    currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + BRANCHING_FACTOR - 1]);
 
                     sum = sum + 1; // TODO placeholder op to concatenate hash
                 }

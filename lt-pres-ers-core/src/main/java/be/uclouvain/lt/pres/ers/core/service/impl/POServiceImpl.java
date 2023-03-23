@@ -3,6 +3,7 @@ package be.uclouvain.lt.pres.ers.core.service.impl;
 import be.uclouvain.lt.pres.ers.core.exception.POInsertionException;
 import be.uclouvain.lt.pres.ers.core.exception.PONotFoundException;
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
+import be.uclouvain.lt.pres.ers.core.exception.RequestNotFoundException;
 import be.uclouvain.lt.pres.ers.core.mapper.PODtoMapperCore;
 import be.uclouvain.lt.pres.ers.core.mapper.POMapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.*;
@@ -41,6 +42,12 @@ public class POServiceImpl implements POService {
 
     @Override
     public PODto getPO(UUID identifier) throws PONotFoundException {
+        return this.mapper.toDto(this.poidRepository.findById(identifier)
+                .orElseThrow(() -> new PONotFoundException("There is no preservation object with identifier " + identifier)).getPo());
+    }
+
+    //@Override
+    public PreservePORequestDto getRequest(UUID identifier) throws RequestNotFoundException { //TODO check if this is the correct error code to send
         return this.mapper.toDto(this.poidRepository.findById(identifier)
                 .orElseThrow(() -> new PONotFoundException("There is no preservation object with identifier " + identifier)).getPo());
     }

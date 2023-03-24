@@ -63,7 +63,7 @@ public class EvidenceRecordDTOToEvidenceRecordType {
             //set canonicalization method : set fixed object
 
             //getting the timestamp
-            byte[] tsbytes = evidenceRecordDto.getTimestamp().getBytes();// is this the right conversion?
+            byte[] tsbytes = evidenceRecordDto.getTimestamp();// is this the right conversion?
             try {
                 //bouncycastle time
                 TimestampToken timeStampToken = new TimestampToken(tsbytes, TimestampType.CONTENT_TIMESTAMP);

@@ -68,8 +68,7 @@ public class EvidenceRecordDto {
     // If null we reached the latest timestamp
     private long parent;
 
-    // TODO : maybe obsolete depending on schema for dynamic branching factor
-    private long neighbour;
+    private byte[] nodeValue;
 
     // The tree this node belongs to
     private long treeId;
@@ -78,7 +77,7 @@ public class EvidenceRecordDto {
     // sorted descending
     private long inTreeNum;
 
-    private String timestamp;
+    private byte[] timestamp;
 
     // True if this is the requested document's (or document group) node
     private boolean start;

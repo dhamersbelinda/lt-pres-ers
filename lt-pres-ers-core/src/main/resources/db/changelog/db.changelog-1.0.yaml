@@ -861,12 +861,6 @@ databaseChangeLog:
                     nullable: true
                     unique: false
               - column:
-                  name: NEIGHBOUR_ID
-                  type: BIGINT
-                  constraints:
-                    nullable: true
-                    unique: true    # TODO : Here we consider only binary trees
-              - column:
                   name: TREE_ID
                   type: BIGINT
                   constraints:
@@ -901,21 +895,10 @@ databaseChangeLog:
             referencedTableName: nodes
             validate: true
 
-  - changeSet:
-      id: 38
-      author: sasha
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: NEIGHBOUR_ID
-            baseTableName: nodes
-            constraintName: FK_NEIGHBOUR_ID
-            deferrable: true
-            initiallyDeferred: true
-            onDelete: RESTRICT
-            onUpdate: RESTRICT
-            referencedColumnNames: NODE_ID
-            referencedTableName: nodes
-            validate: true
+#  - changeSet:
+#      id: 38
+#      author: sasha
+#      changes:
 
   - changeSet:
       id: 39
@@ -939,7 +922,6 @@ databaseChangeLog:
               - column:
                   name: POID
                   type: UUID
-#                  type: VARCHAR(255)
                   constraints:
                     primaryKey: true
                     primaryKeyName: PK_POID__DIG_NUM

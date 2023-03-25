@@ -27,7 +27,6 @@ import java.util.UUID;
 
         @NamedSubgraph(name = "node-subgraph", attributeNodes = {
                @NamedAttributeNode(value = "parent"),
-               @NamedAttributeNode(value = "neighbour"),
                 @NamedAttributeNode(value = "treeId"),
                 @NamedAttributeNode(value = "inTreeId")
         })
@@ -37,37 +36,37 @@ import java.util.UUID;
 @NamedNativeQuery(
         name = "POID.getERPathFromPOID",
         query = """
-                    WITH
-                        -- Get node ID from POID
-                        Doc AS (SELECT node_id FROM poids WHERE poid=:POID),
-                        -- Get complete path from found node_id to highest possible point (aka most recent ts'ed root)
-                        Path AS (
-                            WITH RECURSIVE cte (node_id, parent_id, neighbour_id, tree_id, in_tree_num, node_value) AS
-                                               (
-                                                   SELECT N.* FROM Nodes N WHERE N.node_id = (SELECT node_id FROM Doc)
-                                                   UNION ALL
-                                                   SELECT N.* FROM Nodes N JOIN cte C ON N.node_id = C.parent_id
-                                               )
-                            SELECT C.*, R.root_timestamp FROM cte C LEFT JOIN root R ON C.node_id = R.node_id),
-                        -- first part : get reduced hash tree, but misses all root related nodes
-                        -- second part : adds the doc itself and root nodes (not root leaf nodes)
-                        -- third part : adds the root leaf nodes
-                        r AS (
-                                                -- Get the very first node and mark it as start
-                                                (SELECT *, TRUE AS Start FROM Path P WHERE P.node_id = (SELECT node_id FROM Doc))
-                                                    UNION
-                                                -- Get all neighbours but exclude (NOT IN) non roots in the direct path and the document
-                                                (SELECT N.*, P.root_timestamp AS timestamp, FALSE AS Start FROM Path P JOIN Nodes N ON N.parent_id = P.parent_id
-                                                        WHERE N.node_id NOT IN
-                                                            (SELECT node_id FROM Path WHERE root_timestamp IS NULL OR node_id = (SELECT node_id FROM Doc)))
-                                                    UNION
-                                        --      (SELECT *, FALSE AS Start FROM Path P WHERE P.neighbour_id IS NULL AND P.node_id != (SELECT node_id FROM Doc))
-                                        --           UNION
-                                                -- Add the root node's parents, we must self join as we identify them from roots s
-                                                (SELECT P2.*, FALSE AS Start FROM Path P1 JOIN Path P2 ON P1.parent_id=P2.node_id WHERE P1.in_tree_num = 0)
-                        )
-                        -- Order everything for easier processing (ASSUMES TREEID IS INCREMENTAL AND INCREASES WITH NEW TREES !)
-                       SELECT * FROM r ORDER BY tree_id ASC, in_tree_num DESC;
+                  WITH
+                    -- Get node ID from POID
+                    Doc AS (SELECT node_id FROM poids WHERE poid=:POID),
+                    -- Get complete path from found node_id to highest possible point (aka most recent ts'ed root)
+                    Path AS (
+                        WITH RECURSIVE cte (node_id, parent_id, tree_id, in_tree_id, node_value) AS
+                                           (
+                                               SELECT node_id, parent_id, tree_id, in_tree_id, node_value FROM Nodes N WHERE N.node_id = (SELECT node_id FROM Doc)
+                                               UNION ALL
+                                               SELECT N.node_id, N.parent_id, N.tree_id, N.in_tree_id, N.node_value FROM Nodes N JOIN cte C ON N.node_id = C.parent_id
+                                           )
+                        SELECT C.*, R.root_timestamp FROM cte C LEFT JOIN root R ON C.node_id = R.node_id),
+                    -- first part : get reduced hash tree, but misses all root related nodes
+                    -- second part : adds the doc itself and root nodes (not root leaf nodes)
+                    -- third part : adds the root leaf nodes
+                    r AS (
+                        -- Get the very first node and mark it as start
+                        (SELECT *, TRUE AS Start FROM Path P WHERE P.node_id = (SELECT node_id FROM Doc))
+                        UNION
+                        -- Get all neighbours but exclude (NOT IN) non roots in the direct path and the document
+                        (SELECT N.node_id, N.parent_id, N.tree_id, N.in_tree_id, N.node_value, P.root_timestamp AS timestamp, FALSE AS Start FROM Path P JOIN Nodes N ON N.parent_id = P.parent_id
+                         WHERE N.node_id NOT IN
+                               (SELECT node_id FROM Path WHERE root_timestamp IS NULL OR node_id = (SELECT node_id FROM Doc)))
+                        UNION
+                        (SELECT *, FALSE AS Start FROM Path P WHERE P.parent_id IS NULL AND P.node_id != (SELECT node_id FROM Doc))
+                        UNION
+                        -- Add the root node's parents, we must self join as we identify them from roots s
+                        (SELECT P2.*, FALSE AS Start FROM Path P1 JOIN Path P2 ON P1.parent_id=P2.node_id WHERE P1.in_tree_id = 0)
+                    )
+                    -- Order everything for easier processing (ASSUMES TREEID IS INCREMENTAL AND INCREASES WITH NEW TREES !)
+                SELECT * FROM r ORDER BY tree_id ASC, in_tree_id DESC;
                     """,
         resultSetMapping = "EvidenceRecordDtoMapping"
 )
@@ -79,7 +78,7 @@ import java.util.UUID;
                         @ColumnResult(name = "parent_id", type = Long.class),
                         @ColumnResult(name = "node_value", type = byte[].class),
                         @ColumnResult(name = "tree_id", type = Long.class),
-                        @ColumnResult(name = "in_tree_num", type = Long.class),
+                        @ColumnResult(name = "in_tree_id", type = Long.class),
                         @ColumnResult(name = "root_timestamp", type = byte[].class),
                         @ColumnResult(name = "start", type = Boolean.class)}))
 @NamedNativeQuery(

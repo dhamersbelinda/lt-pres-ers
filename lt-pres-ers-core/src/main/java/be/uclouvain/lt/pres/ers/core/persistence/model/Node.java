@@ -9,8 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "Nodes",
         uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "TREE_ID", "IN_TREE_ID" })//,
-        //@UniqueConstraint(columnNames = { "NEIGHBOUR_ID" }) // TODO : Here with unique neighbour we assume a binary tree !
+        @UniqueConstraint(columnNames = { "TREE_ID", "IN_TREE_ID" })
 })
 
 @Getter
@@ -31,10 +30,6 @@ public class Node {
 
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Node> children;
-
-    @JoinColumn(name = "NEIGHBOUR_ID", referencedColumnName = "NODE_ID", foreignKey = @ForeignKey(name = "FK_NEIGHBOUR_ID"))
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // TODO : Change to support more than one neighbour ?
-    private Node neighbour;
 
     @JoinColumn(name = "TREE_ID", referencedColumnName = "TREE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TREE_ID"))
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

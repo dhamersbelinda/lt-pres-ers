@@ -63,19 +63,19 @@ import javax.persistence.SqlResultSetMapping;
 @AllArgsConstructor
 @ToString
 public class EvidenceRecordDto {
-    private long nodeId;
+    private Long nodeId;
 
     // If null we reached the latest timestamp
-    private long parent;
+    private Long parent;
 
     private byte[] nodeValue;
 
     // The tree this node belongs to
-    private long treeId;
+    private Long treeId;
 
     // Specific numbering of nodes in a tree : per floor, from root to leaves and 'left to right', root is 0, always assumes a complete tree (when the tree is not complete there will be jumps in the numbering)
     // sorted descending
-    private long inTreeNum;
+    private Long inTreeNum;
 
     private byte[] timestamp;
 

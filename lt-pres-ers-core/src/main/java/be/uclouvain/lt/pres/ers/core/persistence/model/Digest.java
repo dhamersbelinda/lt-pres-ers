@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Digest implements Serializable {
 
     @Id

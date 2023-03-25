@@ -117,6 +117,14 @@ class POIDRepositoryTest {
 
         poidRepository.saveAll(poidList);
 
+        UUID uuid = poid1.getId();
+        System.out.println(uuid);
+
+        Optional<POID> test = poidRepository.findById(uuid);
+
+        if(!test.isPresent()) System.out.println("Not present ...");
+        else System.out.println("Present !");
+
         List<TreeCategoryDto> result = poidRepository.getToPreserveCategoriesPOIDAndRoot(now.plusMinutes(1), now.plusMinutes(10));
 
         for (TreeCategoryDto treeCategoryDto : result) {

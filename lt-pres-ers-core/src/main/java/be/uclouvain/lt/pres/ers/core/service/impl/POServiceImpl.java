@@ -47,10 +47,12 @@ public class POServiceImpl implements POService {
     }
 
     //@Override
+    /*
     public PreservePORequestDto getRequest(UUID identifier) throws RequestNotFoundException { //TODO check if this is the correct error code to send
         return this.mapper.toDto(this.poidRepository.findById(identifier)
-                .orElseThrow(() -> new PONotFoundException("There is no preservation object with identifier " + identifier)).getPo());
+                .orElseThrow(() -> new RequestNotFoundException("There is no request object with identifier " + identifier)));
     }
+     */
 
     @Override
     public UUID insertPOs(PreservePORequestDto requestDto) throws POInsertionException {

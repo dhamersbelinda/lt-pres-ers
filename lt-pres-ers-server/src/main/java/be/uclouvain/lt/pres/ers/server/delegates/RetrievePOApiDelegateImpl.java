@@ -1,6 +1,8 @@
 package be.uclouvain.lt.pres.ers.server.delegates;
 
+import be.uclouvain.lt.pres.ers.core.XMLObjects.EvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
+import be.uclouvain.lt.pres.ers.core.mapper.EvidenceRecordDTOToEvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
 import be.uclouvain.lt.pres.ers.core.scheduler.BuildTreeTask;
 import be.uclouvain.lt.pres.ers.core.service.POService;
@@ -19,6 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
@@ -31,6 +37,7 @@ import java.util.stream.Collectors;
 public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
     private final Logger logger = LoggerFactory.getLogger(RetrievePOApiDelegate.class);
     private final POService service;
+    private final EvidenceRecordDTOToEvidenceRecordType converterService;
 
     private final ProfileDtoMapper mapper;
 
@@ -55,8 +62,28 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             RelatedObjects we receive from db (that we received from client in preservePO call)
          */
         UUID poid = UUID.fromString(request.getPoId());
-        List<EvidenceRecordDto> result = service.getERFromPOID(poid);
 
+        List<EvidenceRecordDto> result = service.getERFromPOID(poid);
+        //call converter with poid as arg
+        EvidenceRecordType evidenceRecordType = converterService.toEvidenceRecordType(result, poid);
+
+        String xmlString = null;
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(EvidenceRecordType.class);
+            Marshaller mar = context.createMarshaller();
+            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            StringWriter sw = new StringWriter();
+            mar.marshal(evidenceRecordType, sw);
+
+            xmlString = sw.toString();
+            System.out.println(xmlString);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+
+        //TODO change here
         StringBuilder stringBuilder = new StringBuilder("ER from DB for "+ poid.toString() +", size = "+ result.size() +" raw :\n");
         for (EvidenceRecordDto er:result) {
             stringBuilder.append("\t");

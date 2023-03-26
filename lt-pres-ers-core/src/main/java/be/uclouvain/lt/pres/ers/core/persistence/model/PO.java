@@ -50,6 +50,7 @@ public class PO {
      */
 
     @OneToMany(mappedBy = "po", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<RelatedObject> relatedObjects;
 
     // TODO with one to one we consider only one PO per request
@@ -64,7 +65,7 @@ public class PO {
 
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL, optional = false)
-    //@JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
+    @ToString.Exclude
     private DigestList digestList;
 
 

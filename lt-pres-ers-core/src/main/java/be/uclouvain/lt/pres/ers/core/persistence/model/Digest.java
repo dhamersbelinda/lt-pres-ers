@@ -27,6 +27,7 @@ public class Digest implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) //what about this ???
     @JoinColumn(name = "DIGESTLIST_ID", nullable = false, referencedColumnName = "ID")
+    @ToString.Exclude
     private DigestList digestList;
 
 }

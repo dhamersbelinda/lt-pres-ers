@@ -25,6 +25,7 @@ public class DigestList implements Serializable {
     private URI digestMethod;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "digestList", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Digest> digests;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false) //TODO set the optional here later (false if possible)

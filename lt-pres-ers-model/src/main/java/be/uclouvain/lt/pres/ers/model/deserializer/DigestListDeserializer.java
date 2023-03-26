@@ -52,7 +52,7 @@ public class DigestListDeserializer extends JsonDeserializer<DigestListDto> {
 //                    }
                     String extracted = node.get(fieldName).textValue();
                     extracted = OidUtils.stringToOidString(extracted);
-                    DigestAlgorithm alg = DigestAlgorithm.forOID(extracted);
+                    DigestAlgorithm alg = DigestAlgorithm.forOID(extracted); // Warning : for OID here !
                     digestList.setDigestMethod(alg);
                 }
                 case "digVal" -> {

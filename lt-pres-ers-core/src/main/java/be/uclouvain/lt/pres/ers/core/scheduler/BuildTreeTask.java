@@ -84,6 +84,7 @@ public class BuildTreeTask {
         boolean poidDone, rootDone;
         int poidOffset, rootOffset, tempNPoidQueried;
         for (TreeCategoryDto treeCategory : treeCategories) {
+            alg = null;
             poidDone = false;
             rootDone = false;
             // TODO : here the client should always exist, but is it necessary ?
@@ -93,10 +94,12 @@ public class BuildTreeTask {
                 continue;
             }
             try {
-                alg = DigestAlgorithm.forOID(treeCategory.getDigestAlgorithm());
+                alg = DigestAlgorithm.forXML(treeCategory.getDigestAlgorithm());
             } catch(IllegalArgumentException e) {
-                continue;
+                logger.error("Could not find digest algorithm by xml id : "+treeCategory.getDigestAlgorithm()+"\nMessage for IllegalArgumentException :"+e.getMessage());
+                e.printStackTrace();
             }
+            if(alg == null) continue;
 
             poidOffset = rootOffset = 0;
             while(!(poidDone && rootDone)) {

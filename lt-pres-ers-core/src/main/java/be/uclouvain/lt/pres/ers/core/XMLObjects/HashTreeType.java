@@ -1,7 +1,10 @@
 
 package be.uclouvain.lt.pres.ers.core.XMLObjects;
 
+import be.uclouvain.lt.pres.ers.core.XMLObjects.adapter.Base64ByteArrayAdapter;
+
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +105,7 @@ public class HashTreeType {
     public static class Sequence {
 
         @XmlElement(name = "DigestValue", namespace = "urn:ietf:params:xml:ns:ers", required = true)
+        @XmlJavaTypeAdapter(Base64ByteArrayAdapter.class)
         protected List<byte[]> digestValue;
         @XmlAttribute(name = "Order", required = true)
         protected int order;

@@ -66,7 +66,7 @@ public abstract class PODtoMapperCore {
 
     URI map(DigestAlgorithm value) throws URISyntaxException {
         if(value == null) throw new IllegalArgumentException("Null digAlg");
-        return new URI(value.getOid());
+        return new URI(value.getUri());
     }
 
     List<Digest> map(List<byte[]> digests) {

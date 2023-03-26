@@ -36,6 +36,48 @@ class POIDRepositoryTest {
     private ClientRepository clientRepository;
 
     @Test
+    void findByIdTest() throws URISyntaxException {
+        URI profileID = new URI("https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0");
+        Optional<Profile> optProfile = profileRepository.findByProfileIdentifier(profileID);
+        if(optProfile.isEmpty()) {
+            fail("Could not find profile.");
+        }
+        Profile profile = optProfile.get();
+        OffsetDateTime now = OffsetDateTime.now();
+        Client c1 = new Client();
+
+        clientRepository.save(c1);
+
+        byte[] digest = "sasha1".getBytes(StandardCharsets.UTF_8);
+
+        POID poid1 = new POID();
+        poid1.setProfile(profile);
+        poid1.setClientId(c1);
+        poid1.setCreationDate(now);
+        poid1.setDigestMethod(DigestAlgorithm.SHA256.getOid());
+        poid1.setDigestValue(digest);
+        PO po1 = new PO();
+        poid1.setPo(po1);
+        DigestList digestList1 = new DigestList();
+        Digest digest1 = new Digest();
+        digest1.setDigest(digest);
+        digestList1.setDigests(new ArrayList<>(List.of(new Digest[]{digest1})));
+        digestList1.setDigestMethod(new URI(DigestAlgorithm.SHA256.getOid()));
+        po1.setDigestList(digestList1);
+        po1.setFormatId(new URI("http://uri.etsi.org/19512/format/DigestList"));
+        po1.setPoid(poid1);
+
+        poid1 = poidRepository.save(poid1);
+
+        String uuid = poid1.getId().toString();
+        System.out.println("Performing findById()");
+        Optional<POID> ret = poidRepository.findById(UUID.fromString(uuid));
+        System.out.println("Performed findById()");
+        if(ret.isEmpty()) fail("meh");
+        else System.out.println("It's present ! "+ret.get());
+    }
+
+    @Test
     void getToPreserveCategoriesPOIDAndRootTest() throws URISyntaxException {
         URI profileID = new URI("https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0");
         Optional<Profile> optProfile = profileRepository.findByProfileIdentifier(profileID);

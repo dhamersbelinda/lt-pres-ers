@@ -1,6 +1,7 @@
 package be.uclouvain.lt.pres.ers.server.delegates;
 
 import be.uclouvain.lt.pres.ers.core.XMLObjects.EvidenceRecordType;
+import be.uclouvain.lt.pres.ers.core.XMLObjects.ObjectFactory;
 import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
 import be.uclouvain.lt.pres.ers.core.mapper.EvidenceRecordDTOToEvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
@@ -22,12 +23,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -67,15 +70,22 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         //call converter with poid as arg
         EvidenceRecordType evidenceRecordType = converterService.toEvidenceRecordType(result, poid);
 
+        if(evidenceRecordType == null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "POID not found : '"+request.getPoId()+"'", null, HttpStatus.BAD_REQUEST);
+        }
+
+        ObjectFactory objectFactory = new ObjectFactory();
+        JAXBElement<EvidenceRecordType> er = objectFactory.createEvidenceRecord(evidenceRecordType);
         String xmlString = null;
 
         try {
-            JAXBContext context = JAXBContext.newInstance(EvidenceRecordType.class);
+            JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
             Marshaller mar = context.createMarshaller();
             mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             StringWriter sw = new StringWriter();
-            mar.marshal(evidenceRecordType, sw);
+            mar.marshal(er, sw);
 
             xmlString = sw.toString();
             System.out.println(xmlString);
@@ -84,6 +94,8 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         }
 
         //TODO change here
+        //TODO handle all error codes
+        /*
         StringBuilder stringBuilder = new StringBuilder("ER from DB for "+ poid.toString() +", size = "+ result.size() +" raw :\n");
         for (EvidenceRecordDto er:result) {
             stringBuilder.append("\t");
@@ -92,24 +104,47 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         }
 //        logger.info(stringBuilder.toString());
         System.out.print(stringBuilder.toString());
-
-        return null;
+         */
+        //TODO encode xmlValue here later
+        // TODO : handle ID and related objects
+        return this.buildResponse(
+                request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null, xmlString, HttpStatus.OK
+        );
     }
 
     private ResponseEntity<PresRetrievePOResponseType> buildResponse(final String reqId, final MajEnum maj,
-            final MinEnum min, final String msg, final List<PresProfileType> profiles, final HttpStatus httpStatus) {
-//        final PresRetrieveInfoResponseType response = new PresRetrieveInfoResponseType();
-//        response.setReqId(reqId);
-//
-//        final DsbResultType result = new DsbResultType();
-//        result.setMaj(maj);
-//        result.setMin((min != null) ? min.getUri().toString() : null);
-//        result.setMsg((msg != null) ? new DsbInternationalStringType().value(msg).lang("EN") : null);
-//        response.setResult(result);
-//
-//        response.setPro(profiles);
-//
-//        return ResponseEntity.status(httpStatus).body(response);
-        return null;
+                                                                     final MinEnum min, final String msg, final String b64XmlValue, final HttpStatus httpStatus) {
+        final PresRetrievePOResponseType response = new PresRetrievePOResponseType();
+        response.setReqId(reqId);
+
+
+        if(b64XmlValue != null) {
+            //create POs
+            List<PresPOType> pos = new ArrayList<>();
+            PresPOType po = new PresPOType();
+            PresPOTypeXmlData xmlData = new PresPOTypeXmlData();
+            xmlData.setB64Content(b64XmlValue);
+            po.setXmlData(xmlData);
+            po.setFormatId("urn:ietf:rfc:6283:EvidenceRecord"); // TODO : leave it hardcoded here ?
+            pos.add(po);
+            response.setPo(pos);
+        }
+
+
+        //content of ResponseEntity
+        //content of PresRetrievePOResponseType
+        //reqId, optOut, result, po (List<PresPOType>)
+        //optional POID element
+        //zero or more instances of PO element
+        //content of PresPOType
+        //...
+
+        final DsbResultType result = new DsbResultType();
+        result.setMaj(maj);
+        result.setMin((min != null) ? min.getUri().toString() : null);
+        result.setMsg((msg != null) ? new DsbInternationalStringType().value(msg).lang("EN") : null);
+        response.setResult(result);
+
+        return ResponseEntity.status(httpStatus).body(response);
     }
 }

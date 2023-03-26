@@ -24,8 +24,10 @@ import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,8 +61,14 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             RelatedObjects we receive from db (that we received from client in preservePO call)
          */
         UUID poid = UUID.fromString(request.getPoId());
+        System.out.println(poid);
 
         List<EvidenceRecordDto> result = service.getERFromPOID(poid);
+        if(result != null) {
+            for (EvidenceRecordDto evidenceRecordDto : result) {
+                System.out.println(evidenceRecordDto);
+            }
+        }
         //call converter with poid as arg
         EvidenceRecordType evidenceRecordType = converterService.toEvidenceRecordType(result, poid);
 
@@ -89,17 +97,13 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
 
         //TODO change here
         //TODO handle all error codes
-        /*
-        StringBuilder stringBuilder = new StringBuilder("ER from DB for "+ poid.toString() +", size = "+ result.size() +" raw :\n");
-        for (EvidenceRecordDto ert:result) {
-            stringBuilder.append("\t");
-            stringBuilder.append(ert);
-            stringBuilder.append("\n");
-        }
-//        logger.info(stringBuilder.toString());
-        System.out.print(stringBuilder.toString());
-         */
         //TODO encode xmlValue here later
+        if(xmlString == null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "POID not found : '"+request.getPoId()+"'", null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        String ret = Base64.getEncoder().encodeToString(xmlString.getBytes(StandardCharsets.UTF_8));
+
         // TODO : handle ID and related objects
         return this.buildResponse(
                 request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null, xmlString, HttpStatus.OK

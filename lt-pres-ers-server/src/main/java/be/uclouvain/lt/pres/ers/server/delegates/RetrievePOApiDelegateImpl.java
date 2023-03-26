@@ -2,15 +2,10 @@ package be.uclouvain.lt.pres.ers.server.delegates;
 
 import be.uclouvain.lt.pres.ers.core.XMLObjects.EvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.XMLObjects.ObjectFactory;
-import be.uclouvain.lt.pres.ers.core.exception.ProfileNotFoundException;
-import be.uclouvain.lt.pres.ers.core.mapper.EvidenceRecordDTOToEvidenceRecordType;
+import be.uclouvain.lt.pres.ers.core.XMLObjects.ObjectFactory;
+import be.uclouvain.lt.pres.ers.core.service.impl.EvidenceRecordDTOToEvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
-import be.uclouvain.lt.pres.ers.core.scheduler.BuildTreeTask;
 import be.uclouvain.lt.pres.ers.core.service.POService;
-import be.uclouvain.lt.pres.ers.core.service.ProfileService;
-import be.uclouvain.lt.pres.ers.model.ProfileDto;
-import be.uclouvain.lt.pres.ers.model.ProfileStatus;
-import be.uclouvain.lt.pres.ers.server.api.RetrieveInfoApiDelegate;
 import be.uclouvain.lt.pres.ers.server.api.RetrievePOApiDelegate;
 import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
@@ -33,7 +28,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -97,9 +91,9 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         //TODO handle all error codes
         /*
         StringBuilder stringBuilder = new StringBuilder("ER from DB for "+ poid.toString() +", size = "+ result.size() +" raw :\n");
-        for (EvidenceRecordDto er:result) {
+        for (EvidenceRecordDto ert:result) {
             stringBuilder.append("\t");
-            stringBuilder.append(er);
+            stringBuilder.append(ert);
             stringBuilder.append("\n");
         }
 //        logger.info(stringBuilder.toString());

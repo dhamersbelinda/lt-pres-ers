@@ -1,4 +1,4 @@
-package be.uclouvain.lt.pres.ers.core.mapper;
+package be.uclouvain.lt.pres.ers.core.service.impl;
 
 import be.uclouvain.lt.pres.ers.core.XMLObjects.*;
 import be.uclouvain.lt.pres.ers.core.persistence.model.Digest;
@@ -25,14 +25,15 @@ import java.util.*;
 
 //TODO which ones here are needed ?
 @Service
-//@Validated
-//@Transactional // TODO to avoid maybe
+@Validated
+@Transactional // TODO to avoid maybe
 @AllArgsConstructor
 public class EvidenceRecordDTOToEvidenceRecordType implements EvidenceConverterService {
 
     private final POIDRepository poidRepository;
     public static final String ALGO_ID_C14N_OMIT_COMMENTS = "http://www.w3.org/TR/2001/REC-xml-c14n-20010315";
 
+    @Override
     public EvidenceRecordType toEvidenceRecordType(List<EvidenceRecordDto> evidenceRecordDtoList, UUID poid) {
         Optional<POID> optPoidObj = poidRepository.findById(poid);
 
@@ -45,6 +46,7 @@ public class EvidenceRecordDTOToEvidenceRecordType implements EvidenceConverterS
             // TODO change to "findById" and check for nulls ect if not found
             return EvidenceRecordType.build(evidenceRecordDtoList, poidObj);
         }
+        System.out.println("optional is empty");
         return null;
     }
 

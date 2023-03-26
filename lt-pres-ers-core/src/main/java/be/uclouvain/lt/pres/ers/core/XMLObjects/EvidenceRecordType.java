@@ -5,6 +5,7 @@ import be.uclouvain.lt.pres.ers.core.persistence.model.Digest;
 import be.uclouvain.lt.pres.ers.core.persistence.model.POID;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
 import be.uclouvain.lt.pres.ers.utils.BinaryOrderComparator;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.validation.timestamp.TimestampToken;
 import org.bouncycastle.cms.CMSException;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.List;
 
 
@@ -83,7 +85,9 @@ public class EvidenceRecordType {
         //set digestMethod
         //getting the digestmethod (one per chain -> one per "big" tree)
         DigestMethodType digestMethodType = new DigestMethodType();
-        digestMethodType.setAlgorithm(poidObj.getDigestMethod());
+
+        DigestAlgorithm alg = DigestAlgorithm.forOID(poidObj.getDigestMethod());
+        digestMethodType.setAlgorithm(alg.getUri());
         archiveTimeStampChain.setDigestMethod(digestMethodType);
 
         //set canonicalization method : set fixed object
@@ -207,7 +211,9 @@ public class EvidenceRecordType {
                 }
                 // set new current parent
                 currParent = evidenceRecordDto.getParent();
-                digestValues.add(Base64.getEncoder().encode(evidenceRecordDto.getNodeValue()));
+                byte[] t = Base64.getEncoder().encode(evidenceRecordDto.getNodeValue());
+                digestValues.add(t);
+                System.out.println("Added the following b64 encoded value "+ new String(t,StandardCharsets.UTF_8));
                 prevIsRoot = false;
             }
         }

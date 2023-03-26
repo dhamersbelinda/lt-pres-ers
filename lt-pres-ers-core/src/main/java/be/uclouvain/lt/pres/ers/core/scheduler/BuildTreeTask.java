@@ -57,8 +57,8 @@ public class BuildTreeTask {
     private final POIDRepository poidRepository;
 
     //    @Scheduled(cron = "* 59 23 * * ?") //  this should be every day at midnight
-//    @Scheduled(cron = "0 0 0 1/1 * ?") //  this should be every day at midnight (fancy)
-    @Scheduled(cron = "0 * * * * ?") // TODO : every minute at 0 sec for development purpose
+    @Scheduled(cron = "0 0 0 1/1 * ?") //  this should be every day at midnight (fancy)
+//    @Scheduled(cron = "0 * * * * ?") // TODO : every minute at 0 sec for development purpose
     @SchedulerLock(name = "TaskScheduler_scheduledTask",
             lockAtLeastForString = "PT5s", lockAtMostForString = "PT25s") // TODO find proper duration
     public void scheduledTask() {
@@ -94,7 +94,7 @@ public class BuildTreeTask {
                 continue;
             }
             try {
-                alg = DigestAlgorithm.forXML(treeCategory.getDigestAlgorithm());
+                alg = DigestAlgorithm.forOID(treeCategory.getDigestAlgorithm());
             } catch(IllegalArgumentException e) {
                 logger.error("Could not find digest algorithm by xml id : "+treeCategory.getDigestAlgorithm()+"\nMessage for IllegalArgumentException :"+e.getMessage());
                 e.printStackTrace();

@@ -20,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -115,6 +116,14 @@ class POIDRepositoryTest {
         poidList.add(poid4);
 
         poidRepository.saveAll(poidList);
+
+        UUID uuid = poid1.getId();
+        System.out.println(uuid);
+
+        Optional<POID> test = poidRepository.findById(uuid);
+
+        if(!test.isPresent()) System.out.println("Not present ...");
+        else System.out.println("Present !");
 
         List<TreeCategoryDto> result = poidRepository.getToPreserveCategoriesPOIDAndRoot(now.plusMinutes(1), now.plusMinutes(10));
 

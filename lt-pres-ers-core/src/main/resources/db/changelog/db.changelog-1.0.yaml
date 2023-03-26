@@ -887,8 +887,8 @@ databaseChangeLog:
             baseColumnNames: PARENT_ID
             baseTableName: nodes
             constraintName: FK_PARENT_ID
-            deferrable: true
-            initiallyDeferred: true
+            #deferrable: true
+            #initiallyDeferred: true
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: NODE_ID

@@ -3,8 +3,10 @@ package be.uclouvain.lt.pres.ers.core.mapper;
 import be.uclouvain.lt.pres.ers.core.persistence.model.Digest;
 import be.uclouvain.lt.pres.ers.core.persistence.model.DigestList;
 import be.uclouvain.lt.pres.ers.core.persistence.model.PO;
+import be.uclouvain.lt.pres.ers.core.persistence.model.POID;
 import be.uclouvain.lt.pres.ers.model.DigestListDto;
 import be.uclouvain.lt.pres.ers.model.PODto;
+import be.uclouvain.lt.pres.ers.model.PreservePORequestDto;
 import be.uclouvain.lt.pres.ers.utils.OidUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import org.mapstruct.Mapper;
@@ -58,4 +60,9 @@ public interface POMapper {
             String digest
      */
 
+    /*
+    //TODO maybe move this to another mapper file to be cleaner
+    //from POID to PreservePORequestDto
+    PreservePORequestDto toDto(POID poid);
+     */
 }

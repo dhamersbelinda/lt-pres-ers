@@ -9,6 +9,8 @@ import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.SqlResultSetMapping;
+import java.util.Arrays;
+import java.util.HexFormat;
 
 //@NamedNativeQuery(
 //        name = "POID.getERPathFromPOID",
@@ -61,7 +63,6 @@ import javax.persistence.SqlResultSetMapping;
 @Getter
 @Setter
 @AllArgsConstructor
-@ToString
 public class EvidenceRecordDto {
     private Long nodeId;
 
@@ -81,4 +82,17 @@ public class EvidenceRecordDto {
 
     // True if this is the requested document's (or document group) node
     private boolean start;
+
+    @Override
+    public String toString() {
+        return "EvidenceRecordDto{" +
+                "nodeId=" + nodeId +
+                ", parent=" + parent +
+                ", nodeValue=" + (nodeValue==null ? null:HexFormat.of().formatHex(nodeValue)) +
+                ", treeId=" + treeId +
+                ", inTreeNum=" + inTreeNum +
+                ", timestamp=" + (timestamp==null ? null:HexFormat.of().formatHex(timestamp)) +
+                ", start=" + start +
+                '}';
+    }
 }

@@ -89,6 +89,7 @@ public class EvidenceRecordType {
         //set canonicalization method : set fixed object
         CanonicalizationMethodType canonicalizationMethodType = new CanonicalizationMethodType();
         canonicalizationMethodType.setAlgorithm(ALGO_ID_C14N_OMIT_COMMENTS); // is this correct ?
+        archiveTimeStampChain.setCanonicalizationMethod(canonicalizationMethodType);
 
         HashTreeType hashTreeType = new HashTreeType();
         List<HashTreeType.Sequence> hashTreeTypeSequenceList = hashTreeType.getSequence();

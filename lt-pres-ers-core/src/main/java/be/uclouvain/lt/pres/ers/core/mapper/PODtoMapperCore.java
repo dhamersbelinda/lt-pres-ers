@@ -64,9 +64,9 @@ public abstract class PODtoMapperCore {
     //don't want to set null
     abstract DigestList toDigestList(DigestListDto digestListDto);
 
-    URI map(DigestAlgorithm value) throws URISyntaxException {
-        if(value == null) throw new IllegalArgumentException("Null digAlg");
-        return new URI(value.getUri());
+    URI map(DigestAlgorithm alg) throws URISyntaxException {
+        if(alg == null) throw new IllegalArgumentException("Null digAlg");
+        return new URI(alg.getOid());
     }
 
     List<Digest> map(List<byte[]> digests) {

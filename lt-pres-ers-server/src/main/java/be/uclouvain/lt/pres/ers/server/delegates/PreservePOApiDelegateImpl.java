@@ -105,7 +105,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
             }
         }
         // TODO : adapt for other formats than digestLists
-        String digestMethod = poDtos.get(0).getDigestList().getDigestMethod().getUri();
+        String digestMethod = poDtos.get(0).getDigestList().getDigestMethod().getOid();
         PreservePORequestDto requestDto = new PreservePORequestDto(poDtos, profileDto, clientId, digestMethod);
 
 

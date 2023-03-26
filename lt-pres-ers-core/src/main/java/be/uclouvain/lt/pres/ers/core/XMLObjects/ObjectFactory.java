@@ -4,6 +4,7 @@ package be.uclouvain.lt.pres.ers.core.XMLObjects;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
 

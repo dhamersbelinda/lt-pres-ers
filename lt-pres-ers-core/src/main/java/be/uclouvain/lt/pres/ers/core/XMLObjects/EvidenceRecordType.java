@@ -13,6 +13,7 @@ import org.bouncycastle.tsp.TSPException;
 import javax.xml.bind.annotation.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
@@ -127,6 +128,8 @@ public class EvidenceRecordType {
         //do first iteration
         //need to capture BRANCHING_FACTOR elements and not just BRANCHING_FACTOR - 1
 
+        boolean prevIsRoot = false;
+
         for (int index = 0; index < evidenceRecordDtoList.size(); index++) {
             //we iterate on each value
             EvidenceRecordDto evidenceRecordDto = evidenceRecordDtoList.get(index);
@@ -155,9 +158,11 @@ public class EvidenceRecordType {
                     TimeStampType.TimeStampToken timestampToken = new TimeStampType.TimeStampToken();
                     timestampToken.setType("RFC3161");
                     List<Object> content = timestampToken.getContent();
-                    content.add(encoded); //TODO check if this is right
+                    String s = new String(Base64.getEncoder().encode(encoded), StandardCharsets.UTF_8);
+                    content.add(s); //TODO check if this is right
                     timeStampType.setTimeStampToken(timestampToken);
 
+                    sequence.setOrder(sequenceOrder);
                     hashTreeTypeSequenceList.add(sequence);
 
                     archiveTimeStampType.setTimeStamp(timeStampType);
@@ -178,6 +183,7 @@ public class EvidenceRecordType {
                         //set current parent
                         currParent = evidenceRecordDto.getParent(); // necessary ?
                     }
+                    prevIsRoot = true;
                 } catch (TSPException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -186,19 +192,22 @@ public class EvidenceRecordType {
                     e.printStackTrace();
                 }
             } else { //non-root node
-                if (evidenceRecordDto.getParent().longValue() != currParent) { //we need to create a new level
+                if (evidenceRecordDto.getParent().longValue() != currParent && !prevIsRoot) { //we need to create a new level
                     // add the current sequence and create a new one
+                    sequence.setOrder(sequenceOrder);
                     hashTreeTypeSequenceList.add(sequence);
                     sequence = new HashTreeType.Sequence();
                     digestValues = sequence.getDigestValue();
 
-                    sequence.setOrder(sequenceOrder);
                     sequenceOrder++;
 
-                    // set new current parent
-                    currParent = evidenceRecordDto.getParent();
+
+
                 }
+                // set new current parent
+                currParent = evidenceRecordDto.getParent();
                 digestValues.add(Base64.getEncoder().encode(evidenceRecordDto.getNodeValue()));
+                prevIsRoot = false;
             }
         }
         archiveTimeStampChains.add(archiveTimeStampChain);

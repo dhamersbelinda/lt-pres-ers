@@ -10,5 +10,8 @@ import java.util.UUID;
 public interface EvidenceConverterService {
     public EvidenceRecordType toEvidenceRecordType(List<EvidenceRecordDto> evidenceRecordDtoList, UUID poid);
 
-    public EvidenceRecordType toEvidenceRecordType(List<EvidenceRecordDto> evidenceRecordDtoList, POID poidObj);
+    public static EvidenceRecordType build(List<EvidenceRecordDto> evidenceRecordDtoList, POID poid) {
+        return null;
+    }
+
 }

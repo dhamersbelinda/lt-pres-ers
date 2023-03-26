@@ -43,10 +43,9 @@ public class EvidenceRecordDTOToEvidenceRecordType implements EvidenceConverterS
             System.out.println(poidObj.getPo().getDigestList());
             System.out.println(poidObj.getPo().getDigestList().getDigests());
             // TODO change to "findById" and check for nulls ect if not found
-            return toEvidenceRecordType(evidenceRecordDtoList, poidObj);
+            return EvidenceRecordType.build(evidenceRecordDtoList, poidObj);
         }
         return null;
-
     }
 
 

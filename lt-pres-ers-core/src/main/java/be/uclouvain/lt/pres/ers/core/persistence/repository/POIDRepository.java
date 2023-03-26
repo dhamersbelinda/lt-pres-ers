@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -35,11 +34,6 @@ public interface POIDRepository extends JpaRepository<POID, UUID> {
     @Query(nativeQuery = true)
     List<TreeCategoryDto> getToPreserveCategoriesPOIDAndRoot(@Param("DATE_NOW") OffsetDateTime dateNow, @Param("DATE_SHIFTED") OffsetDateTime dateShifted);
 
-//    @Query(value= """
-//                SELECT * FROM POIDs WHERE creation_date < :DATE_NOW AND client_id = :CLIENT AND digest_method = :DIGEST_METHOD AND node_id IS NULL ORDER BY creation_date LIMIT :N_VALUES OFFSET :OFFSET;
-//            """
-//            ,nativeQuery = true)
-//    List<POID> getPOIDsForTree(@Param("DATE_NOW") OffsetDateTime dateNow, @Param("CLIENT") long clientId, @Param("DIGEST_METHOD") String digestMethod, @Param("N_VALUES") int nValues, @Param("OFFSET") int offset);
     @Query(value= """
                     SELECT * FROM POIDs p WHERE creation_date < :DATE_NOW AND client_id = :CLIENT AND digest_method = :DIGEST_METHOD AND node_id IS NULL ORDER BY creation_date LIMIT :N_VALUES OFFSET :OFFSET ;
                 """, nativeQuery = true)

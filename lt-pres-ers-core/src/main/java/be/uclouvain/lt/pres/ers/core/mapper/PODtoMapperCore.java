@@ -107,9 +107,9 @@ public abstract class PODtoMapperCore {
 
     @AfterMapping
     void setPOObject(@MappingTarget PO po) {
+        DigestList dl = po.getDigestList();
+        dl.setPo(po);
         if (po.getRelatedObjects() != null) {
-            DigestList dl = po.getDigestList();
-            dl.setPo(po);
             po.getRelatedObjects().forEach((elem) -> elem.setPo(po));
         }
     }

@@ -86,12 +86,12 @@ import java.util.UUID;
         query = """
                     WITH
                         poids1 AS (SELECT DISTINCT client_id, digest_method FROM (
-                                    ((SELECT poid, client_id FROM POIDs WHERE creation_date < :DATE_NOW) AS pds\s
+                                    ((SELECT poid, client_id FROM POIDs WHERE creation_date < :DATE_NOW) AS pds
                                     JOIN
                                     (SELECT id, req_id FROM PO) AS po ON pds.poid = po.req_id) AS pds_po
-                                    JOIN\s
+                                    JOIN
                                     (SELECT id, digest_method FROM digestlist) AS dg ON pds_po.id=dg.id) AS r),
-                        roots1 AS (SELECT DISTINCT client_id, digest_method FROM root WHERE :DATE_NOW <= cert_valid_until AND cert_valid_until <= :DATE_SHIFTED)\s
+                        roots1 AS (SELECT DISTINCT client_id, digest_method FROM root WHERE :DATE_NOW <= cert_valid_until AND cert_valid_until <= :DATE_SHIFTED)
                     SELECT * FROM (SELECT * FROM poids1 UNION DISTINCT (SELECT * FROM roots1)) AS r1;
                     """,
         resultSetMapping = "TreeCategoryDtoMapping"

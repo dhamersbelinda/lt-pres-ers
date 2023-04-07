@@ -67,15 +67,7 @@ public class PreservePORequestGenerator {
     }
 
     public static String generateValidPORequestFromB64Digests(List<byte[]> digests, DigestAlgorithm digestAlgorithm) {
-        String toB64 =
-                """
-                      {
-                      "pres-DigestListType": {
-                        "digAlg":"%s",
-                        "digVal":%s
-                      }
-                    }
-                """.formatted(digestAlgorithm.getOid(), byteArrayListToJSONArray(digests));
+        String toB64 = "{\"pres-DigestListType\": {\"digAlg\":\"%s\",\"digVal\":%s}}".formatted(digestAlgorithm.getOid(), byteArrayListToJSONArray(digests));
         byte[] b64 = Base64.getEncoder().encode(toB64.getBytes(StandardCharsets.UTF_8));
         return """
                 {

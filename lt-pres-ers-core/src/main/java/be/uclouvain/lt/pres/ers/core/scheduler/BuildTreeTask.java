@@ -6,7 +6,6 @@ import be.uclouvain.lt.pres.ers.core.persistence.model.dto.TreeCategoryDto;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.ClientRepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.POIDRepository;
 import be.uclouvain.lt.pres.ers.core.persistence.repository.RootRepository;
-import be.uclouvain.lt.pres.ers.core.persistence.repository.TemporaryRepository;
 import be.uclouvain.lt.pres.ers.utils.ByteUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.TimestampType;
@@ -51,7 +50,6 @@ public class BuildTreeTask {
     private final static boolean MIX_RENEWALS = true; // TODO take this into account
     private final static TemporalAmount RENEWAL_TIME_MARGIN = Period.of(1,0,0);
 
-    private final TemporaryRepository temporaryRepository;
     private final ClientRepository clientRepository;
     private final RootRepository rootRepository;
     private final POIDRepository poidRepository;

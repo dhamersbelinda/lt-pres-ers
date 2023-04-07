@@ -22,43 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 
-
-//@NamedNativeQuery(
-//        name = "Root.getPOIDsForTree",
-//        query = """
-//                SELECT * FROM (
-//                    (SELECT * FROM root WHERE CERT_VALID_UNTIL >= :DATE_NOW AND CERT_VALID_UNTIL <= :DATE_SHIFTED
-//                        AND client_id = :CLIENT AND digest_method = :DIGEST_METHOD AND is_extended IS FALSE ORDER BY CERT_VALID_UNTIL ) AS r
-//                    JOIN (SELECT * FROM nodes) AS n ON r.node_id = n.node_id ) AS ret;
-//            """,
-//        resultSetMapping = "RootNodeMapping"
-//)
-//@SqlResultSetMapping(name = "RootNodeMapping",
-//        entities = {
-//                @EntityResult(
-//                        entityClass = Root.class,
-//                        fields = {
-//                                @FieldResult( name = "nodeId", column = "node_id" ),
-//                                @FieldResult( name = "node", column = "node_id" ),
-//                                @FieldResult( name = "clientId", column = "client_id" ),
-//                                @FieldResult( name = "digestMethod", column = "digest_method" ),
-//                                @FieldResult( name = "certValidUntil", column = "cert_valid_until" ),
-//                                @FieldResult( name = "isExtended", column = "is_extended" ),
-//                                @FieldResult( name = "timestamp", column = "root_timestamp" ),
-//                        }
-//                ),
-//                @EntityResult(
-//                        entityClass = Node.class,
-//                        fields = {
-//                                @FieldResult( name = "nodeId", column = "" ),
-//                                @FieldResult( name = "parent", column = "parent_id" ),
-//                                @FieldResult( name = "neighbour", column = "neighbour_id" ),
-//                                @FieldResult( name = "treeId", column = "tree_id" ),
-//                                @FieldResult( name = "inTreeId", column = "in_tree_id" ),
-//                                @FieldResult( name = "nodeValue", column = "node_value" ),
-//                        }
-//                )
-//        })
 @Entity(name = "ROOT")
 @Getter
 @Setter
@@ -72,6 +35,7 @@ public class Root implements Treeable{
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "NODE_ID", referencedColumnName = "NODE_ID")
+    @ToString.Exclude
     private Node node;
 
     @JoinColumn(name = "CLIENT_ID", referencedColumnName = "CLIENT_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_CLIENT_ID_ROOT"))
@@ -116,9 +80,7 @@ public class Root implements Treeable{
         try {
             builder = factory.newDocumentBuilder();
             doc = builder.parse( new InputSource( new StringReader( xml ) ) );
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException | SAXException e) {
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }
 

@@ -42,6 +42,21 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         // TODO : Adapt client id with the JWT when it is done
         Integer clientId = 0;
 
+        // We only support a single PO, for document groups send multiple digests in the digestList
+        if(request.getPo() == null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "Missing PO", HttpStatus.BAD_REQUEST);
+        } else if(request.getPo().size() != 1) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
+                    MinEnum.PARAMETER_ERROR, "At most one PO per preservePO", HttpStatus.BAD_REQUEST);
+        }
+
+        if(request.getPro() == null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "Missing profile", HttpStatus.BAD_REQUEST);
+        }
+
+
         final URI profileIdentifier; // TODO adapt everything according to the profile
         try {
             profileIdentifier = (request.getPro() == null) ? null : new URI(request.getPro());
@@ -61,16 +76,6 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 
         // po : verify preservation object(s)
         List<PresPOType> pos = request.getPo();
-        if(pos == null) {
-            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
-                    "Missing po", HttpStatus.BAD_REQUEST);
-        }
-
-        // We only support a single PO, for document groups send multiple digests in the digestList
-        if(pos.size() != 1) {
-            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
-                    MinEnum.PARAMETER_ERROR, "At most one PO per request !", HttpStatus.BAD_REQUEST);
-        }
 
         URI formatID;
         List<PODto> poDtos = new ArrayList<>(pos.size()); // TODO : will be sent to core service

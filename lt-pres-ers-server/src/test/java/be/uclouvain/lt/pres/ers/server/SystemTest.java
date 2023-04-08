@@ -28,7 +28,7 @@ public class SystemTest {
     public BuildTreeTask buildTreeTask;
 
     @Test
-    public void testPreservePO() throws Exception {
+    public void testErrorPreservePO() throws Exception{
         // Error test preservePO without PO
         mockMvc.perform(post("/pres/PreservePO")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -50,11 +50,26 @@ public class SystemTest {
                                   "po": [
                                     {
                                       "binaryData": {
-                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIwMVZMRnlBQzh3VHRiN0dkNXoyZHppRXcwS1RMWEpNN25xVXVXQkpLRk9FPSJdCiAgICAgIH0KICAgIH0K"
+                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIrcnl0UHhGRUtKWUhDb0JQV20rbXlTblc5Z3Z4ZXJvTUlZOTEzN2xNaSs0PSJdCiAgICAgIH0KICAgIH0K"
                                       },
                                       "formatId": "http://uri.etsi.org/19512/format/DigestList"
                                     }
                                   ]
+                                }""")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        // Could not easily get a custom response with maj min and reqId
+//                .andExpect(jsonPath("$.result").exists())
+//                .andExpect(jsonPath("$.result.maj").value(DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR.getValue()))
+//                .andExpect(jsonPath("$.result.min").value(MinEnum.PARAMETER_ERROR.getUri().toString()));
+
+        // Error test po present but empty list
+        mockMvc.perform(post("/pres/PreservePO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "pro": "https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0",
+                                  "po": []
                                 }""")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -62,6 +77,38 @@ public class SystemTest {
                 .andExpect(jsonPath("$.result.maj").value(DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR.getValue()))
                 .andExpect(jsonPath("$.result.min").value(MinEnum.PARAMETER_ERROR.getUri().toString()));
 
+        // Error test po present but more than one PO
+        mockMvc.perform(post("/pres/PreservePO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "pro": "https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0",
+                                  "po": [{
+                                      "binaryData": {
+                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIrcnl0UHhGRUtKWUhDb0JQV20rbXlTblc5Z3Z4ZXJvTUlZOTEzN2xNaSs0PSJdCiAgICAgIH0KICAgIH0K"
+                                      },
+                                      "formatId": "http://uri.etsi.org/19512/format/DigestList"
+                                    },
+                                    {
+                                      "binaryData": {
+                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIrcnl0UHhGRUtKWUhDb0JQV20rbXlTblc5Z3Z4ZXJvTUlZOTEzN2xNaSs0PSJdCiAgICAgIH0KICAgIH0K"
+                                      },
+                                      "formatId": "http://uri.etsi.org/19512/format/DigestList"
+                                    }]
+                                }""")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.result").exists())
+                .andExpect(jsonPath("$.result.maj").value(DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR.getValue()))
+                .andExpect(jsonPath("$.result.min").value(MinEnum.PARAMETER_ERROR.getUri().toString()));
+
+        // TODO:
+        // wrong/unknwon PO format
+        // different ways of having a wrong digestList
+    }
+
+    @Test
+    public void testPreservePO() throws Exception {
         // Testing poId existence
         mockMvc.perform(post("/pres/PreservePO")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +118,7 @@ public class SystemTest {
                                   "po": [
                                     {
                                       "binaryData": {
-                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIwMVZMRnlBQzh3VHRiN0dkNXoyZHppRXcwS1RMWEpNN25xVXVXQkpLRk9FPSJdCiAgICAgIH0KICAgIH0K"
+                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIrcnl0UHhGRUtKWUhDb0JQV20rbXlTblc5Z3Z4ZXJvTUlZOTEzN2xNaSs0PSJdCiAgICAgIH0KICAgIH0K"
                                       },
                                       "formatId": "http://uri.etsi.org/19512/format/DigestList"
                                     }
@@ -91,7 +138,7 @@ public class SystemTest {
                                   "po": [
                                     {
                                       "binaryData": {
-                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIwMVZMRnlBQzh3VHRiN0dkNXoyZHppRXcwS1RMWEpNN25xVXVXQkpLRk9FPSJdCiAgICAgIH0KICAgIH0K"
+                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIrcnl0UHhGRUtKWUhDb0JQV20rbXlTblc5Z3Z4ZXJvTUlZOTEzN2xNaSs0PSJdCiAgICAgIH0KICAgIH0K"
                                       },
                                       "formatId": "http://uri.etsi.org/19512/format/DigestList"
                                     }
@@ -112,7 +159,7 @@ public class SystemTest {
                                   "po": [
                                     {
                                       "binaryData": {
-                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIwMVZMRnlBQzh3VHRiN0dkNXoyZHppRXcwS1RMWEpNN25xVXVXQkpLRk9FPSJdCiAgICAgIH0KICAgIH0K"
+                                        "value": "ICAgICAgewogICAgICAicHJlcy1EaWdlc3RMaXN0VHlwZSI6IHsKICAgICAgICAiZGlnQWxnIjoiMi4xNi44NDAuMS4xMDEuMy40LjIuMSIsCiAgICAgICAgImRpZ1ZhbCI6WyIrcnl0UHhGRUtKWUhDb0JQV20rbXlTblc5Z3Z4ZXJvTUlZOTEzN2xNaSs0PSJdCiAgICAgIH0KICAgIH0K"
                                       },
                                       "formatId": "http://uri.etsi.org/19512/format/DigestList"
                                     }

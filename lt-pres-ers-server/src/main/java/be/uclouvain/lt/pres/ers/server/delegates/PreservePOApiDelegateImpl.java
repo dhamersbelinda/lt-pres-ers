@@ -14,12 +14,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
+import javax.validation.ConstraintViolationException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 // TODO is this ASYNC ? check for all API methods ...
 @Component
@@ -48,7 +54,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                     "Missing PO", HttpStatus.BAD_REQUEST);
         } else if(request.getPo().size() != 1) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
-                    MinEnum.PARAMETER_ERROR, "At most one PO per preservePO", HttpStatus.BAD_REQUEST);
+                    MinEnum.PARAMETER_ERROR, "Exactly one PO per preservePO request", HttpStatus.BAD_REQUEST);
         }
 
         if(request.getPro() == null) {
@@ -56,23 +62,31 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
                     "Missing profile", HttpStatus.BAD_REQUEST);
         }
 
+        // We do not support optional inputs
+        if(request.getOptIn() != null){
+            if(request.getOptIn().getPolicy() != null && request.getOptIn().getPolicy().size() != 0) {
+                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Policies in optIn are not supported", HttpStatus.BAD_REQUEST);
+            }
+            if(request.getOptIn().getOther() != null && request.getOptIn().getOther().size() != 0) {
+                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Other in optIn are not supported", HttpStatus.BAD_REQUEST);
+            }
+        }
+
 
         final URI profileIdentifier; // TODO adapt everything according to the profile
         try {
-            profileIdentifier = (request.getPro() == null) ? null : new URI(request.getPro());
+            profileIdentifier = new URI(request.getPro());
         } catch (final URISyntaxException e) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
-                    request.getPro() + " is not a valid URI.", HttpStatus.BAD_REQUEST);
+                    "Profile:'" + request.getPro() + "' is not a valid URI.", HttpStatus.BAD_REQUEST);
         }
 
         final ProfileDto profileDto;
         try {
             profileDto = this.profileService.getProfile(profileIdentifier);
         } catch (final ProfileNotFoundException e) {
-            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR,
-                    MinEnum.PARAMETER_ERROR, e.getMessage(), HttpStatus.BAD_REQUEST);
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR, "Unknown profile :"+profileIdentifier, HttpStatus.NOT_FOUND);
         }
-
 
         // po : verify preservation object(s)
         List<PresPOType> pos = request.getPo();
@@ -82,19 +96,16 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         PODto temp;
         int idx = 1;
         for (PresPOType po : pos) {
-
             try {
                 formatID = (po.getFormatId() == null) ? null : URI.create(po.getFormatId());
                 if(! SubDOFormatID.DigestList.getUri().equals(formatID)){
-                    return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.UNKNOWN_PO_FORMAT,
                             "Unsupported format ID: "+po.getFormatId(), HttpStatus.BAD_REQUEST);
                 }
                 if(pos.size() > 1) {
                     return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                             "Only a single PO is supported for digestLists format.", HttpStatus.BAD_REQUEST);
                 }
-                // TODO remove print
-                System.out.println("This is the PO: " + po);
 
                 temp = mapperPOType.toPODto(po);
 

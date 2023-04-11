@@ -1087,3 +1087,25 @@ databaseChangeLog:
                   name: CLIENT_ID
                   value: "0"
             tableName: CLIENT
+# Indexes, changesets depend on dbms
+  - changeSet:
+      id: 51
+      dbms: "!postgresql"
+      author: sasha
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: parent_id
+            indexName: index_hash_nodes_parentID
+            tableName: person
+
+  - changeSet:
+      id: 51
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_hash_nodes_parentID ON nodes USING hash(parent_id);
+

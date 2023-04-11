@@ -97,6 +97,8 @@ class POIDRepositoryTest {
         poid1.setProfile(profile);
         poid1.setClientId(c1);
         poid1.setCreationDate(now);
+        poid1.setDigestValue("test".getBytes(StandardCharsets.UTF_8));
+        poid1.setDigestMethod(DigestAlgorithm.SHA256.getOid());
         PO po1 = new PO();
         poid1.setPo(po1);
         DigestList digestList1 = new DigestList();
@@ -104,6 +106,7 @@ class POIDRepositoryTest {
         digest1.setDigest("sasha1".getBytes(StandardCharsets.UTF_8));
         digestList1.setDigests(new ArrayList<>(List.of(new Digest[]{digest1})));
         digestList1.setDigestMethod(new URI(DigestAlgorithm.SHA256.getOid()));
+        digestList1.setPo(po1);
         po1.setDigestList(digestList1);
         po1.setFormatId(new URI("http://uri.etsi.org/19512/format/DigestList"));
         po1.setPoid(poid1);
@@ -113,6 +116,8 @@ class POIDRepositoryTest {
         poid2.setProfile(profile);
         poid2.setClientId(c1);
         poid2.setCreationDate(now);
+        poid2.setDigestValue("test".getBytes(StandardCharsets.UTF_8));
+        poid2.setDigestMethod(DigestAlgorithm.SHA256.getOid());
         PO po2 = new PO();
         poid2.setPo(po2);
         DigestList digestList2 = new DigestList();
@@ -120,6 +125,7 @@ class POIDRepositoryTest {
         digest2.setDigest("sasha2".getBytes(StandardCharsets.UTF_8));
         digestList2.setDigests(new ArrayList<>(List.of(new Digest[]{digest2})));
         digestList2.setDigestMethod(new URI(DigestAlgorithm.SHA512.getOid()));
+        digestList2.setPo(po2);
         po2.setDigestList(digestList2);
         po2.setFormatId(new URI("http://uri.etsi.org/19512/format/DigestList"));
         po2.setPoid(poid2);
@@ -129,6 +135,8 @@ class POIDRepositoryTest {
         poid3.setProfile(profile);
         poid3.setClientId(c2);
         poid3.setCreationDate(now);
+        poid3.setDigestValue("test".getBytes(StandardCharsets.UTF_8));
+        poid3.setDigestMethod(DigestAlgorithm.SHA256.getOid());
         PO po3 = new PO();
         poid3.setPo(po3);
         DigestList digestList3 = new DigestList();
@@ -136,6 +144,7 @@ class POIDRepositoryTest {
         digest3.setDigest("sasha3".getBytes(StandardCharsets.UTF_8));
         digestList3.setDigests(new ArrayList<>(List.of(new Digest[]{digest3})));
         digestList3.setDigestMethod(new URI(DigestAlgorithm.SHA512.getOid()));
+        digestList3.setPo(po3);
         po3.setDigestList(digestList3);
         po3.setFormatId(new URI("http://uri.etsi.org/19512/format/DigestList"));
         po3.setPoid(poid3);
@@ -145,6 +154,8 @@ class POIDRepositoryTest {
         poid4.setProfile(profile);
         poid4.setClientId(c2);
         poid4.setCreationDate(now);
+        poid4.setDigestValue("test".getBytes(StandardCharsets.UTF_8));
+        poid4.setDigestMethod(DigestAlgorithm.SHA256.getOid());
         PO po4 = new PO();
         poid4.setPo(po4);
         DigestList digestList4 = new DigestList();
@@ -152,6 +163,7 @@ class POIDRepositoryTest {
         digest4.setDigest("sasha4".getBytes(StandardCharsets.UTF_8));
         digestList4.setDigests(new ArrayList<>(List.of(new Digest[]{digest4})));
         digestList4.setDigestMethod(new URI(DigestAlgorithm.SHA256.getOid()));
+        digestList4.setPo(po4);
         po4.setDigestList(digestList4);
         po4.setFormatId(new URI("http://uri.etsi.org/19512/format/DigestList"));
         po4.setPoid(poid4);

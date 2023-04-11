@@ -1098,7 +1098,7 @@ databaseChangeLog:
               - column:
                   name: parent_id
             indexName: index_hash_nodes_parentID
-            tableName: person
+            tableName: nodes
 
   - changeSet:
       id: 51
@@ -1108,4 +1108,78 @@ databaseChangeLog:
         - sql:
             dbms: 'postgresql'
             sql: CREATE INDEX index_hash_nodes_parentID ON nodes USING hash(parent_id);
+
+  - changeSet:
+      id: 52
+      author: sasha
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: creation_date
+              - column:
+                  name: node_id
+              - column:
+                  name: client_id
+              - column:
+                  name: digest_method
+            indexName: index_btree_poids_creationDate_nodeId_clientId_digestMethod
+            tableName: poids
+
+  - changeSet:
+      id: 53
+      author: sasha
+      dbms: "!postgresql"
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: req_id
+            indexName: index_hash_po_reqID
+            tableName: po
+  - changeSet:
+      id: 53
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_hash_po_reqID ON PO USING hash(req_id);
+
+  - changeSet:
+      id: 54
+      author: sasha
+      dbms: "!postgresql"
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: po_id
+            indexName: index_hash_digestList_poId
+            tableName: digestlist
+  - changeSet:
+      id: 54
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_hash_digestList_poId ON digestlist USING hash(po_id);
+
+  - changeSet:
+      id: 55
+      author: sasha
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: CERT_VALID_UNTIL
+              - column:
+                  name: client_id
+              - column:
+                  name: digest_method
+              - column:
+                  name: is_extended
+            indexName: index_btree_root_certValidUntil_clientId_digestMethod_isExtended
+            tableName: root
 

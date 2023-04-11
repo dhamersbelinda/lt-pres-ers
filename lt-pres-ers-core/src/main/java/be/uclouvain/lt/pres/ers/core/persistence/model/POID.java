@@ -90,7 +90,7 @@ import java.util.UUID;
                                     JOIN
                                     (SELECT id, req_id FROM PO) AS po ON pds.poid = po.req_id) AS pds_po
                                     JOIN
-                                    (SELECT id, digest_method FROM digestlist) AS dg ON pds_po.id=dg.id) AS r),
+                                    (SELECT id AS dl_id, digest_method, po_id FROM digestlist) AS dg ON pds_po.id=dg.po_id) AS r),
                         roots1 AS (SELECT DISTINCT client_id, digest_method FROM root WHERE :DATE_NOW <= cert_valid_until AND cert_valid_until <= :DATE_SHIFTED)
                     SELECT * FROM (SELECT * FROM poids1 UNION DISTINCT (SELECT * FROM roots1)) AS r1;
                     """,

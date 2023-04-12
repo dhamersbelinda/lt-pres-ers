@@ -1,11 +1,10 @@
 databaseChangeLog:
-
   - changeSet:
       id: 1
       author: nowina
       changes:
         - createTable:
-            tableName: PROFILE
+            tableName: profile
             columns:
               - column:
                  name: ID
@@ -78,7 +77,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: OPERATION
+            tableName: operation
             columns:
               - column:
                  name: ID
@@ -114,7 +113,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: OPERATION_INPUT
+            tableName: operation_input
             columns:
               - column:
                  name: ID
@@ -150,7 +149,7 @@ databaseChangeLog:
       author: nowina
       changes:
         - createTable:
-            tableName: OPERATION_OUTPUT
+            tableName: operation_output
             columns:
               - column:
                  name: ID
@@ -229,14 +228,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PROFILE_ID
-            baseTableName: OPERATION
+            baseTableName: operation
             constraintName: FK_OPERATION_PROFILE
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: PROFILE
+            referencedTableName: profile
             validate: true
 
   - changeSet:
@@ -245,14 +244,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: FORMAT_ID
-            baseTableName: OPERATION_INPUT
+            baseTableName: operation_input
             constraintName: FK_OPERATION_INPUT_FORMAT
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: FORMAT
+            referencedTableName: format
             validate: true
 
   - changeSet:
@@ -261,14 +260,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: OPERATION_ID
-            baseTableName: OPERATION_INPUT
+            baseTableName: operation_input
             constraintName: FK_OPERATION_INPUT_OPERATION
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: OPERATION
+            referencedTableName: operation
             validate: true
 
   - changeSet:
@@ -277,14 +276,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: OPERATION_ID
-            baseTableName: OPERATION_OUTPUT
+            baseTableName: operation_output
             constraintName: FK_OPERATION_OUTPUT_OPERATION
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: OPERATION
+            referencedTableName: operation
             validate: true
 
   - changeSet:
@@ -293,14 +292,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: PARENT_FORMAT_ID
-            baseTableName: PARAMETER
+            baseTableName: parameter
             constraintName: FK_PARAMETER_PARENT_FORMAT
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: FORMAT
+            referencedTableName: format
             validate: true
 
   - changeSet:
@@ -309,14 +308,14 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: FORMAT_ID
-            baseTableName: PARAMETER
+            baseTableName: parameter
             constraintName: FK_PARAMETER_FORMAT
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: ID
-            referencedTableName: FORMAT
+            referencedTableName: format
             validate: true
 
   - changeSet:
@@ -355,10 +354,10 @@ databaseChangeLog:
              - column:
                  name: PRESERVATION_EVIDENCE_RETENTION_DURATION  
                  value: PT0S
-           tableName: PROFILE
+           tableName: profile
        - rollback:
            - delete:
-              tableName: PROFILE
+              tableName: profile
 
   - changeSet:
      id: 14
@@ -377,7 +376,7 @@ databaseChangeLog:
                  value: See clause 5.3.3
              - column:
                  name: PROFILE_ID  
-                 valueComputed: (SELECT ID FROM PROFILE)
+                 valueComputed: (SELECT ID FROM profile)
            tableName: OPERATION
        - rollback:
            - delete:
@@ -400,7 +399,7 @@ databaseChangeLog:
                  value: See clause 5.3.4
              - column:
                  name: PROFILE_ID  
-                 valueComputed: (SELECT ID FROM PROFILE)
+                 valueComputed: (SELECT ID FROM profile)
            tableName: OPERATION
        - rollback:
            - delete:
@@ -564,3 +563,623 @@ databaseChangeLog:
        - rollback:
            - delete:
               tableName: PARAMETER
+
+  - changeSet:
+      id: 25
+      author: belinda
+      changes:
+        - createTable:
+            tableName: po
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_PO
+                    nullable: false
+              - column:
+                  name: UNIQUE_IDENTIFIER
+                  type: varchar(2048)
+                  constraints:
+                    nullable: true
+                    unique: true
+                    uniqueConstraintName: UK_PO_IDENTIFIER
+              - column:
+                  name: PO_VALUE
+                  type: varchar(2048)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FORMAT_IDENTIFIER
+                  type: varchar(2048)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 26
+      author: belinda
+      changes:
+        - createTable:
+            tableName: DIGESTLIST
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_DIGESTLIST
+                    nullable: false
+              - column:
+                  name: DIGEST_METHOD
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: PO_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 27
+      author: belinda
+      changes:
+        - createTable:
+            tableName: DIGEST
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_DIGEST
+                    nullable: false
+              - column:
+                  name: DIGEST_VALUE
+                  type: BYTEA   # TODO : adapt this with a variable depending on DBMS, here only for postgresql ...
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DIGESTLIST_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 28
+      author: sasha
+      changes:
+        - createTable:
+            tableName: CLIENT
+            columns:
+              - column:
+                  name: CLIENT_ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_CLIENT
+                    nullable: false
+
+  - changeSet:
+      id: 29
+      author: belinda
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: PO_ID
+            baseTableName: digestlist
+            constraintName: FK_DIGESTLIST_PO
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: po
+            validate: true
+
+  - changeSet:
+      id: 30
+      author: belinda
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: DIGESTLIST_ID
+            baseTableName: digest
+            constraintName: FK_DIGEST_DIGESTLIST
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: digestlist
+            validate: true
+
+  - changeSet:
+      id: 31
+      author: bimbambel
+      changes:
+      - addColumn:
+          tableName: po
+          columns:
+            - column:
+                name: MIMETYPE
+                type: varchar(2048)
+                constraints:
+                  nullable: true
+            - column:
+                name: PRONOM_ID
+                type: varchar(2048)
+                constraints:
+                  nullable: true
+            - column:
+                name: REQ_ID
+#                type: VARCHAR(255)
+                type: UUID
+                constraints:
+                  nullable: false
+      - dropColumn:
+          tableName: po
+          columns:
+          - column:
+              name: PO_VALUE
+
+  - changeSet:
+      id: 32
+      author: bimbambel
+      changes:
+        - createTable:
+            tableName: POIDS
+            columns:
+              - column:
+                  name: POID
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+#                  type: VARCHAR(255)
+                  #autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_POID
+                    nullable: false
+              - column:
+                  name: PROFILE_ID
+                  type: BIGINT
+                  #autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CLIENT_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: DIGEST_METHOD  # The digest method the POID's tree is going to be built with
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: DIGEST_VALUE  # TODO : keep or join with digestList then digest ? And bytea only for postgres
+                  type: BYTEA
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: NODE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: CREATION_DATE
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: 33
+      author: bimbambel
+      changes:
+        - createTable:
+            tableName: RELATED_OBJECT
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_RELOBJ
+                    nullable: false
+              - column:
+                  name: RELATED_OBJECT_NAME
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: PO_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 34
+      author: bimbambel
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: PO_ID
+            baseTableName: related_object
+            constraintName: FK_RELOBJ
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: ID
+            referencedTableName: po
+            validate: true
+
+
+  - changeSet:
+      id: 35
+      author: bimbambel
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: REQ_ID
+            baseTableName: po
+            constraintName: FK_REQ_PO
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: POID
+            referencedTableName: poids
+            validate: true
+
+  - changeSet:
+      id: 36
+      author: sasha
+      changes:
+        - createTable:
+            tableName: NODES
+            columns:
+              - column:
+                  name: NODE_ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_NODE_ID
+                    nullable: false
+              - column:
+                  name: PARENT_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    unique: false
+              - column:
+                  name: TREE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: IN_TREE_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: false
+              - column:
+                  name: NODE_VALUE
+                  type: BYTEA    # TODO : only for postgres, check other similar todos
+                  constraints:
+                    nullable: false
+                    unique: false
+
+  - changeSet:
+      id: 37
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: PARENT_ID
+            baseTableName: nodes
+            constraintName: FK_PARENT_ID
+            #deferrable: true
+            #initiallyDeferred: true
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: NODE_ID
+            referencedTableName: nodes
+            validate: true
+
+#  - changeSet:
+#      id: 38
+#      author: sasha
+#      changes:
+
+  - changeSet:
+      id: 39
+      author: sasha
+      changes:
+        - addUniqueConstraint:
+            columnNames: TREE_ID, IN_TREE_ID
+            tableName: NODES
+            constraintName: UQ_TREE_ID__IN_TREE_ID
+            deferrable: false
+            initiallyDeferred: false
+            validate: true
+
+#  id 40 & 41 are available
+
+  - changeSet:
+      id: 42
+      author: sasha
+      changes:
+        - createTable:
+            tableName: SHEDLOCK
+            columns:
+              - column:
+                  name: NAME
+                  type: VARCHAR(64)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: LOCK_UNTIL
+                  type: TIMESTAMP(3)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: LOCKED_AT
+                  type: TIMESTAMP(3)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: LOCKED_BY
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 43
+      author: sasha
+      changes:
+        - createTable:
+            tableName: ROOT
+            columns:
+              - column:
+                  name: NODE_ID
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: CERT_VALID_UNTIL
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: IS_EXTENDED
+                  type: BOOLEAN
+                  defaultValueBoolean: false # TODO do we keep it ?
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CLIENT_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DIGEST_METHOD
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ROOT_TIMESTAMP
+                  type: BYTEA
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 44
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: NODE_ID
+            baseTableName: ROOT
+            constraintName: FK_NODE_ID_ROOT
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
+            validate: true
+
+  - changeSet:
+      id: 45
+      author: sasha
+      changes:
+        - createTable:
+            tableName: TREE_ID
+            columns:
+              - column:
+                  name: TREE_ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+  - changeSet:
+      id: 46
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: TREE_ID
+            baseTableName: NODES
+            constraintName: FK_TREE_ID_NODES
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: TREE_ID
+            referencedTableName: TREE_ID
+            validate: true
+
+  - changeSet:
+      id: 47
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: NODE_ID
+            baseTableName: POIDS
+            constraintName: FK_NODE_ID_POIDS
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT   # Safe check for when we delete ?
+            onUpdate: CASCADE
+            referencedColumnNames: NODE_ID
+            referencedTableName: NODES
+            validate: true
+
+  - changeSet:
+      id: 48
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: CLIENT_ID
+            baseTableName: ROOT
+            constraintName: FK_CLIENT_ID_ROOT
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: CLIENT_ID
+            referencedTableName: CLIENT
+            validate: true
+
+  - changeSet:
+      id: 49
+      author: sasha
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: CLIENT_ID
+            baseTableName: POIDS
+            constraintName: FK_CLIENT_ID_POIDS
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            referencedColumnNames: CLIENT_ID
+            referencedTableName: CLIENT
+            validate: true
+
+  # TODO : This is a dummy client, remove it when the authentication/identification has been done
+  - changeSet:
+      id: 50
+      author: sasha
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: CLIENT_ID
+                  value: "0"
+            tableName: CLIENT
+# Indexes, changesets depend on dbms
+  - changeSet:
+      id: 51
+      dbms: "!postgresql"
+      author: sasha
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: parent_id
+            indexName: index_hash_nodes_parentID
+            tableName: nodes
+
+  - changeSet:
+      id: 51
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_hash_nodes_parentID ON nodes USING hash(parent_id);
+
+  - changeSet:
+      id: 52
+      author: sasha
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: creation_date
+              - column:
+                  name: node_id
+              - column:
+                  name: client_id
+              - column:
+                  name: digest_method
+            indexName: index_btree_poids_creationDate_nodeId_clientId_digestMethod
+            tableName: poids
+
+  - changeSet:
+      id: 53
+      author: sasha
+      dbms: "!postgresql"
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: req_id
+            indexName: index_hash_po_reqID
+            tableName: po
+  - changeSet:
+      id: 53
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_hash_po_reqID ON PO USING hash(req_id);
+
+  - changeSet:
+      id: 54
+      author: sasha
+      dbms: "!postgresql"
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: po_id
+            indexName: index_hash_digestList_poId
+            tableName: digestlist
+  - changeSet:
+      id: 54
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_hash_digestList_poId ON digestlist USING hash(po_id);
+
+  - changeSet:
+      id: 55
+      author: sasha
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: CERT_VALID_UNTIL
+              - column:
+                  name: client_id
+              - column:
+                  name: digest_method
+              - column:
+                  name: is_extended
+            indexName: index_btree_root_certValidUntil_clientId_digestMethod_isExtended
+            tableName: root
+

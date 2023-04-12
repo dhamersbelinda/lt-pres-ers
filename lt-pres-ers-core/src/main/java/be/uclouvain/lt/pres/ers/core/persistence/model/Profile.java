@@ -58,7 +58,7 @@ public class Profile {
     // profileIdentifier can be a natural primary key, but JPA 2.2 does not allow
     // the use of converters on attributes annotated with @Id. So, we use a
     // surrogate key and we put a unique key constraint on this column.
-    @Column(name = "PROFILE_IDENTIFIER", nullable = false, length = 2048)
+    @Column(name = "PROFILE_IDENTIFIER", unique=true, nullable = false, length = 2048)
     private URI profileIdentifier;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile", cascade = CascadeType.ALL)

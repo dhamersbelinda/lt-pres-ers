@@ -15,7 +15,6 @@ import java.util.UUID;
         @NamedAttributeNode(value = "po", subgraph = "po-subgraph"),
         @NamedAttributeNode(value = "node", subgraph = "node-subgraph")
         },
-
         subgraphs = {
         @NamedSubgraph(name = "po-subgraph", attributeNodes = {
                 @NamedAttributeNode(value = "digestList", subgraph = "digestList-subgraph") }),
@@ -23,8 +22,6 @@ import java.util.UUID;
                 @NamedAttributeNode(value = "digests", subgraph = "digest-subgraph")}),
         @NamedSubgraph(name = "digest-subgraph" , attributeNodes = {
                 @NamedAttributeNode(value = "digest")}),
-
-
         @NamedSubgraph(name = "node-subgraph", attributeNodes = {
                @NamedAttributeNode(value = "parent"),
                 @NamedAttributeNode(value = "treeId"),

@@ -64,7 +64,12 @@ public class EvidenceRecordType {
     protected BigDecimal version;
 
     public static EvidenceRecordType build(List<EvidenceRecordDto> evidenceRecordDtoList, POID poidObj) {
-
+        if(poidObj == null){
+            throw new IllegalArgumentException("poidObj cannot be null");
+        }
+        if(evidenceRecordDtoList == null || evidenceRecordDtoList.isEmpty()) {
+            throw new IllegalArgumentException("evidenceRecordDtoList cannot be null or empty");
+        }
         // initialize all structures
         EvidenceRecordType evidenceRecordType = new EvidenceRecordType();
         //no encryptionInformation (yet)

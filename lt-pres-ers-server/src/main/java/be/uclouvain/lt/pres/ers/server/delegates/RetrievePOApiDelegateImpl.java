@@ -3,6 +3,8 @@ package be.uclouvain.lt.pres.ers.server.delegates;
 import be.uclouvain.lt.pres.ers.core.XMLObjects.EvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.XMLObjects.ObjectFactory;
 import be.uclouvain.lt.pres.ers.core.XMLObjects.ObjectFactory;
+import be.uclouvain.lt.pres.ers.core.exception.PONotFoundException;
+import be.uclouvain.lt.pres.ers.core.persistence.model.POID;
 import be.uclouvain.lt.pres.ers.core.service.impl.EvidenceRecordDTOToEvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
 import be.uclouvain.lt.pres.ers.core.service.POService;
@@ -60,17 +62,28 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             ID we receive from db (that we received from client in preservePO call)
             RelatedObjects we receive from db (that we received from client in preservePO call)
          */
-        UUID poid = UUID.fromString(request.getPoId());
-        System.out.println(poid);
-
-        List<EvidenceRecordDto> result = service.getERFromPOID(poid);
-        if(result != null) {
-            for (EvidenceRecordDto evidenceRecordDto : result) {
-                System.out.println(evidenceRecordDto);
-            }
+        UUID poidUUID;
+        try{
+            poidUUID = UUID.fromString(request.getPoId());
+        } catch(IllegalArgumentException e) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "Invalid POID", null, HttpStatus.BAD_REQUEST);
         }
+
+        List<EvidenceRecordDto> result;
+        try {
+            result = service.getERFromPOID(poidUUID);
+        }catch (PONotFoundException e) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "POID not found : '"+request.getPoId()+"'", null, HttpStatus.BAD_REQUEST);
+        }
+        if(result==null || result.isEmpty()) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, MinEnum.REQUEST_ONLY_PARTLY_SUCCESSFUL,
+                    "POID's evidence not yet generated", null, HttpStatus.OK);
+        }
+
         //call converter with poid as arg
-        EvidenceRecordType evidenceRecordType = converterService.toEvidenceRecordType(result, poid);
+        EvidenceRecordType evidenceRecordType = converterService.toEvidenceRecordType(result, poidUUID);
 
         if(evidenceRecordType == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,

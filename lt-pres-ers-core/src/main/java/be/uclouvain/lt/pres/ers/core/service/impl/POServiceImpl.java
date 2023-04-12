@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
@@ -68,8 +69,11 @@ public class POServiceImpl implements POService {
         return toReturn.get();
     }
 
-    public List<EvidenceRecordDto> getERFromPOID(UUID poid) {
-        return poidRepository.getERPathFromPOID(poid);
+    public List<EvidenceRecordDto> getERFromPOID(UUID poidUUID) {
+        Optional<POID> poid = poidRepository.findById(poidUUID);
+        if(poid.isEmpty()) throw new PONotFoundException();
+        if(poid.get().getNode() == null) return null; // TODO create an exception for this ?
+        return poidRepository.getERPathFromPOID(poidUUID);
     }
 
 }

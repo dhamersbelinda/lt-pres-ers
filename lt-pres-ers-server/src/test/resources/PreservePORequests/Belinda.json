@@ -1,0 +1,11 @@
+{
+  "pro": "https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0",
+  "po": [
+    {
+      "binaryData": {
+        "value": "eyJkaWdBbGciOiIyLjE2Ljg0MC4xLjEwMS4zLjQuMi4xIiwiZGlnVmFsIjpbIjAxVkxGeUFDOHdUdGI3R2Q1ejJkemlFdzBLVExYSk03bnFVdVdCSktGT0U9Il19"
+      },
+      "formatId": "http://uri.etsi.org/19512/format/DigestList"
+    }
+  ]
+}

@@ -21,49 +21,24 @@ public class DigestListDeserializer extends JsonDeserializer<DigestListDto> {
         final ObjectCodec codec = parser.getCodec();
         final JsonNode root = codec.readTree(parser);
 
+        final DigestListDto digestList = new DigestListDto();
         final Iterator<String> rootFieldNameIter = root.fieldNames();
         while (rootFieldNameIter.hasNext()) {
-            String field = rootFieldNameIter.next();
-            if(!Objects.equals(field, "pres-DigestListType")) {
-                throw new IllegalArgumentException("Unknown root-level field : "+field);
-            }
-        }
-
-        final JsonNode node = root.get("pres-DigestListType");
-//        final JsonNode node = root;
-        if(node == null || node.isNull()) {
-            throw new IllegalArgumentException("Empty field 'pres-DigestListType'");
-        }
-
-        final DigestListDto digestList = new DigestListDto();
-        final Iterator<String> fieldNameIter = node.fieldNames();
-
-        while (fieldNameIter.hasNext()) {
-            System.out.println("Iterating ...");
-            final String fieldName = fieldNameIter.next();
+            String fieldName = rootFieldNameIter.next();
             switch (fieldName) {
                 case "digAlg" -> {
-                    System.out.println("Iterating digAlg");
-//                    URI digAlg;
-//                    try {
-//                        digAlg = new URI(node.get(fieldName).textValue());
-//                    } catch (URISyntaxException e) {
-//                        throw new IllegalArgumentException("Cannot parse URI in field digAlg");
-//                    }
-                    String extracted = node.get(fieldName).textValue();
+                    String extracted = root.get(fieldName).textValue();
                     extracted = OidUtils.stringToOidString(extracted);
                     DigestAlgorithm alg = DigestAlgorithm.forOID(extracted); // Warning : for OID here !
                     digestList.setDigestMethod(alg);
                 }
                 case "digVal" -> {
-                    System.out.println("Iterating digAlg");
-                    JsonNode arrayRoot = node.get(fieldName);
+                    JsonNode arrayRoot = root.get(fieldName);
                     if(! arrayRoot.isArray()) throw new IllegalArgumentException("Field 'digVal' in digest list JSON is not an array");
                     String value;
                     List<byte[]> result = new ArrayList<>();
                     for (JsonNode jsonNode : arrayRoot) {
                         value = jsonNode.textValue();
-                        System.out.println("      digAlg : "+value);
                         // TODO : Here we assume a specific string encoding (ISO 8859 1, see decode() documentation)
                         result.add(Base64.getDecoder().decode(value));
                     }
@@ -71,9 +46,14 @@ public class DigestListDeserializer extends JsonDeserializer<DigestListDto> {
                 }
                 // TODO : support evidences ?
                 case "ev" -> throw new IllegalArgumentException("'ev' field present in digest list, evidences are not supported.");
-                default -> throw new IllegalArgumentException("Unknown field in digest list JSON : " + fieldName);
+                default -> throw new IllegalArgumentException("Unknown field in pres-DigestListType JSON : " + fieldName);
             }
         }
+        if(digestList.getDigests() == null || digestList.getDigests().isEmpty())
+            throw new IllegalArgumentException("Missing or empty digVal");
+
+        if(digestList.getDigestMethod() == null)
+            throw new IllegalArgumentException("Missing digAlg");
 
         return digestList;
     }

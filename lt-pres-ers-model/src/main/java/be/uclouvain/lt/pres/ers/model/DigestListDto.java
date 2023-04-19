@@ -14,7 +14,6 @@ import java.util.Base64;
 import java.util.List;
 
 @Data
-@JsonRootName(value = "pres-DigestListType")
 @JsonDeserialize(using = DigestListDeserializer.class)
 public class DigestListDto {
 

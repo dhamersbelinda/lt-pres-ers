@@ -15,10 +15,7 @@ import javax.xml.bind.annotation.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.HexFormat;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -72,6 +69,7 @@ public class EvidenceRecordType {
         }
         // initialize all structures
         EvidenceRecordType evidenceRecordType = new EvidenceRecordType();
+        evidenceRecordType.setVersion(BigDecimal.valueOf(1.0));
         //no encryptionInformation (yet)
         //no supportingInformationList (yet)
         ArchiveTimeStampSequenceType archiveTimeStampSequenceType = new ArchiveTimeStampSequenceType();
@@ -105,6 +103,30 @@ public class EvidenceRecordType {
 
         boolean isGroup = false;
         List<Digest> digestList = poidObj.getPo().getDigestList().getDigests();
+
+//        if (digestList.size() > 1) { //we have a group
+//            //we need to sort digestList according to the binary order
+//            isGroup = true;
+//            digestList.sort(new Comparator<Digest>() {
+//                @Override
+//                public int compare(Digest o1, Digest o2) {
+//                    return BinaryOrderComparator.compareBytes(o1.getDigest(), o2.getDigest());
+//                }
+//            });
+//            //fill up the first level (sequence) of the hash tree
+//            HashTreeType.Sequence sequence = new HashTreeType.Sequence();
+//            sequence.setOrder(sequenceOrder);
+//            sequenceOrder++;
+//            List<byte[]> digestValues = sequence.getDigestValue();
+//            for (Digest digest : digestList) {
+//                digestValues.add(Base64.getEncoder().encode(digest.getDigest()));
+//            }
+//            //add the sequence
+//            hashTreeTypeSequenceList.add(sequence);
+//        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        //doing the first iteration
         if (digestList.size() > 1) { //we have a group
             //we need to sort digestList according to the binary order
             isGroup = true;
@@ -114,24 +136,26 @@ public class EvidenceRecordType {
                     return BinaryOrderComparator.compareBytes(o1.getDigest(), o2.getDigest());
                 }
             });
-            //fill up the first level (sequence) of the hash tree
-            HashTreeType.Sequence sequence = new HashTreeType.Sequence();
-            sequence.setOrder(sequenceOrder);
-            sequenceOrder++;
-            List<byte[]> digestValues = sequence.getDigestValue();
-            for (Digest digest : digestList) {
-                digestValues.add(Base64.getEncoder().encode(digest.getDigest()));
-            }
-            //add the sequence
-            hashTreeTypeSequenceList.add(sequence);
         }
+        //fill up the first level (sequence) of the hash tree
+        HashTreeType.Sequence sequence = new HashTreeType.Sequence();
+        sequence.setOrder(sequenceOrder);
+        sequenceOrder++;
+        List<byte[]> digestValues = sequence.getDigestValue();
+        for (Digest digest : digestList) {
+            digestValues.add(Base64.getEncoder().encode(digest.getDigest()));
+        }
+        //add the sequence
+        hashTreeTypeSequenceList.add(sequence);
+        ///////////////////////////////////////////////////////////////////////////////////////
 
         Long currParent = evidenceRecordDtoList.get(0).getParent();
         long currTreeId = evidenceRecordDtoList.get(0).getTreeId();
         int currTreeCounter = 0;
 
-        HashTreeType.Sequence sequence = new HashTreeType.Sequence();
-        List<byte[]> digestValues = sequence.getDigestValue();
+        sequence = new HashTreeType.Sequence(); //changed here
+        List<byte[]> digestsToSort = new ArrayList<>();
+        digestValues = sequence.getDigestValue(); //changed here
 
         ArchiveTimeStampType archiveTimeStampType = new ArchiveTimeStampType();
 
@@ -149,14 +173,11 @@ public class EvidenceRecordType {
                 currTreeId = evidenceRecordDto.getTreeId();
                 currTreeCounter = 1;
             }
-            if (isGroup && evidenceRecordDto.isStart()) { //we ignore the start since it is already included
-                continue;
-            }
-
 
             if (evidenceRecordDto.getInTreeNum() == 0) { //root node
-                if (currTreeCounter == 1) { // leaf node at the same time
-                    digestValues.add(Base64.getEncoder().encode(evidenceRecordDto.getNodeValue()));
+                if (currTreeCounter == 1 && !evidenceRecordDto.isStart()) { // leaf node at the same time //TODO change here if single group ?
+                    digestsToSort.add(evidenceRecordDto.getNodeValue());
+                    //digestValues.add(Base64.getEncoder().encode(evidenceRecordDto.getNodeValue()));
                 }
 
                 byte[] tsbytes = evidenceRecordDto.getTimestamp();// is this the right conversion?
@@ -172,8 +193,15 @@ public class EvidenceRecordType {
                     content.add(s); //TODO check if this is right
                     timeStampType.setTimeStampToken(timestampToken);
 
-                    sequence.setOrder(sequenceOrder);
-                    hashTreeTypeSequenceList.add(sequence);
+                    if (!evidenceRecordDto.isStart()) {
+                        sequence.setOrder(sequenceOrder);
+                        digestsToSort.sort(new BinaryOrderComparator());
+                        for (byte[] digest : digestsToSort) {
+                            digestValues.add(Base64.getEncoder().encode(digest));
+                        }
+                        hashTreeTypeSequenceList.add(sequence);
+                    }
+
 
                     archiveTimeStampType.setTimeStamp(timeStampType);
                     archiveTimeStampType.setHashTree(hashTreeType);
@@ -186,6 +214,7 @@ public class EvidenceRecordType {
                         hashTreeType = new HashTreeType();
                         hashTreeTypeSequenceList = hashTreeType.getSequence();
                         sequence = new HashTreeType.Sequence();
+                        digestsToSort.clear();
                         digestValues = sequence.getDigestValue();
 
                         sequenceOrder = 1;
@@ -202,24 +231,38 @@ public class EvidenceRecordType {
                     e.printStackTrace();
                 }
             } else { //non-root node
-                if (evidenceRecordDto.getParent().longValue() != currParent && !prevIsRoot) { //we need to create a new level
-                    // add the current sequence and create a new one
-                    sequence.setOrder(sequenceOrder);
-                    hashTreeTypeSequenceList.add(sequence);
-                    sequence = new HashTreeType.Sequence();
-                    digestValues = sequence.getDigestValue();
+                if (!evidenceRecordDto.isStart()){ //changed here
+                    EvidenceRecordDto next = evidenceRecordDtoList.get(index + 1);
+                    if (next.isStart()) {
+                        next = evidenceRecordDtoList.get(index + 2);
+                    }
+                    currParent = evidenceRecordDto.getParent();
+                    digestsToSort.add(evidenceRecordDto.getNodeValue());
+                    //byte[] t = Base64.getEncoder().encode(evidenceRecordDto.getNodeValue());
+                    //digestValues.add(t);
+                    //System.out.println("Added the following b64 encoded value "+ new String(t,StandardCharsets.UTF_8));
 
-                    sequenceOrder++;
+                    //if the next one is start, we need to check the parent of the next to next one
 
+                    if (next.getParent() == null || (next.getParent().longValue() != currParent.longValue() && next.getInTreeNum() != 0) || prevIsRoot) {
+                        sequence.setOrder(sequenceOrder);
+                        digestsToSort.sort(new BinaryOrderComparator());
+                        for (byte[] digest : digestsToSort) {
+                            digestValues.add(Base64.getEncoder().encode(digest));
+                        }
+                        hashTreeTypeSequenceList.add(sequence);
+                        sequence = new HashTreeType.Sequence();
+                        digestsToSort.clear();
+                        digestValues = sequence.getDigestValue();
+
+                        sequenceOrder++;
+                    }
+
+
+                    prevIsRoot = false;
 
 
                 }
-                // set new current parent
-                currParent = evidenceRecordDto.getParent();
-                byte[] t = Base64.getEncoder().encode(evidenceRecordDto.getNodeValue());
-                digestValues.add(t);
-                System.out.println("Added the following b64 encoded value "+ new String(t,StandardCharsets.UTF_8));
-                prevIsRoot = false;
             }
         }
         archiveTimeStampChains.add(archiveTimeStampChain);
@@ -309,7 +352,7 @@ public class EvidenceRecordType {
 
     /**
      * Sets the value of the version property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link BigDecimal }

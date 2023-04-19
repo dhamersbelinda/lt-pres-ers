@@ -78,21 +78,123 @@ public class EvidenceConverterServiceTest {
         /*
         evidenceRecordDtoList.add(new EvidenceRecordDto(25L, null, "test".getBytes(StandardCharsets.UTF_8), 7L, 0L, Base64.getDecoder().decode(ts),true));
         */
-        evidenceRecordDtoList.add(new EvidenceRecordDto(4L, 2L, "test".getBytes(StandardCharsets.UTF_8), 1L, 3L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(4L, 2L, "test".getBytes(StandardCharsets.UTF_8), 1L, 3L, Base64.getDecoder().decode(ts),false));
         evidenceRecordDtoList.add(new EvidenceRecordDto(5L, 2L, "test".getBytes(StandardCharsets.UTF_8), 1L, 3L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(3L, 1L, "test".getBytes(StandardCharsets.UTF_8), 1L, 2L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(1L, 14L, "test".getBytes(StandardCharsets.UTF_8), 1L, 0L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(3L, 1L, "test".getBytes(StandardCharsets.UTF_8), 1L, 2L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(1L, 14L, "test".getBytes(StandardCharsets.UTF_8), 1L, 0L, Base64.getDecoder().decode(ts),false));
 
-        evidenceRecordDtoList.add(new EvidenceRecordDto(14L, 12L, "test".getBytes(StandardCharsets.UTF_8), 3L, 3L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(15L, 12L, "test".getBytes(StandardCharsets.UTF_8), 3L, 4L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(13L, 11L, "test".getBytes(StandardCharsets.UTF_8), 3L, 2L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(11L, 22L, "test".getBytes(StandardCharsets.UTF_8), 3L, 0L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(14L, 12L, "test".getBytes(StandardCharsets.UTF_8), 3L, 3L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(15L, 12L, "test".getBytes(StandardCharsets.UTF_8), 3L, 4L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(13L, 11L, "test".getBytes(StandardCharsets.UTF_8), 3L, 2L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(11L, 22L, "test".getBytes(StandardCharsets.UTF_8), 3L, 0L, Base64.getDecoder().decode(ts),false));
 
-        evidenceRecordDtoList.add(new EvidenceRecordDto(22L, 21L, "test".getBytes(StandardCharsets.UTF_8), 5L, 1L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(23L, 21L, "test".getBytes(StandardCharsets.UTF_8), 5L, 2L, Base64.getDecoder().decode(ts),true));
-        evidenceRecordDtoList.add(new EvidenceRecordDto(21L, 24L, "test".getBytes(StandardCharsets.UTF_8), 5L, 0L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(22L, 21L, "test".getBytes(StandardCharsets.UTF_8), 5L, 1L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(23L, 21L, "test".getBytes(StandardCharsets.UTF_8), 5L, 2L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(21L, 24L, "test".getBytes(StandardCharsets.UTF_8), 5L, 0L, Base64.getDecoder().decode(ts),false));
 
-        evidenceRecordDtoList.add(new EvidenceRecordDto(24L, null, "test".getBytes(StandardCharsets.UTF_8), 6L, 0L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(24L, null, "test".getBytes(StandardCharsets.UTF_8), 6L, 0L, Base64.getDecoder().decode(ts),false));
+
+        EvidenceRecordType er = EvidenceRecordType.build(evidenceRecordDtoList, r);
+
+
+        String xmlString = null;
+        ObjectFactory objectFactory = new ObjectFactory();
+        JAXBElement<EvidenceRecordType> evidenceRecordTypeJAXBElement = objectFactory.createEvidenceRecord(er);
+
+        try {
+            JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
+            Marshaller mar = context.createMarshaller();
+            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            StringWriter sw = new StringWriter();
+            mar.marshal(evidenceRecordTypeJAXBElement, sw);
+
+            xmlString = sw.toString();
+            System.out.println(xmlString);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void conversion1Node() throws URISyntaxException {
+
+        List<EvidenceRecordDto> evidenceRecordDtoList = new ArrayList<>();
+        /*
+        evidenceRecordDtoList.add(new EvidenceRecordDto(1L,null, "test".getBytes(StandardCharsets.UTF_8), 2L, 0L, "ts".getBytes(StandardCharsets.UTF_8), true));
+
+        when(this.poidRepository.getERPathFromPOID(any())).thenReturn(evidenceRecordDtoList);
+        */
+        PO po = new PO();
+        DigestList dl = new DigestList();
+        po.setDigestList(dl);
+        dl.setDigestMethod(new URI(DigestAlgorithm.SHA256.getOid()));
+        List<Digest> dlist = new ArrayList<>();
+        dlist.add(new Digest(null, "test".getBytes(StandardCharsets.UTF_8),null));
+        dl.setDigests(dlist);
+        POID r = new POID();
+        r.setPo(po);
+        r.setDigestMethod(DigestAlgorithm.SHA256.getOid());
+        //when(this.poidRepository.findById(any())).thenReturn(java.util.Optional.of(r));
+
+        //construct example
+        /*
+        evidenceRecordDtoList.add(new EvidenceRecordDto(25L, null, "test".getBytes(StandardCharsets.UTF_8), 7L, 0L, Base64.getDecoder().decode(ts),true));
+        */
+        evidenceRecordDtoList.add(new EvidenceRecordDto(1L, null, "test".getBytes(StandardCharsets.UTF_8), 1L, 0L, Base64.getDecoder().decode(ts),true));
+
+
+        EvidenceRecordType er = EvidenceRecordType.build(evidenceRecordDtoList, r);
+
+
+        String xmlString = null;
+        ObjectFactory objectFactory = new ObjectFactory();
+        JAXBElement<EvidenceRecordType> evidenceRecordTypeJAXBElement = objectFactory.createEvidenceRecord(er);
+
+        try {
+            JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
+            Marshaller mar = context.createMarshaller();
+            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            StringWriter sw = new StringWriter();
+            mar.marshal(evidenceRecordTypeJAXBElement, sw);
+
+            xmlString = sw.toString();
+            System.out.println(xmlString);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void conversion3VRNode() throws URISyntaxException {
+
+        List<EvidenceRecordDto> evidenceRecordDtoList = new ArrayList<>();
+        /*
+        evidenceRecordDtoList.add(new EvidenceRecordDto(1L,null, "test".getBytes(StandardCharsets.UTF_8), 2L, 0L, "ts".getBytes(StandardCharsets.UTF_8), true));
+
+        when(this.poidRepository.getERPathFromPOID(any())).thenReturn(evidenceRecordDtoList);
+        */
+        PO po = new PO();
+        DigestList dl = new DigestList();
+        po.setDigestList(dl);
+        dl.setDigestMethod(new URI(DigestAlgorithm.SHA256.getOid()));
+        List<Digest> dlist = new ArrayList<>();
+        dlist.add(new Digest(null, "test".getBytes(StandardCharsets.UTF_8),null));
+        dl.setDigests(dlist);
+        POID r = new POID();
+        r.setPo(po);
+        r.setDigestMethod(DigestAlgorithm.SHA256.getOid());
+        //when(this.poidRepository.findById(any())).thenReturn(java.util.Optional.of(r));
+
+        //construct example
+        /*
+        evidenceRecordDtoList.add(new EvidenceRecordDto(25L, null, "test".getBytes(StandardCharsets.UTF_8), 7L, 0L, Base64.getDecoder().decode(ts),true));
+        */
+        evidenceRecordDtoList.add(new EvidenceRecordDto(26L, 27L, "test".getBytes(StandardCharsets.UTF_8), 1L, 0L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(27L, 28L, "test".getBytes(StandardCharsets.UTF_8), 2L, 0L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(28L, null, "test".getBytes(StandardCharsets.UTF_8), 3L, 0L, Base64.getDecoder().decode(ts),false));
+
 
         EvidenceRecordType er = EvidenceRecordType.build(evidenceRecordDtoList, r);
 

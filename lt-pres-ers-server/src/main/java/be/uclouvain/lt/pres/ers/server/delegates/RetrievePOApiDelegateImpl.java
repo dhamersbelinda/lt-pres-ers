@@ -12,17 +12,20 @@ import be.uclouvain.lt.pres.ers.server.api.RetrievePOApiDelegate;
 import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
 import be.uclouvain.lt.pres.ers.server.model.DsbResultType.MajEnum;
+import eu.europa.esig.dss.xades.reference.CanonicalizationTransform;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.dom.DOMResult;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -92,18 +95,20 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
 
         ObjectFactory objectFactory = new ObjectFactory();
         JAXBElement<EvidenceRecordType> er = objectFactory.createEvidenceRecord(evidenceRecordType);
-        String xmlString = null;
-
+//        String xmlString = null;
+        byte[] canonicalized = null;
         try {
             JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
             Marshaller mar = context.createMarshaller();
             mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-            StringWriter sw = new StringWriter();
-            mar.marshal(er, sw);
+            DOMResult res = new DOMResult();
+            mar.marshal(er, res);
 
-            xmlString = sw.toString();
-            System.out.println(xmlString);
+            Document doc = (Document) res.getNode();
+            CanonicalizationTransform transform = new CanonicalizationTransform("http://www.w3.org/2006/12/xml-c14n11");
+            canonicalized = transform.getBytesAfterTransformation(doc);
+            System.out.println(new String(canonicalized));
         } catch (JAXBException e) {
             e.printStackTrace();
         }
@@ -111,15 +116,15 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         //TODO change here
         //TODO handle all error codes
         //TODO encode xmlValue here later
-        if(xmlString == null) {
+        if(canonicalized == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     "POID not found : '"+request.getPoId()+"'", null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String ret = Base64.getEncoder().encodeToString(xmlString.getBytes(StandardCharsets.UTF_8));
+        String ret = Base64.getEncoder().encodeToString(canonicalized);
 
         // TODO : handle ID and related objects
         return this.buildResponse(
-                request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null, xmlString, HttpStatus.OK
+                request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null, ret, HttpStatus.OK
         );
     }
 

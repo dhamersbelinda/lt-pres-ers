@@ -19,7 +19,7 @@ public class BinaryOrderComparator implements Comparator<byte[]> {
         int runner = 0, min = Math.min(o1.length, o2.length), cmp;
 
         for (; runner < min; runner++) {
-            cmp = Byte.compare(o1[runner], o2[runner]);
+            cmp = Byte.compareUnsigned(o1[runner], o2[runner]);
             if(cmp!= 0) {
                 return cmp;
             }

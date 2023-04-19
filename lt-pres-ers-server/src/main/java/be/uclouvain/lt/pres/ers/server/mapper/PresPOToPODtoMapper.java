@@ -7,6 +7,7 @@ import be.uclouvain.lt.pres.ers.server.model.PresPOTypeBinaryData;
 import be.uclouvain.lt.pres.ers.server.model.PresPOTypeXmlData;
 import be.uclouvain.lt.pres.ers.model.deserializer.DigestListDeserializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -93,7 +94,7 @@ public interface PresPOToPODtoMapper {
             try {
                 byte[] decodedContent = Base64.getDecoder().decode(b64Content);
                 // parse JSON
-                JsonMapper jsonMapper = new JsonMapper();
+                ObjectMapper jsonMapper = new ObjectMapper();
 //                jsonMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
 //                SimpleModule module = new SimpleModule();
 //                module.addDeserializer(DigestListDto.class, new DigestListDeserializer());

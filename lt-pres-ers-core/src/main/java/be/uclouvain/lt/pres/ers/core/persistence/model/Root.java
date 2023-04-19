@@ -1,23 +1,37 @@
 package be.uclouvain.lt.pres.ers.core.persistence.model;
 
+import be.uclouvain.lt.pres.ers.core.XMLObjects.TimeStampType;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.TreeCategoryDto;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.TimestampType;
+import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.validation.timestamp.TimestampToken;
 import eu.europa.esig.dss.xades.reference.CanonicalizationTransform;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.persistence.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMResult;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.Base64;
@@ -68,25 +82,52 @@ public class Root implements Treeable{
 
     @Override
     public byte[] getHashValue() {
+        // TODO : check if all the validation data is present
+//        TimestampToken timestampToken;
+//        TimestampBinary tsBinary = ;
+//        try {
+//            timestampToken = new TimestampToken(tsBinary.getBytes(), TimestampType.CONTENT_TIMESTAMP);
+//            // TODO : better errors and signalling
+//        } catch (TSPException e) {
+//            logger.error("TSP Exception ! "+e.getMessage());
+//            continue;
+//        } catch (IOException e) {
+//            logger.error("IO Exception ! "+e.getMessage());
+//            continue;
+//        } catch (CMSException e) {
+//            logger.error("CMS Exception ! "+e.getMessage());
+//            continue;
+//        }
+
         // TODO : hash the ts
         DigestAlgorithm alg = DigestAlgorithm.forOID(this.digestMethod);
+
         // TODO : hash the canonicalization version of the timestamp element ...
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        Document doc;
-        // TODO : do with classes ect ? avoid hardcoded ...
-        String xml = "<TimeStamp Type=\"RFC3161\">"+ new String(Base64.getEncoder().encode(this.getTimestamp()), StandardCharsets.UTF_8)+"</TimeStamp>";
+        TimeStampType timeStamp = new TimeStampType();
+        TimeStampType.TimeStampToken timeStampToken = new TimeStampType.TimeStampToken();
+        timeStamp.setTimeStampToken(timeStampToken);
+        timeStampToken.setType("RFC3161");
+        timeStampToken.getContent().add(new String(Base64.getEncoder().encode(this.getTimestamp()), StandardCharsets.UTF_8));
+
+        JAXBElement<TimeStampType> timeStampJAXBElement = new JAXBElement<TimeStampType>(new QName("urn:ietf:params:xml:ns:ers", "TimeStamp"), TimeStampType.class, null, timeStamp);
 
         try {
-            builder = factory.newDocumentBuilder();
-            doc = builder.parse( new InputSource( new StringReader( xml ) ) );
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new RuntimeException(e);
+            JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
+            Marshaller mar = context.createMarshaller();
+            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            DOMResult res = new DOMResult();
+            mar.setProperty(Marshaller.JAXB_FRAGMENT, true);
+            mar.marshal(timeStampJAXBElement, res);
+
+            Document doc = (Document) res.getNode();
+            CanonicalizationTransform transform = new CanonicalizationTransform("http://www.w3.org/2006/12/xml-c14n11");
+            byte[] canonicalized = transform.getBytesAfterTransformation(doc);
+            System.out.println(new String(canonicalized));
+            return DSSUtils.digest(alg, canonicalized);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            throw new RuntimeException(); // TODO : better handling here
         }
-
-        CanonicalizationTransform transform = new CanonicalizationTransform("http://www.w3.org/2006/12/xml-c14n11");
-        byte[] canonicalized = transform.getBytesAfterTransformation(doc);
-
-        return DSSUtils.digest(alg, canonicalized);
     }
 }

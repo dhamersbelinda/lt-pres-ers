@@ -15,11 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.File;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -103,15 +108,23 @@ public class EvidenceConverterServiceTest {
 
         try {
             JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
+
+
+            //Setup schema validator
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            File file = new File("C:/Users/belin/lt-pres-ers/lt-pres-ers-core/src/main/java/be/uclouvain/lt/pres/ers/core/XMLObjects/globalSchema.xsd");
+            Schema xmlSchema = sf.newSchema(file);
             Marshaller mar = context.createMarshaller();
+            mar.setSchema(xmlSchema);
             mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
 
             StringWriter sw = new StringWriter();
             mar.marshal(evidenceRecordTypeJAXBElement, sw);
 
             xmlString = sw.toString();
             System.out.println(xmlString);
-        } catch (JAXBException e) {
+        } catch (JAXBException | SAXException e) {
             e.printStackTrace();
         }
     }
@@ -205,15 +218,22 @@ public class EvidenceConverterServiceTest {
 
         try {
             JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
+
+
+            //Setup schema validator
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            File file = new File("C:/Users/belin/lt-pres-ers/lt-pres-ers-core/src/main/java/be/uclouvain/lt/pres/ers/core/XMLObjects/globalSchema.xsd");
+            Schema xmlSchema = sf.newSchema(file);
             Marshaller mar = context.createMarshaller();
+            mar.setSchema(xmlSchema);
             mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             StringWriter sw = new StringWriter();
             mar.marshal(evidenceRecordTypeJAXBElement, sw);
 
             xmlString = sw.toString();
-            System.out.println(xmlString);
-        } catch (JAXBException e) {
+            //System.out.println(xmlString);
+        } catch (JAXBException | SAXException e) {
             e.printStackTrace();
         }
     }

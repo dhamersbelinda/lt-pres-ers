@@ -98,6 +98,10 @@ public class ExampleForJETest {
 
         // build the tree
         buildTreeTask.scheduledTask();
+        // Timestamp renewal 1
+        buildTreeTask.scheduledTask();
+        // Timestamp renewal 2
+        buildTreeTask.scheduledTask();
 
         // Get all ERs
         System.out.println("XML Sasha ==========");
@@ -112,7 +116,34 @@ public class ExampleForJETest {
         System.out.println("XML Belinda ==========");
         resp = mockMvc.perform(post("/pres/RetrievePO")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(  "{\"poId\":\""+poidSasha+"\"}"  )
+                        .content(  "{\"poId\":\""+poidBelinda+"\"}"  )
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        System.out.println(new String(Base64.getDecoder().decode((String) JsonPath.read(resp.getResponse().getContentAsString(), "$.po[0].xmlData.b64Content"))));
+
+        System.out.println("XML Jean-Emmanuel ==========");
+        resp = mockMvc.perform(post("/pres/RetrievePO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(  "{\"poId\":\""+poidJeanEmmanuel+"\"}"  )
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        System.out.println(new String(Base64.getDecoder().decode((String) JsonPath.read(resp.getResponse().getContentAsString(), "$.po[0].xmlData.b64Content"))));
+
+        System.out.println("XML Jean ==========");
+        resp = mockMvc.perform(post("/pres/RetrievePO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(  "{\"poId\":\""+poidJean+"\"}"  )
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        System.out.println(new String(Base64.getDecoder().decode((String) JsonPath.read(resp.getResponse().getContentAsString(), "$.po[0].xmlData.b64Content"))));
+
+        System.out.println("XML Yves ==========");
+        resp = mockMvc.perform(post("/pres/RetrievePO")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(  "{\"poId\":\""+poidYves+"\"}"  )
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();

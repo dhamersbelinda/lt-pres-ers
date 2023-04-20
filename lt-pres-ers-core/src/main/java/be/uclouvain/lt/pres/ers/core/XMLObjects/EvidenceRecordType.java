@@ -244,7 +244,8 @@ public class EvidenceRecordType {
 
                     //if the next one is start, we need to check the parent of the next to next one
 
-                    if (next.getParent() == null || (next.getParent().longValue() != currParent.longValue() && next.getInTreeNum() != 0) || prevIsRoot) {
+//                    if (next.getParent() == null || (next.getParent().longValue() != currParent.longValue() && next.getInTreeNum() != 0) || prevIsRoot) {
+                    if ((next.getParent() != null && next.getParent().longValue() != currParent.longValue() && next.getInTreeNum() != 0) || prevIsRoot) {
                         sequence.setOrder(sequenceOrder);
                         digestsToSort.sort(new BinaryOrderComparator());
                         for (byte[] digest : digestsToSort) {

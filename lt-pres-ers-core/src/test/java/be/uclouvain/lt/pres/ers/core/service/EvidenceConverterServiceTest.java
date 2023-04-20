@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -22,6 +23,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -112,12 +114,15 @@ public class EvidenceConverterServiceTest {
 
             //Setup schema validator
             SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            File file = new File("C:/Users/belin/lt-pres-ers/lt-pres-ers-core/src/main/java/be/uclouvain/lt/pres/ers/core/XMLObjects/globalSchema.xsd");
+            File file = new File(System.getProperty("user.dir")+"/src/main/java/be/uclouvain/lt/pres/ers/core/XMLObjects/globalSchema.xsd");
             Schema xmlSchema = sf.newSchema(file);
             Marshaller mar = context.createMarshaller();
             mar.setSchema(xmlSchema);
             mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
+//            DOMResult res = new DOMResult();
+//            mar.marshal(evidenceRecordTypeJAXBElement, res);
+//            Document doc = (Document) res.getNode();
 
             StringWriter sw = new StringWriter();
             mar.marshal(evidenceRecordTypeJAXBElement, sw);
@@ -237,4 +242,61 @@ public class EvidenceConverterServiceTest {
             e.printStackTrace();
         }
     }
+
+
+
+    @Test
+    public void conversion5Node() throws URISyntaxException {
+
+        List<EvidenceRecordDto> evidenceRecordDtoList = new ArrayList<>();
+        /*
+        evidenceRecordDtoList.add(new EvidenceRecordDto(1L,null, "test".getBytes(StandardCharsets.UTF_8), 2L, 0L, "ts".getBytes(StandardCharsets.UTF_8), true));
+
+        when(this.poidRepository.getERPathFromPOID(any())).thenReturn(evidenceRecordDtoList);
+        */
+        PO po = new PO();
+        DigestList dl = new DigestList();
+        po.setDigestList(dl);
+        dl.setDigestMethod(new URI(DigestAlgorithm.SHA256.getOid()));
+        List<Digest> dlist = new ArrayList<>();
+        dlist.add(new Digest(null, "test".getBytes(StandardCharsets.UTF_8),null));
+        dl.setDigests(dlist);
+        POID r = new POID();
+        r.setPo(po);
+        r.setDigestMethod(DigestAlgorithm.SHA256.getOid());
+        //when(this.poidRepository.findById(any())).thenReturn(java.util.Optional.of(r));
+
+        //construct example
+        /*
+        evidenceRecordDtoList.add(new EvidenceRecordDto(25L, null, "test".getBytes(StandardCharsets.UTF_8), 7L, 0L, Base64.getDecoder().decode(ts),true));
+        */
+        evidenceRecordDtoList.add(new EvidenceRecordDto(7L, 3L, "test".getBytes(StandardCharsets.UTF_8), 1L, 7L, Base64.getDecoder().decode(ts),true));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(8L, 3L, "test".getBytes(StandardCharsets.UTF_8), 1L, 8L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(4L, 1L, "test".getBytes(StandardCharsets.UTF_8), 1L, 4L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(2L, 0L, "test".getBytes(StandardCharsets.UTF_8), 1L, 2L, Base64.getDecoder().decode(ts),false));
+        evidenceRecordDtoList.add(new EvidenceRecordDto(0L, null, "test".getBytes(StandardCharsets.UTF_8), 1L, 0L, Base64.getDecoder().decode(ts),false));
+
+
+        EvidenceRecordType er = EvidenceRecordType.build(evidenceRecordDtoList, r);
+
+
+        String xmlString = null;
+        ObjectFactory objectFactory = new ObjectFactory();
+        JAXBElement<EvidenceRecordType> evidenceRecordTypeJAXBElement = objectFactory.createEvidenceRecord(er);
+
+        try {
+            JAXBContext context = JAXBContext.newInstance("be.uclouvain.lt.pres.ers.core.XMLObjects");
+            Marshaller mar = context.createMarshaller();
+            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            StringWriter sw = new StringWriter();
+            mar.marshal(evidenceRecordTypeJAXBElement, sw);
+
+            xmlString = sw.toString();
+            System.out.println(xmlString);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

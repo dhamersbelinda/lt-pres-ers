@@ -46,7 +46,7 @@ public class BuildTreeTask {
     final String tspServer = "http://dss.nowina.lu/pki-factory/tsa/good-tsa";
 
     private final static int BRANCHING_FACTOR = 2;
-    private final static int MAX_LEAVES = 1000;
+    private final static int MAX_LEAVES = 50;
     private final static boolean MIX_RENEWALS = true; // TODO take this into account
     private final static TemporalAmount RENEWAL_TIME_MARGIN = Period.of(1,0,0);
 
@@ -101,15 +101,17 @@ public class BuildTreeTask {
 
             poidOffset = rootOffset = 0;
             while(!(poidDone && rootDone)) {
-                workingSet.addAll(poidRepository.getPOIDsForTree(taskStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES, poidOffset));
+                workingSet.addAll(poidRepository.getPOIDsForTree(taskStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES, 0));
                 poidOffset += workingSet.size();
 
-                if(workingSet.size() < MAX_LEAVES && (MIX_RENEWALS || workingSet.size() == 0)) {
+                if(poidDone || workingSet.size() < MAX_LEAVES) {
                     poidDone = true;
-                    tempNPoidQueried = workingSet.size();
-                    workingSet.addAll(rootRepository.getRootsForTree(taskStart, shiftedStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES - workingSet.size(), rootOffset));
-                    rootOffset += workingSet.size() - tempNPoidQueried;
-                    if(workingSet.size() < MAX_LEAVES) rootDone = true;
+                    if (MIX_RENEWALS || workingSet.size() == 0) {
+                        tempNPoidQueried = workingSet.size();
+                        workingSet.addAll(rootRepository.getRootsForTree(taskStart, shiftedStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES - workingSet.size(), 0));
+                        rootOffset += workingSet.size() - tempNPoidQueried;
+                        if (workingSet.size() < MAX_LEAVES) rootDone = true;
+                    }
                 }
 
                 hashTreeBase = new HashTreeBase(new TreeID(), treeCategory.getClientId(), alg, workingSet);
@@ -160,6 +162,8 @@ public class BuildTreeTask {
                 rootRepository.save(root);
                 logger.info("Saved the tree.");
                 System.out.println(root);
+
+                workingSet.clear();
             }
 
         }

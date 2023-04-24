@@ -8,6 +8,7 @@ import be.uclouvain.lt.pres.ers.core.persistence.model.POID;
 import be.uclouvain.lt.pres.ers.core.service.impl.EvidenceRecordDTOToEvidenceRecordType;
 import be.uclouvain.lt.pres.ers.core.persistence.model.dto.EvidenceRecordDto;
 import be.uclouvain.lt.pres.ers.core.service.POService;
+import be.uclouvain.lt.pres.ers.model.SubjectOfRetrieval;
 import be.uclouvain.lt.pres.ers.server.api.RetrievePOApiDelegate;
 import be.uclouvain.lt.pres.ers.server.mapper.ProfileDtoMapper;
 import be.uclouvain.lt.pres.ers.server.model.*;
@@ -31,10 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -65,6 +63,12 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             ID we receive from db (that we received from client in preservePO call)
             RelatedObjects we receive from db (that we received from client in preservePO call)
          */
+
+        if(request.getSor() != null && (!Objects.equals(request.getSor(), SubjectOfRetrieval.EVIDENCE.getStandardizedValue()) && !Objects.equals(request.getSor(), SubjectOfRetrieval.PO_WITH_EMBEDDED_EVIDENCE.getStandardizedValue()))) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "Invalid or unsupported field 'sor': '"+request.getSor()+"'", null, HttpStatus.BAD_REQUEST);
+        }
+
         UUID poidUUID;
         try{
             poidUUID = UUID.fromString(request.getPoId());

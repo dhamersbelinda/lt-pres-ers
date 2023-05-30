@@ -112,7 +112,7 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             Document doc = (Document) res.getNode();
             CanonicalizationTransform transform = new CanonicalizationTransform("http://www.w3.org/2006/12/xml-c14n11");
             canonicalized = transform.getBytesAfterTransformation(doc);
-            System.out.println(new String(canonicalized));
+//            System.out.println(new String(canonicalized));
         } catch (JAXBException e) {
             e.printStackTrace();
         }

@@ -177,11 +177,11 @@ public class BuildTreeTask {
                 root.setTimestamp(tsBinary.getBytes());
 
                 logger.info("Built a tree.");
-                System.out.println(root);
+//                System.out.println(root);
 
                 rootRepository.save(root);
                 logger.info("Saved the tree.");
-                System.out.println(root);
+//                System.out.println(root);
 
                 workingSet.clear();
             }

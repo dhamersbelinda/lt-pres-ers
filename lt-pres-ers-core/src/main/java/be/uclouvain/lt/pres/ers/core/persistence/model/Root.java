@@ -131,7 +131,7 @@ public class Root implements Treeable{
             Document doc = (Document) res.getNode();
             CanonicalizationTransform transform = new CanonicalizationTransform("http://www.w3.org/2006/12/xml-c14n11");
             byte[] canonicalized = transform.getBytesAfterTransformation(doc);
-            System.out.println(new String(canonicalized));
+//            System.out.println(new String(canonicalized));
             return DSSUtils.digest(alg, canonicalized);
         } catch (JAXBException e) {
             e.printStackTrace();

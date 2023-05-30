@@ -61,9 +61,6 @@ public class PO {
     //@MapsId("id")
     private POID poid;
 
-
-
-
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "po", cascade = CascadeType.ALL, optional = false)
     @ToString.Exclude
     private DigestList digestList;

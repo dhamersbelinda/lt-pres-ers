@@ -82,12 +82,7 @@ import java.util.UUID;
         name = "POID.getToPreserveCategoriesPOIDAndRoot",
         query = """
                     WITH
-                        poids1 AS (SELECT DISTINCT client_id, digest_method FROM (
-                                    ((SELECT poid, client_id FROM POIDs WHERE creation_date < :DATE_NOW) AS pds
-                                    JOIN
-                                    (SELECT id, req_id FROM PO) AS po ON pds.poid = po.req_id) AS pds_po
-                                    JOIN
-                                    (SELECT id AS dl_id, digest_method, po_id FROM digestlist) AS dg ON pds_po.id=dg.po_id) AS r),
+                        poids1 AS (SELECT DISTINCT client_id, digest_method FROM POIDs WHERE node_id IS NULL AND creation_date < :DATE_NOW ),
                         roots1 AS (SELECT DISTINCT client_id, digest_method FROM root WHERE :DATE_NOW <= cert_valid_until AND cert_valid_until <= :DATE_SHIFTED)
                     SELECT * FROM (SELECT * FROM poids1 UNION DISTINCT (SELECT * FROM roots1)) AS r1;
                     """,
@@ -99,6 +94,14 @@ import java.util.UUID;
                 columns = {
                         @ColumnResult(name = "client_id", type = Long.class),
                         @ColumnResult(name = "digest_method", type = String.class)}))
+@NamedNativeQuery(
+        name = "POID.getToPreserveCategoriesPOIDOnly",
+        query = """
+                    SELECT DISTINCT client_id, digest_method FROM POIDs WHERE node_id IS NULL AND creation_date < :DATE_NOW ;
+                    """,
+        resultSetMapping = "TreeCategoryDtoMapping"
+)
+
 @Entity
 @Table(name = "POIDs")
 @Getter

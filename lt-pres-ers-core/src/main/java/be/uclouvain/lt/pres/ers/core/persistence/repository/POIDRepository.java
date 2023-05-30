@@ -31,8 +31,12 @@ public interface POIDRepository extends JpaRepository<POID, UUID> {
     List<EvidenceRecordDto> getERPathFromPOID(@Param("POID") UUID poid);
 
     // Used to get all the unique tuples (client_id, digest_method) for which a (new) POID or a root node must be preserved
+    // The below two queries are defined in the POID entity class
     @Query(nativeQuery = true)
     List<TreeCategoryDto> getToPreserveCategoriesPOIDAndRoot(@Param("DATE_NOW") OffsetDateTime dateNow, @Param("DATE_SHIFTED") OffsetDateTime dateShifted);
+
+    @Query(nativeQuery = true)
+    List<TreeCategoryDto> getToPreserveCategoriesPOIDOnly(@Param("DATE_NOW") OffsetDateTime dateNow);
 
     @Query(value= """
                     SELECT * FROM POIDs p WHERE creation_date < :DATE_NOW AND client_id = :CLIENT AND digest_method = :DIGEST_METHOD AND node_id IS NULL ORDER BY creation_date LIMIT :N_VALUES OFFSET :OFFSET ;

@@ -44,11 +44,13 @@ public class BuildTreeTask {
     private final Logger logger = LoggerFactory.getLogger(BuildTreeTask.class);
     // TODO : use a modified or a set of composite tsp sources
     final String tspServer = "http://dss.nowina.lu/pki-factory/tsa/good-tsa";
-
-    private final static int BRANCHING_FACTOR = 2;
     private final static int MAX_LEAVES = 50;
     private final static boolean MIX_RENEWALS = true; // TODO take this into account
     private final static TemporalAmount RENEWAL_TIME_MARGIN = Period.of(1,0,0);
+
+    public final static int NEW_POIDS_ONLY = 0;
+    public final static int RENEWALS_ONLY = 1;
+    public final static int NEW_POIDS_AND_RENEWALS = 2;
 
     private final ClientRepository clientRepository;
     private final RootRepository rootRepository;
@@ -60,10 +62,23 @@ public class BuildTreeTask {
     @SchedulerLock(name = "TaskScheduler_scheduledTask",
             lockAtLeastForString = "PT5s", lockAtMostForString = "PT25s") // TODO find proper duration
     public void scheduledTask() {
+        this.task(NEW_POIDS_AND_RENEWALS);
+    }
+
+    public void task(int mode) {
         OffsetDateTime taskStart = OffsetDateTime.now();
         OffsetDateTime shiftedStart = taskStart.plus(RENEWAL_TIME_MARGIN);
 
-        List<TreeCategoryDto> treeCategories = poidRepository.getToPreserveCategoriesPOIDAndRoot(taskStart, taskStart.plusYears(1));
+        List<TreeCategoryDto> treeCategories;
+        switch(mode) {
+            case NEW_POIDS_ONLY -> treeCategories = poidRepository.getToPreserveCategoriesPOIDOnly(taskStart);
+            case RENEWALS_ONLY -> treeCategories = rootRepository.getToPreserveCategoriesRootOnly(taskStart, shiftedStart);
+            case NEW_POIDS_AND_RENEWALS -> treeCategories = poidRepository.getToPreserveCategoriesPOIDAndRoot(taskStart, shiftedStart);
+            default -> {
+                logger.error(String.format("Unknown mode value given to task():  %d", mode));
+                return;
+            }
+        }
 
         logger.info(String.format("Found %d categories to build trees for !", treeCategories.size()));
 
@@ -83,8 +98,8 @@ public class BuildTreeTask {
         int poidOffset, rootOffset, tempNPoidQueried;
         for (TreeCategoryDto treeCategory : treeCategories) {
             alg = null;
-            poidDone = false;
-            rootDone = false;
+            poidDone = (mode == RENEWALS_ONLY);
+            rootDone = (mode == NEW_POIDS_ONLY);
             // TODO : here the client should always exist, but is it necessary ?
             try {
                 c = clientRepository.getReferenceById(treeCategory.getClientId());
@@ -101,19 +116,24 @@ public class BuildTreeTask {
 
             poidOffset = rootOffset = 0;
             while(!(poidDone && rootDone)) {
-                workingSet.addAll(poidRepository.getPOIDsForTree(taskStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES, 0));
-                poidOffset += workingSet.size();
+                if(!poidDone) {
+                    workingSet.addAll(poidRepository.getPOIDsForTree(taskStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES, 0));
+                    poidOffset += workingSet.size();
+                }
 
                 if(poidDone || workingSet.size() < MAX_LEAVES) {
                     poidDone = true;
-                    if (MIX_RENEWALS || workingSet.size() == 0) {
+                    if (!rootDone && (MIX_RENEWALS || workingSet.size() == 0)) {
                         tempNPoidQueried = workingSet.size();
                         workingSet.addAll(rootRepository.getRootsForTree(taskStart, shiftedStart, treeCategory.getClientId(), treeCategory.getDigestAlgorithm(), MAX_LEAVES - workingSet.size(), 0));
                         rootOffset += workingSet.size() - tempNPoidQueried;
                         if (workingSet.size() < MAX_LEAVES) rootDone = true;
                     }
                 }
-
+                if(workingSet.isEmpty()) {
+                    logger.warn("Tree was going to be built for empty working set!");
+                    continue;
+                }
                 hashTreeBase = new HashTreeBase(new TreeID(), treeCategory.getClientId(), alg, workingSet);
 
                 Node rootNode = hashTreeBase.buildTree();

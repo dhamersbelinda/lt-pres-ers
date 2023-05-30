@@ -1109,22 +1109,22 @@ databaseChangeLog:
             dbms: 'postgresql'
             sql: CREATE INDEX index_hash_nodes_parentID ON nodes USING hash(parent_id);
 
-  - changeSet:
-      id: 52
-      author: sasha
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: creation_date
-              - column:
-                  name: node_id
-              - column:
-                  name: client_id
-              - column:
-                  name: digest_method
-            indexName: index_btree_poids_creationDate_nodeId_clientId_digestMethod
-            tableName: poids
+#  - changeSet:
+#      id: 52
+#      author: sasha
+#      changes:
+#        - createIndex:
+#            columns:
+#              - column:
+#                  name: creation_date
+#              - column:
+#                  name: node_id
+#              - column:
+#                  name: client_id
+#              - column:
+#                  name: digest_method
+#            indexName: index_btree_poids_creationDate_nodeId_clientId_digestMethod
+#            tableName: poids
 
   - changeSet:
       id: 53
@@ -1183,3 +1183,28 @@ databaseChangeLog:
             indexName: index_btree_root_certValidUntil_clientId_digestMethod_isExtended
             tableName: root
 
+# Index used when getting POIDs for building trees, creation date is not included as it wouldn't filter many rows.
+# In case of postgresql a partial index with 'WHERE node_id IS NULL' is used to improve performance.
+  - changeSet:
+      id: 56
+      author: sasha
+      dbms: "!postgresql"
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: node_id
+              - column:
+                  name: client_id
+              - column:
+                  name: digest_method
+            indexName: index_btree_poids_nodeId_clientId_digestMethod
+            tableName: poids
+  - changeSet:
+      id: 57
+      dbms: "postgresql"
+      author: sasha
+      changes:
+        - sql:
+            dbms: 'postgresql'
+            sql: CREATE INDEX index_partial_btree_poids_nodeIdNULL_clientId_digestMethod ON POIDS USING btree (client_id, digest_method) WHERE node_id IS NULL;

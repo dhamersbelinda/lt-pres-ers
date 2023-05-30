@@ -36,6 +36,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 
+@NamedNativeQuery(
+        name = "Root.getToPreserveCategoriesRootOnly",
+        query = """
+                   SELECT DISTINCT client_id, digest_method FROM root WHERE :DATE_NOW <= cert_valid_until AND cert_valid_until <= :DATE_SHIFTED ;
+                   """,
+        resultSetMapping = "TreeCategoryDtoMapping"
+)
+
 @Entity(name = "ROOT")
 @Getter
 @Setter

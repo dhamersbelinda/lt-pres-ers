@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Document;
@@ -91,26 +92,11 @@ public class Root implements Treeable{
     @Override
     public byte[] getHashValue() {
         // TODO : check if all the validation data is present
-//        TimestampToken timestampToken;
-//        TimestampBinary tsBinary = ;
-//        try {
-//            timestampToken = new TimestampToken(tsBinary.getBytes(), TimestampType.CONTENT_TIMESTAMP);
-//            // TODO : better errors and signalling
-//        } catch (TSPException e) {
-//            logger.error("TSP Exception ! "+e.getMessage());
-//            continue;
-//        } catch (IOException e) {
-//            logger.error("IO Exception ! "+e.getMessage());
-//            continue;
-//        } catch (CMSException e) {
-//            logger.error("CMS Exception ! "+e.getMessage());
-//            continue;
-//        }
+
 
         // TODO : hash the ts
         DigestAlgorithm alg = DigestAlgorithm.forOID(this.digestMethod);
 
-        // TODO : hash the canonicalization version of the timestamp element ...
         TimeStampType timeStamp = new TimeStampType();
         TimeStampType.TimeStampToken timeStampToken = new TimeStampType.TimeStampToken();
         timeStamp.setTimeStampToken(timeStampToken);
@@ -129,7 +115,7 @@ public class Root implements Treeable{
             mar.marshal(timeStampJAXBElement, res);
 
             Document doc = (Document) res.getNode();
-            CanonicalizationTransform transform = new CanonicalizationTransform("http://www.w3.org/2006/12/xml-c14n11");
+            CanonicalizationTransform transform = new CanonicalizationTransform(Canonicalizer.ALGO_ID_C14N_OMIT_COMMENTS);
             byte[] canonicalized = transform.getBytesAfterTransformation(doc);
 //            System.out.println(new String(canonicalized));
             return DSSUtils.digest(alg, canonicalized);

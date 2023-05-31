@@ -64,12 +64,13 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 
         // We do not support optional inputs
         if(request.getOptIn() != null){
-            if(request.getOptIn().getPolicy() != null && request.getOptIn().getPolicy().size() != 0) {
-                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Policies in optIn are not supported", HttpStatus.BAD_REQUEST);
-            }
-            if(request.getOptIn().getOther() != null && request.getOptIn().getOther().size() != 0) {
-                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Other in optIn are not supported", HttpStatus.BAD_REQUEST);
-            }
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Optional inputs (optIn) are not supported", HttpStatus.BAD_REQUEST);
+//            if(request.getOptIn().getPolicy() != null && request.getOptIn().getPolicy().size() != 0) {
+//                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Policies in optIn are not supported", HttpStatus.BAD_REQUEST);
+//            }
+//            if(request.getOptIn().getOther() != null && request.getOptIn().getOther().size() != 0) {
+//                return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED, "Other in optIn are not supported", HttpStatus.BAD_REQUEST);
+//            }
         }
 
 

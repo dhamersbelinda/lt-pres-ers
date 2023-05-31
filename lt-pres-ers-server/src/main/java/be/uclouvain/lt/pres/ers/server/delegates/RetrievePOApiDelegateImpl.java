@@ -64,9 +64,29 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
             RelatedObjects we receive from db (that we received from client in preservePO call)
          */
 
+        if(request.getOptIn() != null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED,
+                    "Optional inputs not supported.", null, HttpStatus.BAD_REQUEST);
+        }
+
         if(request.getSor() != null && (!Objects.equals(request.getSor(), SubjectOfRetrieval.EVIDENCE.getStandardizedValue()) && !Objects.equals(request.getSor(), SubjectOfRetrieval.PO_WITH_EMBEDDED_EVIDENCE.getStandardizedValue()))) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     "Invalid or unsupported field 'sor': '"+request.getSor()+"'", null, HttpStatus.BAD_REQUEST);
+        }
+
+        if(request.getVersionId() != null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED,
+                    "versionID field not supported.", null, HttpStatus.BAD_REQUEST);
+        }
+
+        if(request.getPoFormat() != null) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
+                    "poFormat field not supported by the profile.", null, HttpStatus.BAD_REQUEST);
+        }
+
+        if(request.getEvFormat() != null && !request.getEvFormat().equals("urn:ietf:rfc:6283")) {
+            return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.NOT_SUPPORTED,
+                    "evFormat '"+request.getEvFormat()+"' not supported by the profile.", null, HttpStatus.BAD_REQUEST);
         }
 
         UUID poidUUID;

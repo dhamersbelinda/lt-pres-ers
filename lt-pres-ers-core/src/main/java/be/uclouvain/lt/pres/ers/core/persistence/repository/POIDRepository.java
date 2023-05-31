@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Repository
-public interface POIDRepository extends JpaRepository<POID, UUID> {
+public interface POIDRepository extends JpaRepository<POID, UUID>, CustomPOIDRepository {
 
     //TODO change here
     @EntityGraph(value = "request-entity-graph", type = EntityGraphType.FETCH)
@@ -38,8 +38,8 @@ public interface POIDRepository extends JpaRepository<POID, UUID> {
     @Query(nativeQuery = true)
     List<TreeCategoryDto> getToPreserveCategoriesPOIDOnly(@Param("DATE_NOW") OffsetDateTime dateNow);
 
-    @Query(value= """
-                    SELECT * FROM POIDs p WHERE creation_date < :DATE_NOW AND client_id = :CLIENT AND digest_method = :DIGEST_METHOD AND node_id IS NULL ORDER BY creation_date LIMIT :N_VALUES OFFSET :OFFSET ;
-                """, nativeQuery = true)
-    List<POID> getPOIDsForTree(@Param("DATE_NOW") OffsetDateTime dateNow, @Param("CLIENT") long clientId, @Param("DIGEST_METHOD") String digestMethod, @Param("N_VALUES") int nValues, @Param("OFFSET") int offset);
+//    @Query(value= """
+//                    SELECT * FROM POIDs p WHERE creation_date < :DATE_NOW AND client_id = :CLIENT AND digest_method = :DIGEST_METHOD AND node_id IS NULL ORDER BY creation_date LIMIT :N_VALUES OFFSET :OFFSET ;
+//                """, nativeQuery = true)
+//    List<POID> getPOIDsForTree(@Param("DATE_NOW") OffsetDateTime dateNow, @Param("CLIENT") long clientId, @Param("DIGEST_METHOD") String digestMethod, @Param("N_VALUES") int nValues, @Param("OFFSET") int offset);
 }

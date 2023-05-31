@@ -6,9 +6,12 @@ import be.uclouvain.lt.pres.ers.utils.ByteUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.spi.DSSUtils;
 import lombok.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 
 //class that can be used to build a Merkle hash-tree
@@ -18,6 +21,9 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class HashTreeBase {
+
+    private final Logger logger = LoggerFactory.getLogger(HashTreeBase.class);
+
     public HashTreeBase(TreeID treeID, Long clientId, DigestAlgorithm digestMethod, List<Treeable> leaves) {
         this.treeID = treeID;
         this.clientId = clientId;
@@ -25,15 +31,13 @@ public class HashTreeBase {
         this.leaves = leaves;
     }
 
-    private int BRANCHING_FACTOR = 2;
-
     private TreeID treeID;
     private Long clientId;
     private DigestAlgorithm digestMethod; //has become superfluous now, or maybe not ? correct type ?
 //    private List<POCompressed> poCompressedList;
     private List<Treeable> leaves;
 
-    public Node buildTree() {
+    public Node buildTree(int branchingFactor) {
         /*  InTreeId = (2^depth + i - 1)     i in [0, 2^depth[
            0             0
                        /   \
@@ -49,13 +53,13 @@ public class HashTreeBase {
         byte[] dummyBuffer;
 
         int nLeaves = this.leaves.size();
-        int depth = (int) Math.ceil(Math.log(nLeaves) / Math.log(BRANCHING_FACTOR)); // log_b (x) = ln(x)/ln(b)
-        // int treeSize = (int) ((Math.pow(BRANCHING_FACTOR, depth+1) - 1)/((double) (BRANCHING_FACTOR - 1)));
-        int mod = nLeaves % BRANCHING_FACTOR;
-        int fullNum = mod == 0 ? nLeaves : nLeaves + BRANCHING_FACTOR - mod;
+        int depth = (int) Math.ceil(Math.log(nLeaves) / Math.log(branchingFactor)); // log_b (x) = ln(x)/ln(b)
+        // int treeSize = (int) ((Math.pow(branchingFactor, depth+1) - 1)/((double) (branchingFactor - 1)));
+        int mod = nLeaves % branchingFactor;
+        int fullNum = mod == 0 ? nLeaves : nLeaves + branchingFactor - mod;
         Node[] buf = new Node[fullNum];
         int d = 0;
-        int firstLvlNodeNum = (int) ((Math.pow(BRANCHING_FACTOR, depth) - 1)/((double) (BRANCHING_FACTOR - 1)));
+        int firstLvlNodeNum = (int) ((Math.pow(branchingFactor, depth) - 1)/((double) (branchingFactor - 1)));
         Node temp;
         TreeID treeID = this.treeID;
         // transform leaves in node object & put in array
@@ -70,7 +74,7 @@ public class HashTreeBase {
             d++;
         }
 
-        int leapIndex = 0;   // Advance by BRANCHING_FACTOR
+        int leapIndex = 0;   // Advance by branchingFactor
         int insertIndex = 0; // Advance of 1
         int runnerIndex = 0; // Used to scan children
 
@@ -78,14 +82,14 @@ public class HashTreeBase {
         Node currentNode;
         Node parentNode;
         List<Node> children;
-        List<byte[]> toConcat = new ArrayList<>(BRANCHING_FACTOR);
+        List<byte[]> toConcat = new ArrayList<>(branchingFactor);
         byte[] toHash;
         // Loop on every 'floor' of the tree
         for (d = depth-1; d >= 0; d--) {
-            firstLvlNodeNum = (int) ((Math.pow(BRANCHING_FACTOR, d) - 1)/((double) (BRANCHING_FACTOR - 1))); // for parent's in_tree_id field
+            firstLvlNodeNum = (int) ((Math.pow(branchingFactor, d) - 1)/((double) (branchingFactor - 1))); // for parent's in_tree_id field
             // First check if we have to add dummy nodes
             if(realNum < fullNum){
-                int lowerLvlNodeNum = firstLvlNodeNum + ((int) Math.pow(BRANCHING_FACTOR, d));
+                int lowerLvlNodeNum = firstLvlNodeNum + ((int) Math.pow(branchingFactor, d));
                 for (int i = realNum; i < fullNum; i++) {
                     currentNode = new Node();
                     currentNode.setTreeId(treeID);
@@ -97,24 +101,24 @@ public class HashTreeBase {
                 }
             }
             // Second reduce all nodes in the array to their parent
-            for (leapIndex = 0; leapIndex < fullNum; leapIndex = leapIndex + BRANCHING_FACTOR) {
+            for (leapIndex = 0; leapIndex < fullNum; leapIndex = leapIndex + branchingFactor) {
                 int sum = 0; //placeholder for empty hash
                 //create parent Node
                 parentNode = new Node();
                 parentNode.setTreeId(treeID);
                 parentNode.setInTreeId(firstLvlNodeNum + insertIndex);
-                children = new ArrayList<>(BRANCHING_FACTOR);
+                children = new ArrayList<>(branchingFactor);
                 toConcat.clear();
-                for (runnerIndex = leapIndex; runnerIndex < leapIndex + BRANCHING_FACTOR; runnerIndex++) {
+                for (runnerIndex = leapIndex; runnerIndex < leapIndex + branchingFactor; runnerIndex++) {
                     currentNode = buf[runnerIndex];
                     //set parent-child-neighbour relation
                     currentNode.setParent(parentNode);
                     children.add(currentNode);
 
                     //supposing branching factor of 2
-                    //leapIndex + BRANCHING_FACTOR-1 - (runnerIndex-leapIndex)
+                    //leapIndex + branchingFactor-1 - (runnerIndex-leapIndex)
                     // TODO : support more than one neighbour
-//                    currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + BRANCHING_FACTOR - 1]);
+//                    currentNode.setNeighbour(buf[2*leapIndex - runnerIndex + branchingFactor - 1]);
 
                     sum = sum + 1; // TODO placeholder op to concatenate hash
                 }
@@ -135,9 +139,9 @@ public class HashTreeBase {
                 insertIndex++;
                 sum = 0;
             }
-            realNum = fullNum / BRANCHING_FACTOR;
-            mod = realNum % BRANCHING_FACTOR;
-            fullNum = mod == 0 ? realNum : realNum + BRANCHING_FACTOR - mod ;
+            realNum = fullNum / branchingFactor;
+            mod = realNum % branchingFactor;
+            fullNum = mod == 0 ? realNum : realNum + branchingFactor - mod ;
             insertIndex = 0;
         }
         return buf[0];

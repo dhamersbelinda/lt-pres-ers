@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.ConstraintViolationException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
 
     @Override
     public ResponseEntity<PresPreservePOResponseType> preservePOPost(final PresPreservePOType request) {
+        long start = System.nanoTime();
         // Validate inputs
         // TODO : optIn ?
         // TODO reqID ?
@@ -125,11 +129,15 @@ public class PreservePOApiDelegateImpl implements PreservePOApiDelegate {
         String digestMethod = poDtos.get(0).getDigestList().getDigestMethod().getOid();
         PreservePORequestDto requestDto = new PreservePORequestDto(poDtos, profileDto, clientId, digestMethod);
 
-
+        long beforeInsert = System.nanoTime();
         UUID poid = this.poService.insertPOs(requestDto);
+
+        long end = System.nanoTime();
+
+        // total, insert
         return this
                 .buildResponse(
-                        request.getReqId(), poid, MajEnum.RESULTMAJOR_SUCCESS, null, "Success !",
+                        "%d %d".formatted(end-start, end-beforeInsert), poid, MajEnum.RESULTMAJOR_SUCCESS, null, "Success !",
                         HttpStatus.OK);
     }
 

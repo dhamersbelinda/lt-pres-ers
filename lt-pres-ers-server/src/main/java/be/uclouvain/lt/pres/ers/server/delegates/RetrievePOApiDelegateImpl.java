@@ -27,6 +27,9 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMResult;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,7 +48,7 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
 
     @Override
     public ResponseEntity<PresRetrievePOResponseType> retrievePOPost(final PresRetrievePOType request) {
-
+        long start = System.nanoTime();
 
         // VersionID : If versionID is present return error ? => we don't use versioning but could add an immutable versionID for each document, then check it after DB fetch ??
         /* SubjectOfRetrieval (sor) : "If this element is missing POwithEmbeddedEvidence shall be used as default value"
@@ -98,8 +101,12 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         }
 
         List<EvidenceRecordDto> result;
+        long beforeQuery=0, afterQuery=0;
+
         try {
+            beforeQuery = System.nanoTime();
             result = service.getERFromPOID(poidUUID);
+            afterQuery = System.nanoTime();
         }catch (PONotFoundException e) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     "POID not found : '"+request.getPoId()+"'", null, HttpStatus.BAD_REQUEST);
@@ -110,13 +117,15 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         }
 
         //call converter with poid as arg
+        long beforeProcess = System.nanoTime();
         EvidenceRecordType evidenceRecordType = converterService.toEvidenceRecordType(result, poidUUID);
-
+        long afterProcess = System.nanoTime();
         if(evidenceRecordType == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     "POID not found : '"+request.getPoId()+"'", null, HttpStatus.BAD_REQUEST);
         }
 
+        long beforeXML = System.nanoTime();
         ObjectFactory objectFactory = new ObjectFactory();
         JAXBElement<EvidenceRecordType> er = objectFactory.createEvidenceRecord(evidenceRecordType);
 //        String xmlString = null;
@@ -136,19 +145,21 @@ public class RetrievePOApiDelegateImpl implements RetrievePOApiDelegate {
         } catch (JAXBException e) {
             e.printStackTrace();
         }
+        long afterXML = System.nanoTime();
 
         //TODO change here
         //TODO handle all error codes
-        //TODO encode xmlValue here later
         if(canonicalized == null) {
             return this.buildResponse(request.getReqId(), MajEnum.RESULTMAJOR_REQUESTERERROR, MinEnum.PARAMETER_ERROR,
                     "POID not found : '"+request.getPoId()+"'", null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String ret = Base64.getEncoder().encodeToString(canonicalized);
 
-        // TODO : handle ID and related objects
+        long end = System.nanoTime();
+
+        // total, query, process, xml
         return this.buildResponse(
-                request.getReqId(), MajEnum.RESULTMAJOR_SUCCESS, null, null, ret, HttpStatus.OK
+                "%d %d %d %d".formatted(end-start, afterQuery - beforeQuery, afterProcess-beforeProcess, afterXML-beforeXML), MajEnum.RESULTMAJOR_SUCCESS, null, null, ret, HttpStatus.OK
         );
     }
 

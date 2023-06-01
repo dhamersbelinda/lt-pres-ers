@@ -675,7 +675,7 @@ databaseChangeLog:
             constraintName: FK_DIGESTLIST_PO
             deferrable: false
             initiallyDeferred: false
-            onDelete: RESTRICT
+            onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: ID
             referencedTableName: po
@@ -691,7 +691,7 @@ databaseChangeLog:
             constraintName: FK_DIGEST_DIGESTLIST
             deferrable: false
             initiallyDeferred: false
-            onDelete: RESTRICT
+            onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: ID
             referencedTableName: digestlist
@@ -816,7 +816,7 @@ databaseChangeLog:
             constraintName: FK_RELOBJ
             deferrable: false
             initiallyDeferred: false
-            onDelete: RESTRICT
+            onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: ID
             referencedTableName: po
@@ -833,7 +833,7 @@ databaseChangeLog:
             constraintName: FK_REQ_PO
             deferrable: false
             initiallyDeferred: false
-            onDelete: RESTRICT
+            onDelete: CASCADE
             onUpdate: RESTRICT
             referencedColumnNames: POID
             referencedTableName: poids

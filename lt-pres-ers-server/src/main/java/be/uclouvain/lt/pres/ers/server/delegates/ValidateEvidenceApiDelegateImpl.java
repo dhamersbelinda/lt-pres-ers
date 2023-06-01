@@ -40,6 +40,17 @@ public class ValidateEvidenceApiDelegateImpl implements ValidateEvidenceApiDeleg
                     }
 
                 }
+                case'5' -> {
+                    String[] params = presValidateEvidenceType.getReqId().split(" ");
+                    if(params.length < 2) return null; // "4 L"
+                    int L = Integer.parseInt(params[1]);
+                    try {
+                        task.insertRandomPOIDs(L);
+                    } catch (URISyntaxException e) {
+                        logger.warn("Failed to insert random POIDs : "+e.getMessage());
+                        return null;
+                    }
+                }
                 default -> {
                     return buildResponse(null, DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR, null, "unknown reqId",HttpStatus.BAD_REQUEST);
                 }

@@ -40,9 +40,9 @@ public class ValidateEvidenceApiDelegateImpl implements ValidateEvidenceApiDeleg
                     }
 
                 }
-                case'5' -> {
+                case '5' -> {
                     String[] params = presValidateEvidenceType.getReqId().split(" ");
-                    if(params.length < 2) return null; // "4 L"
+                    if(params.length != 2) return null; // "4 L"
                     int L = Integer.parseInt(params[1]);
                     try {
                         task.insertRandomPOIDs(L);
@@ -50,6 +50,26 @@ public class ValidateEvidenceApiDelegateImpl implements ValidateEvidenceApiDeleg
                         logger.warn("Failed to insert random POIDs : "+e.getMessage());
                         return null;
                     }
+                }
+                case '6' -> {
+                    String[] params = presValidateEvidenceType.getReqId().split(" ");
+                    if(params.length != 5) return buildResponse(null, DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR, null, "unknown reqId",HttpStatus.BAD_REQUEST);; // "6 MODE B L maxL"
+                    int mode = Integer.parseInt(params[1]);
+                    int B = Integer.parseInt(params[2]);
+                    int L = Integer.parseInt(params[3]);
+                    int maxL = Integer.parseInt(params[4]);
+                    if(mode < 0 || mode > 2 || B < 2 || maxL < 1 || L < 1){
+                        return buildResponse(null, DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR, null, "invalid params",HttpStatus.BAD_REQUEST);
+                    }
+
+                    try {
+                        task.insertRandomPOIDs(L);
+                    } catch (URISyntaxException e) {
+                        logger.warn("Failed to insert random POIDs : "+e.getMessage());
+                        return null;
+                    }
+
+                    task.task(mode, B, maxL);
                 }
                 default -> {
                     return buildResponse(null, DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR, null, "unknown reqId",HttpStatus.BAD_REQUEST);

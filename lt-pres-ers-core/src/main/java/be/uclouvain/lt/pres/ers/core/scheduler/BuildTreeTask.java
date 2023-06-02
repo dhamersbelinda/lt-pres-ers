@@ -40,6 +40,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @AllArgsConstructor
@@ -184,8 +185,9 @@ public class BuildTreeTask {
                     logger.error("No certificates in the timestamp token ! "+timestampToken);
                     continue;
                 }
-                expirationDate = certificateTokens.get(0).getNotAfter().toInstant().atOffset(ZoneOffset.UTC);
-
+//                expirationDate = certificateTokens.get(0).getNotAfter().toInstant().atOffset(ZoneOffset.UTC);
+//                expirationDate = OffsetDateTime.now().plusMonths(3);
+                expirationDate = OffsetDateTime.now().plusYears(2);
                 root.setCertValidUntil(expirationDate);
                 root.setTimestamp(tsBin);
 
@@ -212,7 +214,13 @@ public class BuildTreeTask {
         List<POID> poids = new ArrayList<>();
         DigestAlgorithm alg = DigestAlgorithm.SHA256;
 
-        Client c = new Client();
+        Client c;
+        try {
+            c = clientRepository.getReferenceById(0L);
+        } catch(EntityNotFoundException e) {
+            logger.error("Could not insert");
+            throw new RuntimeException("Could not insert, client not found");
+        }
 
         URI profileID = new URI("https://uclouvain.be/en/faculties/epl/preservation-api/profile/v1.0");
         Optional<Profile> optProfile = profileRepository.findByProfileIdentifier(profileID);
@@ -249,6 +257,21 @@ public class BuildTreeTask {
             poid1.setDigestValue(bytes1);
 
             poids.add(poid1);
+
+            // This is to have different creation dates in the DB
+//            try {
+//                TimeUnit.NANOSECONDS.sleep(600);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            long bef = System.nanoTime();
+//            int m = 0;
+//            Random rdn = new Random();
+//            while(m<100000) {
+//                rdn.nextInt();
+//                m++;
+//            }
+//            logger.info("Loop time: %d".formatted(System.nanoTime() - bef));
         }
 
         poidRepository.saveAll(poids);

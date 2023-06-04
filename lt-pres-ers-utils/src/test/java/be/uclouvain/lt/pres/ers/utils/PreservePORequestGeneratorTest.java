@@ -15,6 +15,15 @@ public class PreservePORequestGeneratorTest {
     }
 
     @Test
+    public void generateValidDigestListPORequestFromGroupTest() {
+        List<String> docs = new ArrayList<>(1);
+
+        docs.add("Sasha");
+        docs.add("Belinda");
+        System.out.println(PreservePORequestGenerator.generateValidPORequestFromDocs(docs, DigestAlgorithm.SHA256));
+    }
+
+    @Test
     public void generateRandomValidPORequestFromDocTest() {
         List<String> docs = new ArrayList<>(1);
 
@@ -35,6 +44,13 @@ public class PreservePORequestGeneratorTest {
 
         docs.clear();
         docs.add("Yves");
+        System.out.println(PreservePORequestGenerator.generateValidPORequestFromDocs(docs, DigestAlgorithm.SHA256));
+
+        docs.clear();
+        docs.add("Jean-Emmanuel");
+        docs.add("Yves");
+        docs.add("Sasha");
+        docs.add("Belinda");
         System.out.println(PreservePORequestGenerator.generateValidPORequestFromDocs(docs, DigestAlgorithm.SHA256));
     }
 }

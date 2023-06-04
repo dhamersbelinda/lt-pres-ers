@@ -12,11 +12,11 @@ To store trees the model used is Adjacency List. Meaning that a node holds a for
 
 *Note: append ``lt-pres-ers-`` before each name of the list below.*
 
-*  **core:** This module contains everything that is persistence-related, e.g. the JPA entities, the liquibase changelog, repositories. A scheduled job performs the tree building (including timestamp renewals), it is located in the ``scheduler`` package.
-*  **model:** This module contains intermediary representations to transfert between the *core* and *server* modules.
-*  **server:** Contains the API delegates for the REST endpoints. It also holds the ``.properties`` file for the service's configuration.
-*  **utils:** This module contains utility function such as a comparator for sorting in binary ascending order. It also has a useful ``PreservePO`` request body generator, which can be easily used by hand using the test cases.
-*  **test:** This module is not used, most of the tests are present in their respective modules. When integration testing is done the ``TestContainers`` library is used to run a temporary PostgreSQL instance in a Docker container. 
+*  a**core:** This module contains everything that is persistence-related, e.g. the JPA entities, the liquibase changelog, repositories. A scheduled job performs the tree building (including timestamp renewals), it is located in the ``scheduler`` package.
+*  a**model:** This module contains intermediary representations to transfert between the *core* and *server* modules.
+*  a**server:** Contains the API delegates for the REST endpoints. It also holds the ``.properties`` file for the service's configuration.
+*  a**utils:** This module contains utility function such as a comparator for sorting in binary ascending order. It also has a useful ``PreservePO`` request body generator, which can be easily used by hand using the test cases.
+*  a**test:** This module is not used, most of the tests are present in their respective modules. When integration testing is done the ``TestContainers`` library is used to run a temporary PostgreSQL instance in a Docker container. 
 
 ## Installation
 

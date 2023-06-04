@@ -53,7 +53,8 @@ public class ValidateEvidenceApiDelegateImpl implements ValidateEvidenceApiDeleg
                 }
                 case '6' -> {
                     String[] params = presValidateEvidenceType.getReqId().split(" ");
-                    if(params.length != 5) return buildResponse(null, DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR, null, "unknown reqId",HttpStatus.BAD_REQUEST);; // "6 MODE B L maxL"
+                    // "6 MODE B L maxL"
+                    if(params.length != 5) return buildResponse(null, DsbResultType.MajEnum.RESULTMAJOR_REQUESTERERROR, null, "unknown reqId",HttpStatus.BAD_REQUEST);;
                     int mode = Integer.parseInt(params[1]);
                     int B = Integer.parseInt(params[2]);
                     int L = Integer.parseInt(params[3]);

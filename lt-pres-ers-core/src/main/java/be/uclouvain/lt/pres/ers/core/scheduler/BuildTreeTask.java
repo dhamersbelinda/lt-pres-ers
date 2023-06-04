@@ -51,7 +51,7 @@ public class BuildTreeTask {
     final String tspServer = "http://dss.nowina.lu/pki-factory/tsa/good-tsa";
     public final static int MAX_LEAVES = 1024;
     public final static int BRANCHING_FACTOR = 2;
-    private final static boolean MIX_RENEWALS = true; // TODO take this into account
+    private final static boolean MIX_RENEWALS = true;
     private final static TemporalAmount RENEWAL_TIME_MARGIN = Period.of(1,0,0);
 
     public final static int NEW_POIDS_ONLY = 0;
@@ -158,16 +158,16 @@ public class BuildTreeTask {
 
                 timeAfterBuild = System.nanoTime();
 
-//                try {
-////                    tsBinary = tspSource.getTimeStampResponse(alg, rootNode.getNodeValue());
+                try {
 //                    tsBinary = tspSource.getTimeStampResponse(alg, rootNode.getNodeValue());
-//                } catch(DSSException e) {
-//                    logger.error("Could not get timestamp ! "+e.getMessage());
-//                    continue;
-//                }
+                    tsBinary = tspSource.getTimeStampResponse(alg, rootNode.getNodeValue());
+                } catch(DSSException e) {
+                    logger.error("Could not get timestamp ! "+e.getMessage());
+                    continue;
+                }
                 timeAfterTS = System.nanoTime();
                 try {
-                    timestampToken = new TimestampToken(tsBin, TimestampType.CONTENT_TIMESTAMP);
+                    timestampToken = new TimestampToken(tsBinary.getBytes(), TimestampType.CONTENT_TIMESTAMP);
                     // TODO : better errors and signalling
                 } catch (TSPException e) {
                     logger.error("TSP Exception ! "+e.getMessage());
@@ -189,7 +189,7 @@ public class BuildTreeTask {
 //                expirationDate = OffsetDateTime.now().plusMonths(3);
                 expirationDate = OffsetDateTime.now().plusYears(2);
                 root.setCertValidUntil(expirationDate);
-                root.setTimestamp(tsBin);
+                root.setTimestamp(tsBinary.getBytes());
 
                 logger.info("Built a tree.");
                 timeBeforeInsert = System.nanoTime();
